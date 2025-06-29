@@ -1,0 +1,61 @@
+import type { ApiError, ApiRequestConfig, ApiResponse } from './types';
+
+export class HttpClient {
+  private baseUrl: string;
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
+  async request<T>(
+    endpoint: string,
+    config: ApiRequestConfig = { headers: {}, method: 'GET' }
+  ): Promise<ApiResponse<T>> {
+    const url = `${this.baseUrl}${endpoint}`;
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      ...config.headers,
+    };
+
+    const requestConfig: RequestInit = {
+      method: config.method || "GET",
+      headers,
+    };
+
+    if (config.body && config.method !== "GET") {
+      requestConfig.body = JSON.stringify(config.body);
+    }
+
+    try {
+      const response = await fetch(url, requestConfig);
+      const data = await response.json();
+
+      if (!response.ok) {
+        const error: ApiError = {
+          message: data.message || "An error occurred",
+          status: response.status,
+          code: data.code,
+        };
+        throw error;
+      }
+
+      return {
+        data,
+        message: data.message,
+        status: response.status,
+      };
+    } catch (error) {
+      if (error instanceof Error && "status" in error) {
+        throw error;
+      }
+
+      const apiError: ApiError = {
+        message: error instanceof Error ? error.message : "Network error",
+        status: 0,
+      };
+      throw apiError;
+    }
+  }
+}
+
+export const httpClient = new HttpClient('http://localhost:3000/api');
