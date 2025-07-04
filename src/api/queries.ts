@@ -25,7 +25,7 @@ export function useApiMutation<T, P = unknown>(
   options?: {
     onSuccess?: (data: T) => void;
     onError?: (error: ApiError) => void;
-    invalidateQueries?: string[][];
+    invalidateQueries: string[];
   }
 ) {
   const queryClient = useQueryClient();
@@ -37,9 +37,7 @@ export function useApiMutation<T, P = unknown>(
     },
     onSuccess: (data) => {
       options?.onSuccess?.(data);
-      options?.invalidateQueries?.forEach(queryKey => {
-        queryClient.invalidateQueries({ queryKey });
-      });
+      queryClient.invalidateQueries({ queryKey: options?.invalidateQueries });
     },
     onError: options?.onError,
   });
