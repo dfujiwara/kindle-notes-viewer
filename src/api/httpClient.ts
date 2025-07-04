@@ -18,7 +18,7 @@ export class HttpClient {
     };
 
     const requestConfig: RequestInit = {
-      method: config.method || "GET",
+      method: config.method,
       headers,
     };
 
@@ -32,16 +32,14 @@ export class HttpClient {
 
       if (!response.ok) {
         const error: ApiError = {
-          message: data.message || "An error occurred",
+          message: "An api error",
           status: response.status,
-          code: data.code,
         };
         throw error;
       }
 
       return {
         data,
-        message: data.message,
         status: response.status,
       };
     } catch (error) {

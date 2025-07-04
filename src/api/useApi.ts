@@ -23,7 +23,7 @@ export function useApi<T>(
 
   const execute = useCallback(async () => {
     setState(prev => ({ ...prev, loading: true, error: null }));
-    
+
     try {
       const response = await apiCall();
       setState({
@@ -56,15 +56,14 @@ export function useApi<T>(
   };
 }
 
-export function useApiMutation<T, P = unknown>(
-  apiCall: (params: P) => Promise<ApiResponse<T>>
-): {
-  data: T | null;
-  loading: boolean;
-  error: ApiError | null;
+interface UseApiMutationReturn<T, P> extends UseApiState<T> {
   mutate: (params: P) => Promise<void>;
   reset: () => void;
-} {
+}
+
+export function useApiMutation<T, P = unknown>(
+  apiCall: (params: P) => Promise<ApiResponse<T>>
+): UseApiMutationReturn<T, P> {
   const [state, setState] = useState<UseApiState<T>>({
     data: null,
     loading: false,
@@ -73,7 +72,7 @@ export function useApiMutation<T, P = unknown>(
 
   const mutate = useCallback(async (params: P) => {
     setState(prev => ({ ...prev, loading: true, error: null }));
-    
+
     try {
       const response = await apiCall(params);
       setState({
