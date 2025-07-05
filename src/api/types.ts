@@ -9,7 +9,7 @@ export interface ApiError {
 }
 
 export interface ApiRequestConfig {
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   headers: Record<string, string>;
   body?: unknown;
 }

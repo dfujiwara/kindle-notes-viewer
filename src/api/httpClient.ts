@@ -1,4 +1,4 @@
-import type { ApiError, ApiRequestConfig, ApiResponse } from './types';
+import type { ApiError, ApiRequestConfig, ApiResponse } from "./types";
 
 export class HttpClient {
   private baseUrl: string;
@@ -9,7 +9,7 @@ export class HttpClient {
 
   async request<T>(
     endpoint: string,
-    config: ApiRequestConfig = { headers: {}, method: 'GET' }
+    config: ApiRequestConfig = { headers: {}, method: "GET" },
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseUrl}${endpoint}`;
     const headers: Record<string, string> = {
@@ -56,4 +56,4 @@ export class HttpClient {
   }
 }
 
-export const httpClient = new HttpClient('http://localhost:3000/api');
+export const httpClient = new HttpClient("http://localhost:3000/api");

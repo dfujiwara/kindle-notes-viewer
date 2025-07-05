@@ -1,11 +1,11 @@
-import type { ApiResponse } from './types';
-import type { KindleNote } from '../models/note';
-import { httpClient } from './httpClient';
+import type { KindleNote } from "../models/note";
+import { httpClient } from "./httpClient";
+import type { ApiResponse } from "./types";
 
 const ENDPOINTS = {
-  LIST: '/notes',
+  LIST: "/notes",
   GET: (id: string) => `/notes/${id}`,
-  CREATE: '/notes',
+  CREATE: "/notes",
 } as const;
 
 export class NotesService {
@@ -18,7 +18,7 @@ export class NotesService {
   }
 
   async createNote(
-    note: Omit<KindleNote, "id" | "createdAt" | "updatedAt">
+    note: Omit<KindleNote, "id" | "createdAt" | "updatedAt">,
   ): Promise<ApiResponse<KindleNote>> {
     return httpClient.request<KindleNote>(ENDPOINTS.CREATE, {
       method: "POST",
