@@ -2,7 +2,9 @@ interface LoadingIndicatorProps {
   message?: string;
 }
 
-export function LoadingIndicator({ message = "Loading..." }: LoadingIndicatorProps) {
+export function LoadingIndicator({
+  message = "Loading...",
+}: LoadingIndicatorProps) {
   return (
     <div className="loading-indicator">
       <div className="spinner"></div>

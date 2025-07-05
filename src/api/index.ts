@@ -1,5 +1,5 @@
-export { notesService } from './notesService';
+export { notesService } from "./notesService";
 export type {
-  ApiResponse,
   ApiError,
-} from './types';
+  ApiResponse,
+} from "./types";

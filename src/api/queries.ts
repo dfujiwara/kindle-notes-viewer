@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ApiError, ApiResponse } from './types';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { ApiError, ApiResponse } from "./types";
 
 export function useApiQuery<T>(
   queryKey: string[],
@@ -8,7 +8,7 @@ export function useApiQuery<T>(
     enabled?: boolean;
     staleTime?: number;
     gcTime?: number;
-  }
+  },
 ) {
   return useQuery({
     queryKey,
@@ -26,7 +26,7 @@ export function useApiMutation<T, P = unknown>(
     onSuccess?: (data: T) => void;
     onError?: (error: ApiError) => void;
     invalidateQueries: string[];
-  }
+  },
 ) {
   const queryClient = useQueryClient();
 
