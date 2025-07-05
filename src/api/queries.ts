@@ -1,16 +1,15 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery, type UseSuspenseQueryResult, type UseMutationResult } from "@tanstack/react-query";
 import type { ApiError, ApiResponse } from "./types";
 
 export function useApiQuery<T>(
   queryKey: string[],
   apiCall: () => Promise<ApiResponse<T>>,
   options?: {
-    enabled?: boolean;
     staleTime?: number;
     gcTime?: number;
   },
-) {
-  return useQuery({
+): UseSuspenseQueryResult<T> {
+  return useSuspenseQuery({
     queryKey,
     queryFn: async () => {
       const response = await apiCall();
@@ -27,7 +26,7 @@ export function useApiMutation<T, P = unknown>(
     onError?: (error: ApiError) => void;
     invalidateQueries: string[];
   },
-) {
+): UseMutationResult<T, ApiError, P> {
   const queryClient = useQueryClient();
 
   return useMutation({
