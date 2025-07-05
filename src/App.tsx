@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorFallback } from "./ErrorFallback";
 import "./App.css";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <>
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
       <div>
         <h1>Kindle Notes Frontend</h1>
         <div className="card">
@@ -20,7 +22,7 @@ function App() {
           Click on the Vite and React logos to learn more
         </p>
       </div>
-    </>
+    </ErrorBoundary>
   );
 }
 
