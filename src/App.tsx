@@ -9,7 +9,7 @@ function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <div>
-        <h1>Kindle Notes Frontend</h1>
+        <h1 className="text-red-200">Kindle Notes Frontend</h1>
         <div className="card">
           <button type="button" onClick={() => setCount((count) => count + 1)}>
             count is {count}
