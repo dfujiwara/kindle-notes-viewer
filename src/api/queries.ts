@@ -1,4 +1,10 @@
-import { useMutation, useQueryClient, useSuspenseQuery, type UseSuspenseQueryResult, type UseMutationResult } from "@tanstack/react-query";
+import {
+  type UseMutationResult,
+  type UseSuspenseQueryResult,
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import type { ApiError, ApiResponse } from "./types";
 
 export function useApiQuery<T>(
