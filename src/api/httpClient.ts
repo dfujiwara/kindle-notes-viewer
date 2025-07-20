@@ -56,4 +56,4 @@ export class HttpClient {
   }
 }
 
-export const httpClient = new HttpClient("http://localhost:3000/api");
+export const httpClient = new HttpClient(import.meta.env.VITE_API_URL);
