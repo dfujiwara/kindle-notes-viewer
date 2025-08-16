@@ -3,18 +3,13 @@ import { httpClient } from "./httpClient";
 import type { ApiResponse } from "./types";
 
 const ENDPOINTS = {
-  LIST: "/notes",
-  GET: (id: string) => `/notes/${id}`,
+  LIST: (bookId: string) => `/books/${bookId}/notes`,
   CREATE: "/notes",
 } as const;
 
 export class NotesService {
-  async getNotes(): Promise<ApiResponse<KindleNote[]>> {
-    return httpClient.request<KindleNote[]>(ENDPOINTS.LIST);
-  }
-
-  async getNote(id: string): Promise<ApiResponse<KindleNote>> {
-    return httpClient.request<KindleNote>(ENDPOINTS.GET(id));
+  async getNotesFromBook(bookId: string): Promise<ApiResponse<KindleNote[]>> {
+    return httpClient.request<KindleNote[]>(ENDPOINTS.LIST(bookId));
   }
 
   async createNote(
