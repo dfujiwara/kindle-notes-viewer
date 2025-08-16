@@ -1,4 +1,4 @@
-import type { KindleNote } from "../models/note";
+import type { KindleNote } from "../models";
 import { httpClient } from "./httpClient";
 import type { ApiResponse } from "./types";
 
