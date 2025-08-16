@@ -5,11 +5,16 @@ import type { ApiResponse } from "./types";
 const ENDPOINTS = {
   LIST: (bookId: string) => `/books/${bookId}/notes`,
   CREATE: "/notes",
+  RANDOM: "/random",
 } as const;
 
 export class NotesService {
   async getNotesFromBook(bookId: string): Promise<ApiResponse<KindleNote[]>> {
     return httpClient.request<KindleNote[]>(ENDPOINTS.LIST(bookId));
+  }
+
+  async getRandomNote(): Promise<ApiResponse<KindleNote>> {
+    return httpClient.request<KindleNote>(ENDPOINTS.RANDOM);
   }
 
   async createNote(
