@@ -6,7 +6,7 @@ describe("App", () => {
   it("renders heading", () => {
     render(<App />);
     expect(
-      screen.getByRole("heading", { name: "Kindle Notes Frontend" }),
+      screen.getByRole("heading", { name: "Kindle Notes" }),
     ).toBeInTheDocument();
   });
 
