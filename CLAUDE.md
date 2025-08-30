@@ -84,7 +84,7 @@ The project uses **Biome** for linting and formatting:
 - Run `npm run check` to validate code quality
 - Run `npm run check:fix` to auto-fix issues
 
-**IMPORTANT**: After making any code changes, always run `npm run check` to ensure code quality and formatting standards are met.
+**IMPORTANT**: After making any code changes, always run `npm run check` and `npm run test:run` to ensure code quality and formatting standards are met.
 
 ## Testing Setup
 
