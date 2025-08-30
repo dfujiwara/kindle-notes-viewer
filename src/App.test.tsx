@@ -1,26 +1,35 @@
 import { render, screen } from "@testing-library/react";
-import { userEvent } from "@testing-library/user-event";
+import { MemoryRouter } from "react-router";
 import { describe, expect, it } from "vitest";
 import App from "./App";
 
 describe("App", () => {
   it("renders heading", () => {
-    render(<App />);
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    );
     expect(
       screen.getByRole("heading", { name: "Kindle Notes" }),
     ).toBeInTheDocument();
   });
 
-  it("increments count when button is clicked", async () => {
-    const user = userEvent.setup();
-    render(<App />);
+  it("renders home page content", () => {
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <App />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText("hello")).toBeInTheDocument();
+  });
 
-    const button = screen.getByRole("button", { name: /count is 0/ });
-    expect(button).toBeInTheDocument();
-
-    await user.click(button);
-    expect(
-      screen.getByRole("button", { name: /count is 1/ }),
-    ).toBeInTheDocument();
+  it("renders books page content", () => {
+    render(
+      <MemoryRouter initialEntries={["/books"]}>
+        <App />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText("books")).toBeInTheDocument();
   });
 });
