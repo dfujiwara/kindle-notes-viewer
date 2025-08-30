@@ -20,7 +20,7 @@ describe("App", () => {
         <App />
       </MemoryRouter>,
     );
-    expect(screen.getByText("hello")).toBeInTheDocument();
+    expect(screen.getByText("Welcome to Kindle Notes")).toBeInTheDocument();
   });
 
   it("renders books page content", () => {
