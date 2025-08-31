@@ -1,8 +1,8 @@
 import { ErrorBoundary } from "react-error-boundary";
 import { Route, Routes } from "react-router";
 import { Footer, Header } from "src/components";
-import { ErrorFallback } from "src/ErrorFallback";
-import { HomePage } from "./pages/HomePage";
+import { ErrorFallback } from "src/components/ErrorFallback";
+import { HomePage } from "src/pages/HomePage";
 import "./App.css";
 
 function App() {
