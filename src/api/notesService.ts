@@ -1,4 +1,4 @@
-import type { KindleNote } from "../models";
+import type { KindleNote, KindleNoteBundle } from "../models";
 import { httpClient } from "./httpClient";
 import type { ApiResponse } from "./types";
 
@@ -9,8 +9,10 @@ const ENDPOINTS = {
 } as const;
 
 export class NotesService {
-  async getNotesFromBook(bookId: string): Promise<ApiResponse<KindleNote[]>> {
-    return httpClient.request<KindleNote[]>(ENDPOINTS.LIST(bookId));
+  async getNotesFromBook(
+    bookId: string,
+  ): Promise<ApiResponse<KindleNoteBundle>> {
+    return httpClient.request<KindleNoteBundle>(ENDPOINTS.LIST(bookId));
   }
 
   async getRandomNote(): Promise<ApiResponse<KindleNote>> {

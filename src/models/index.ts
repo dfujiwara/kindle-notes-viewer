@@ -1,2 +1,2 @@
 export type { KindleBook } from "./book";
-export type { KindleNote } from "./note";
+export type { KindleNote, KindleNoteBundle } from "./note";
