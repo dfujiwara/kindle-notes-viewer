@@ -1,4 +1,4 @@
-import type { KindleBook } from "../models/book";
+import type { KindleBook } from "src/models";
 import { BookItem } from "./BookItem";
 
 interface BookListProps {

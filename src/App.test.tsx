@@ -3,9 +3,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { vi } from "vitest";
 import App from "./App";
-import { booksService } from "./api";
+import { booksService, notesService } from "./api";
 
 vi.mock("./api/booksService");
+vi.mock("./api/notesService");
 
 const TestWrapper = ({
   children,
@@ -48,23 +49,42 @@ describe("App", () => {
     });
   });
 
-  it("renders home page content with no books", async () => {
-    render(
-      <TestWrapper initialEntries={["/"]}>
-        <App />
-      </TestWrapper>,
-    );
-    await waitFor(() => {
-      expect(screen.getByText("No Books Found")).toBeInTheDocument();
+  describe("Home Page", async () => {
+    it("renders home page content with no books", async () => {
+      render(
+        <TestWrapper initialEntries={["/"]}>
+          <App />
+        </TestWrapper>,
+      );
+      await waitFor(() => {
+        expect(screen.getByText("No Books Found")).toBeInTheDocument();
+      });
     });
   });
 
-  it("renders books page content", () => {
-    render(
-      <TestWrapper initialEntries={["/books"]}>
-        <App />
-      </TestWrapper>,
-    );
-    expect(screen.getByText("books")).toBeInTheDocument();
+  describe("Book Page ", async () => {
+    beforeEach(() => {
+      vi.mocked(booksService.getBooks).mockResolvedValue({
+        data: [{ id: "1", title: "A book title", author: "The Man" }],
+        status: 200,
+      });
+      vi.mocked(notesService.getNotesFromBook).mockResolvedValue({
+        data: {
+          book: { id: "1", title: "A book title", author: "The Man" },
+          notes: [],
+        },
+        status: 200,
+      });
+    });
+    it("renders books page content", async () => {
+      render(
+        <TestWrapper initialEntries={["/books/1"]}>
+          <App />
+        </TestWrapper>,
+      );
+      await waitFor(() => {
+        expect(screen.getByText("A book title")).toBeInTheDocument();
+      });
+    });
   });
 });
