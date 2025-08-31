@@ -3,8 +3,8 @@ import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import "./index.css";
-import App from "./App.tsx";
-import { LoadingIndicator } from "./LoadingIndicator.tsx";
+import App from "src/App.tsx";
+import { LoadingIndicator } from "src/components/LoadingIndicator.tsx";
 
 const queryClient = new QueryClient();
 
