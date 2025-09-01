@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router";
 import { Footer, Header } from "src/components";
 import { ErrorFallback } from "src/components/ErrorFallback";
 import { LoadingIndicator } from "src/components/LoadingIndicator.tsx";
-import { HomePage } from "src/pages/HomePage";
+import { BookPage, HomePage } from "src/pages";
 import "./App.css";
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
           <main className="flex-1 p-8">
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/books" element={<h1>books</h1>} />
+              <Route path="/books/:bookId" element={<BookPage />} />
             </Routes>
           </main>
           <Footer />
