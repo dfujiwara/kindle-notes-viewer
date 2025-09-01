@@ -1,11 +1,11 @@
 import type { KindleNote } from "../../models";
 import { NoteItem } from "./NoteItem";
 
-interface NotesListProps {
+interface NoteListProps {
   notes: KindleNote[];
 }
 
-export function NotesList({ notes }: NotesListProps) {
+export function NoteList({ notes }: NoteListProps) {
   if (notes.length === 0) {
     return (
       <div className="text-center py-8">

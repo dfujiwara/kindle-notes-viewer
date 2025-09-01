@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 import { notesService, useApiQuery } from "src/api";
 import { BookDescription } from "./BookDescription";
-import { NotesList } from "./NotesList";
+import { NoteList } from "./NoteList";
 
 export function BookPage() {
   const { bookId } = useParams<{ bookId: string }>();
@@ -14,7 +14,7 @@ export function BookPage() {
   return (
     <div>
       <BookDescription book={result.data.book} />
-      <NotesList notes={result.data.notes} />
+      <NoteList notes={result.data.notes} />
     </div>
   );
 }
