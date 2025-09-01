@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import type { KindleNote } from "src/models";
-import { NotesList } from "./NotesList";
+import { NoteList } from "./NoteList";
 
 const mockNotes: KindleNote[] = [
   {
@@ -25,7 +25,7 @@ const mockNotes: KindleNote[] = [
 
 describe("NotesList", () => {
   it("renders all notes when notes array is not empty", () => {
-    render(<NotesList notes={mockNotes} />);
+    render(<NoteList notes={mockNotes} />);
 
     expect(screen.getByText("First note from the book.")).toBeInTheDocument();
     expect(
@@ -38,7 +38,7 @@ describe("NotesList", () => {
   });
 
   it("displays 'No notes found' message when notes array is empty", () => {
-    render(<NotesList notes={[]} />);
+    render(<NoteList notes={[]} />);
 
     expect(
       screen.getByText("No notes found for this book."),
@@ -48,7 +48,7 @@ describe("NotesList", () => {
   it("handles single note", () => {
     const singleNote = [mockNotes[0]];
 
-    render(<NotesList notes={singleNote} />);
+    render(<NoteList notes={singleNote} />);
 
     expect(screen.getByText("First note from the book.")).toBeInTheDocument();
     expect(
