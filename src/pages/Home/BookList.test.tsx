@@ -51,12 +51,10 @@ describe("BookList", () => {
 
     render(<BookList books={mockBooks} onBookClick={mockOnBookClick} />);
 
-    const firstBookButton = screen
-      .getByText("The Great Gatsby")
-      .closest("button");
-    expect(firstBookButton).toBeInTheDocument();
-
-    await user.click(firstBookButton!);
+    const firstBookButton = screen.getByRole("button", {
+      name: /The Great Gatsby/i,
+    });
+    await user.click(firstBookButton);
 
     expect(mockOnBookClick).toHaveBeenCalledTimes(1);
     expect(mockOnBookClick).toHaveBeenCalledWith(mockBooks[0]);
@@ -68,17 +66,17 @@ describe("BookList", () => {
 
     render(<BookList books={mockBooks} onBookClick={mockOnBookClick} />);
 
-    const secondBookButton = screen
-      .getByText("To Kill a Mockingbird")
-      .closest("button");
-    await user.click(secondBookButton!);
+    const secondBookButton = screen.getByRole("button", {
+      name: /To Kill a Mockingbird/i,
+    });
+    await user.click(secondBookButton);
 
     expect(mockOnBookClick).toHaveBeenCalledWith(mockBooks[1]);
 
     mockOnBookClick.mockClear();
 
-    const thirdBookButton = screen.getByText("1984").closest("button");
-    await user.click(thirdBookButton!);
+    const thirdBookButton = screen.getByRole("button", { name: /1984/i });
+    await user.click(thirdBookButton);
 
     expect(mockOnBookClick).toHaveBeenCalledWith(mockBooks[2]);
   });
