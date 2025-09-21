@@ -10,3 +10,10 @@ export interface KindleNote {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface KindleDetailedNote {
+  id: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
