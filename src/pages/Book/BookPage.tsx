@@ -14,7 +14,7 @@ export function BookPage() {
   return (
     <div>
       <BookDescription book={result.data.book} />
-      <NoteList notes={result.data.notes} />
+      <NoteList bookId={bookId} notes={result.data.notes} />
     </div>
   );
 }

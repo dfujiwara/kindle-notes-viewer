@@ -4,24 +4,28 @@ import { Route, Routes } from "react-router";
 import { Footer, Header } from "src/components";
 import { ErrorFallback } from "src/components/ErrorFallback";
 import { LoadingIndicator } from "src/components/LoadingIndicator.tsx";
-import { BookPage, HomePage } from "src/pages";
+import { BookPage, HomePage, NotePage } from "src/pages";
 import "./App.css";
 
 function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <Suspense fallback={<LoadingIndicator />}>
-        <div className="min-h-screen flex flex-col">
-          <Header />
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <Suspense fallback={<LoadingIndicator />}>
           <main className="flex-1 p-8">
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/books/:bookId" element={<BookPage />} />
+              <Route
+                path="/books/:bookId/notes/:noteId"
+                element={<NotePage />}
+              />
             </Routes>
           </main>
-          <Footer />
-        </div>
-      </Suspense>
+        </Suspense>
+        <Footer />
+      </div>
     </ErrorBoundary>
   );
 }

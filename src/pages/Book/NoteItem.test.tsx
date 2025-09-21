@@ -6,12 +6,11 @@ const mockNote: KindleNote = {
   id: "1",
   content: "This is a sample note from the book.",
   createdAt: "2024-01-15T10:30:00Z",
-  updatedAt: "2024-01-15T10:30:00Z",
 };
 
 describe("NoteItem", () => {
   it("renders note content", () => {
-    render(<NoteItem note={mockNote} />);
+    render(<NoteItem note={mockNote} onClick={() => {}} />);
 
     expect(
       screen.getByText("This is a sample note from the book."),
@@ -23,10 +22,9 @@ describe("NoteItem", () => {
       id: "4",
       content: "",
       createdAt: "2024-01-15T10:30:00Z",
-      updatedAt: "2024-01-15T10:30:00Z",
     };
 
-    render(<NoteItem note={emptyNote} />);
+    render(<NoteItem note={emptyNote} onClick={() => {}} />);
 
     const noteContent = screen.getByRole("paragraph");
     expect(noteContent).toBeInTheDocument();
@@ -39,10 +37,9 @@ describe("NoteItem", () => {
       content:
         "First line of the note.\nSecond line of the note.\nThird line of the note.",
       createdAt: "2024-01-15T10:30:00Z",
-      updatedAt: "2024-01-15T10:30:00Z",
     };
 
-    render(<NoteItem note={multilineNote} />);
+    render(<NoteItem note={multilineNote} onClick={() => {}} />);
 
     const noteContent = screen.getByRole("paragraph");
     expect(noteContent).toHaveTextContent(
