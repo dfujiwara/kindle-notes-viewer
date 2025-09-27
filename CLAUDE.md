@@ -93,6 +93,8 @@ The project uses Vitest with the following configuration:
 - **Global APIs**: Enabled (no need to import `describe`, `it`, `expect`)
 - **Setup file**: `src/test/setup.ts` (automatically imports jest-dom matchers)
 
+**IMPORTANT**: Don't write tests that checks the style of the components. Make sure unit tests are meant to test the logic instead of pure visual.
+
 ### Running Tests
 - Use `npm run test` for development (watch mode with file change detection)
 - Test files should be named `*.test.tsx` or `*.test.ts`
