@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 import type { KindleNote } from "src/models";
 import { NoteList } from "./NoteList";
 
@@ -7,25 +8,26 @@ const mockNotes: KindleNote[] = [
     id: "1",
     content: "First note from the book.",
     createdAt: "2024-01-15T10:30:00Z",
-    updatedAt: "2024-01-15T10:30:00Z",
   },
   {
     id: "2",
     content: "Second note with different content.",
     createdAt: "2024-01-16T14:20:00Z",
-    updatedAt: "2024-01-16T14:20:00Z",
   },
   {
     id: "3",
     content: "Third note for testing purposes.",
     createdAt: "2024-01-17T09:15:00Z",
-    updatedAt: "2024-01-17T09:15:00Z",
   },
 ];
 
 describe("NotesList", () => {
   it("renders all notes when notes array is not empty", () => {
-    render(<NoteList notes={mockNotes} />);
+    render(
+      <MemoryRouter>
+        <NoteList bookId="test-book-id" notes={mockNotes} />
+      </MemoryRouter>,
+    );
 
     expect(screen.getByText("First note from the book.")).toBeInTheDocument();
     expect(
@@ -38,7 +40,11 @@ describe("NotesList", () => {
   });
 
   it("displays 'No notes found' message when notes array is empty", () => {
-    render(<NoteList notes={[]} />);
+    render(
+      <MemoryRouter>
+        <NoteList bookId="test-book-id" notes={[]} />
+      </MemoryRouter>,
+    );
 
     expect(
       screen.getByText("No notes found for this book."),
@@ -48,7 +54,11 @@ describe("NotesList", () => {
   it("handles single note", () => {
     const singleNote = [mockNotes[0]];
 
-    render(<NoteList notes={singleNote} />);
+    render(
+      <MemoryRouter>
+        <NoteList bookId="test-book-id" notes={singleNote} />
+      </MemoryRouter>,
+    );
 
     expect(screen.getByText("First note from the book.")).toBeInTheDocument();
     expect(

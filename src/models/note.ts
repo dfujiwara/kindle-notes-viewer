@@ -8,12 +8,11 @@ export interface KindleNote {
   id: string;
   content: string;
   createdAt: string;
-  updatedAt: string;
 }
 
 export interface KindleDetailedNote {
-  id: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
+  book: KindleBook;
+  note: KindleNote;
+  additional_context: string;
+  related_notes: KindleNote[];
 }
