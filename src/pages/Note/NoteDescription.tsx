@@ -9,9 +9,14 @@ export function NoteDescription({
   detailedNote,
   onRelatedNoteClick,
 }: NoteDescriptionProps) {
-  const { note } = detailedNote;
+  const { note, book } = detailedNote;
   return (
     <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-6 mb-6">
+      <div className="mb-4">
+        <h2 className="text-xl font-semibold text-white mb-1">{book.title}</h2>
+        <p className="text-zinc-400 text-sm">by {book.author}</p>
+      </div>
+
       <div className="text-lg text-zinc-300 mb-4">{note.content}</div>
 
       <div className="mb-4">

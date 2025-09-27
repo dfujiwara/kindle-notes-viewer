@@ -52,6 +52,18 @@ describe("NoteDescription", () => {
     mockOnRelatedNoteClick.mockClear();
   });
 
+  it("renders book title and author", () => {
+    render(
+      <NoteDescription
+        detailedNote={mockDetailedNote}
+        onRelatedNoteClick={mockOnRelatedNoteClick}
+      />,
+    );
+
+    expect(screen.getByText("Sample Book")).toBeInTheDocument();
+    expect(screen.getByText("by Sample Author")).toBeInTheDocument();
+  });
+
   it("renders main note content", () => {
     render(
       <NoteDescription
