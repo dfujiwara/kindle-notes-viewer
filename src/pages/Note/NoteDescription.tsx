@@ -3,19 +3,27 @@ import type { KindleDetailedNote } from "src/models";
 interface NoteDescriptionProps {
   detailedNote: KindleDetailedNote;
   onRelatedNoteClick: (noteId: string) => void;
+  onBookClick: () => void;
 }
 
 export function NoteDescription({
   detailedNote,
   onRelatedNoteClick,
+  onBookClick,
 }: NoteDescriptionProps) {
   const { note, book } = detailedNote;
   return (
     <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-6 mb-6">
-      <div className="mb-4">
-        <h2 className="text-xl font-semibold text-white mb-1">{book.title}</h2>
+      <button
+        type="button"
+        className="block mb-4 hover:bg-zinc-750 rounded p-2 -m-2 transition-colors w-full text-left cursor-pointer"
+        onClick={onBookClick}
+      >
+        <h2 className="text-xl font-semibold text-white mb-1 hover:text-blue-400 transition-colors">
+          {book.title}
+        </h2>
         <p className="text-zinc-400 text-sm">by {book.author}</p>
-      </div>
+      </button>
 
       <div className="text-lg text-zinc-300 mb-4">{note.content}</div>
 

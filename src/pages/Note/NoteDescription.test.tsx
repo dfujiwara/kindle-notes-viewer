@@ -46,9 +46,11 @@ const mockDetailedNoteWithoutRelated: KindleDetailedNote = {
 };
 
 describe("NoteDescription", () => {
+  const mockOnBookClick = vi.fn();
   const mockOnRelatedNoteClick = vi.fn();
 
   beforeEach(() => {
+    mockOnBookClick.mockClear();
     mockOnRelatedNoteClick.mockClear();
   });
 
@@ -56,6 +58,7 @@ describe("NoteDescription", () => {
     render(
       <NoteDescription
         detailedNote={mockDetailedNote}
+        onBookClick={mockOnBookClick}
         onRelatedNoteClick={mockOnRelatedNoteClick}
       />,
     );
@@ -67,6 +70,7 @@ describe("NoteDescription", () => {
   it("renders main note content", () => {
     render(
       <NoteDescription
+        onBookClick={mockOnBookClick}
         detailedNote={mockDetailedNote}
         onRelatedNoteClick={mockOnRelatedNoteClick}
       />,
@@ -82,6 +86,7 @@ describe("NoteDescription", () => {
   it("renders additional context section", () => {
     render(
       <NoteDescription
+        onBookClick={mockOnBookClick}
         detailedNote={mockDetailedNote}
         onRelatedNoteClick={mockOnRelatedNoteClick}
       />,
@@ -98,6 +103,7 @@ describe("NoteDescription", () => {
   it("renders related notes section with notes", () => {
     render(
       <NoteDescription
+        onBookClick={mockOnBookClick}
         detailedNote={mockDetailedNote}
         onRelatedNoteClick={mockOnRelatedNoteClick}
       />,
@@ -111,13 +117,14 @@ describe("NoteDescription", () => {
   it("renders related notes as clickable buttons", () => {
     render(
       <NoteDescription
+        onBookClick={mockOnBookClick}
         detailedNote={mockDetailedNote}
         onRelatedNoteClick={mockOnRelatedNoteClick}
       />,
     );
 
     const relatedNoteButtons = screen.getAllByRole("button");
-    expect(relatedNoteButtons).toHaveLength(2);
+    expect(relatedNoteButtons).toHaveLength(3); // 1 book button + 2 related note buttons
   });
 
   it("calls onRelatedNoteClick when related note is clicked", async () => {
@@ -125,6 +132,7 @@ describe("NoteDescription", () => {
 
     render(
       <NoteDescription
+        onBookClick={mockOnBookClick}
         detailedNote={mockDetailedNote}
         onRelatedNoteClick={mockOnRelatedNoteClick}
       />,
@@ -140,12 +148,14 @@ describe("NoteDescription", () => {
   it("displays 'No related notes found' when no related notes exist", () => {
     render(
       <NoteDescription
+        onBookClick={mockOnBookClick}
         detailedNote={mockDetailedNoteWithoutRelated}
         onRelatedNoteClick={mockOnRelatedNoteClick}
       />,
     );
 
     expect(screen.getByText("No related notes found")).toBeInTheDocument();
-    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    // There should still be 1 button for the book title/author
+    expect(screen.getAllByRole("button")).toHaveLength(1);
   });
 });
