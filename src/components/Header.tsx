@@ -11,6 +11,9 @@ export function Header({ title = "Kindle Notes" }: HeaderProps) {
         <NavLink to="/">
           <h1 className="text-2xl font-semibold text-blue-400 m-0">{title}</h1>
         </NavLink>
+        <NavLink to="/random">
+          <h1 className="text-2xl font-semibold text-blue-400 m-0">Random</h1>
+        </NavLink>
       </div>
     </header>
   );

@@ -29,8 +29,8 @@ export class NotesService {
     );
   }
 
-  async getRandomNote(): Promise<ApiResponse<KindleNote>> {
-    return httpClient.request<KindleNote>(ENDPOINTS.RANDOM);
+  async getRandomNote(): Promise<ApiResponse<KindleDetailedNote>> {
+    return httpClient.request<KindleDetailedNote>(ENDPOINTS.RANDOM);
   }
 
   async createNote(
