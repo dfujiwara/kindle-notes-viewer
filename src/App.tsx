@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router";
 import { Footer, Header } from "src/components";
 import { ErrorFallback } from "src/components/ErrorFallback";
 import { LoadingIndicator } from "src/components/LoadingIndicator.tsx";
-import { BookPage, HomePage, NotePage } from "src/pages";
+import { BookPage, HomePage, NotePage, RandomNotePage } from "src/pages";
 import "./App.css";
 
 function App() {
@@ -21,6 +21,7 @@ function App() {
                 path="/books/:bookId/notes/:noteId"
                 element={<NotePage />}
               />
+              <Route path="/random" element={<RandomNotePage />} />
             </Routes>
           </main>
         </Suspense>
