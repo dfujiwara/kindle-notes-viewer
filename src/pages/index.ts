@@ -1,4 +1,4 @@
 export { BookPage } from "./Book/BookPage";
 export { HomePage } from "./Home/HomePage";
 export { NotePage } from "./Note/NotePage";
-export { RandomNotePage } from "./Random/RandomNotePage";
+export { RandomNotePage } from "./Note/RandomNotePage";
