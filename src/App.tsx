@@ -4,7 +4,13 @@ import { Route, Routes } from "react-router";
 import { Footer, Header } from "src/components";
 import { ErrorFallback } from "src/components/ErrorFallback";
 import { LoadingIndicator } from "src/components/LoadingIndicator.tsx";
-import { BookPage, HomePage, NotePage, RandomNotePage } from "src/pages";
+import {
+  BookPage,
+  HomePage,
+  NotePage,
+  RandomNotePage,
+  UploadPage,
+} from "src/pages";
 import "./App.css";
 
 function App() {
@@ -22,6 +28,7 @@ function App() {
                 element={<NotePage />}
               />
               <Route path="/random" element={<RandomNotePage />} />
+              <Route path="/upload" element={<UploadPage />} />
             </Routes>
           </main>
         </Suspense>
