@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import { notesService, useApiQuery } from "src/api";
-import { NoteDescription } from "../Note/NoteDescription";
+import { NoteDescription } from "./NoteDescription";
 
 export function RandomNotePage() {
   const result = useApiQuery(["random"], () => notesService.getRandomNote());
