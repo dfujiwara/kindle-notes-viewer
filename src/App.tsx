@@ -9,6 +9,7 @@ import {
   HomePage,
   NotePage,
   RandomNotePage,
+  SearchPage,
   UploadPage,
 } from "src/pages";
 import "./App.css";
@@ -28,6 +29,7 @@ function App() {
                 element={<NotePage />}
               />
               <Route path="/random" element={<RandomNotePage />} />
+              <Route path="/search" element={<SearchPage />} />
               <Route path="/upload" element={<UploadPage />} />
             </Routes>
           </main>
