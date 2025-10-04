@@ -13,6 +13,18 @@ export function Header({ title = "Kindle Notes" }: HeaderProps) {
         </NavLink>
         <nav className="flex gap-6">
           <NavLink
+            to="/search"
+            className={({ isActive }) =>
+              `px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                isActive
+                  ? "bg-blue-600 text-white shadow-lg"
+                  : "text-zinc-300 hover:text-blue-400 hover:bg-zinc-800"
+              }`
+            }
+          >
+            Search
+          </NavLink>
+          <NavLink
             to="/random"
             className={({ isActive }) =>
               `px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
