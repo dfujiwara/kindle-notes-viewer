@@ -4,6 +4,7 @@ import type { ApiResponse } from "./types";
 
 const ENDPOINTS = {
   LIST: "/books",
+  UPLOAD: "/books",
 } as const;
 
 export class BooksService {
@@ -13,6 +14,16 @@ export class BooksService {
     );
     const data = response.data.books || [];
     return { ...response, data };
+  }
+  async uploadBook(file: File): Promise<ApiResponse<{ success: boolean }>> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return httpClient.request<{ success: boolean }>(ENDPOINTS.UPLOAD, {
+      method: "POST",
+      headers: {},
+      body: formData,
+    });
   }
 }
 
