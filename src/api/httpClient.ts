@@ -12,8 +12,10 @@ export class HttpClient {
     config: ApiRequestConfig = { headers: {}, method: "GET" },
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseUrl}${endpoint}`;
+    const isFormData = config.body instanceof FormData;
+
     const headers: Record<string, string> = {
-      "Content-Type": "application/json",
+      ...(!isFormData && { "Content-Type": "application/json" }),
       ...config.headers,
     };
 
@@ -23,7 +25,9 @@ export class HttpClient {
     };
 
     if (config.body && config.method !== "GET") {
-      requestConfig.body = JSON.stringify(config.body);
+      requestConfig.body = isFormData
+        ? config.body
+        : JSON.stringify(config.body);
     }
 
     try {

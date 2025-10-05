@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { ApiError, booksService, useApiMutation } from "src/api";
+import { type ApiError, booksService, useApiMutation } from "src/api";
 import { FileDropZone } from "src/components/FileDropZone";
 import { FileUploadControl } from "src/components/FileUploadControl";
 
