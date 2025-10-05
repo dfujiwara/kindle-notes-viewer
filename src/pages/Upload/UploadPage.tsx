@@ -1,19 +1,30 @@
 import { useState } from "react";
-import { FileDropZone } from "../../components/FileDropZone";
-import { FileUploadControl } from "../../components/FileUploadControl";
+import { useNavigate } from "react-router";
+import { ApiError, booksService, useApiMutation } from "src/api";
+import { FileDropZone } from "src/components/FileDropZone";
+import { FileUploadControl } from "src/components/FileUploadControl";
 
 export function UploadPage() {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const navigate = useNavigate();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const mutation = useApiMutation(
+    (file: File) => booksService.uploadBook(file),
+    () => navigate("/"),
+    (error: ApiError) => console.error(error),
+    ["books"],
+  );
 
   const handleFilesSelected = (files: File[]) => {
-    setSelectedFiles(files);
+    setSelectedFile(files[0]);
   };
   const handleClearFiles = () => {
-    setSelectedFiles([]);
+    setSelectedFile(null);
   };
   const handleUpload = () => {
-    // TODO: Handle file upload
-    console.log("Uploading files:", selectedFiles);
+    if (selectedFile === null) {
+      return;
+    }
+    mutation.mutate(selectedFile);
   };
 
   return (
@@ -21,15 +32,16 @@ export function UploadPage() {
       <h1 className="text-3xl font-bold mb-6">Upload Kindle Notes</h1>
       <FileDropZone
         onFilesSelected={handleFilesSelected}
-        selectedFiles={selectedFiles}
+        selectedFiles={selectedFile ? [selectedFile] : []}
         acceptedTypes={["txt", "html"]}
         maxFiles={1}
         maxSizeMB={10}
       />
       <FileUploadControl
-        selectedFiles={selectedFiles}
+        selectedFiles={selectedFile ? [selectedFile] : []}
         onClearFiles={handleClearFiles}
         onUpload={handleUpload}
+        isUploading={mutation.isPending}
       />
     </div>
   );
