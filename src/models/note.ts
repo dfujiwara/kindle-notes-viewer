@@ -13,6 +13,6 @@ export interface KindleNote {
 export interface KindleDetailedNote {
   book: KindleBook;
   note: KindleNote;
-  additional_context: string;
-  related_notes: KindleNote[];
+  additionalContext: string;
+  relatedNotes: KindleNote[];
 }

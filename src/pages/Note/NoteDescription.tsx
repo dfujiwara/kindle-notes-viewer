@@ -31,14 +31,14 @@ export function NoteDescription({
         <h3 className="text-lg font-semibold text-white mb-2">
           Additional Context
         </h3>
-        <p className="text-zinc-300">{detailedNote.additional_context}</p>
+        <p className="text-zinc-300">{detailedNote.additionalContext}</p>
       </div>
 
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-white mb-2">Related Notes</h3>
         <div className="space-y-2">
-          {detailedNote.related_notes.length > 0 ? (
-            detailedNote.related_notes.map((relatedNote) => (
+          {detailedNote.relatedNotes.length > 0 ? (
+            detailedNote.relatedNotes.map((relatedNote) => (
               <button
                 key={relatedNote.id}
                 type="button"

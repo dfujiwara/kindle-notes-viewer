@@ -14,9 +14,9 @@ const mockDetailedNote: KindleDetailedNote = {
     content: "This is the main note content that provides valuable insights.",
     createdAt: "2024-01-15T10:30:00Z",
   },
-  additional_context:
+  additionalContext:
     "This note discusses important concepts related to the topic.",
-  related_notes: [
+  relatedNotes: [
     {
       id: "related-1",
       content: "First related note content",
@@ -41,8 +41,8 @@ const mockDetailedNoteWithoutRelated: KindleDetailedNote = {
     content: "A note without related notes.",
     createdAt: "2024-01-17T11:45:00Z",
   },
-  additional_context: "Some additional context for this note.",
-  related_notes: [],
+  additionalContext: "Some additional context for this note.",
+  relatedNotes: [],
 };
 
 describe("NoteDescription", () => {
