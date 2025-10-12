@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router";
-import { notesService, useApiQuery } from "src/api";
+import { notesService, useApiSuspenseQuery } from "src/api";
 import { NoteDescription } from "./NoteDescription";
 
 export function NotePage() {
@@ -7,7 +7,7 @@ export function NotePage() {
   if (bookId === undefined || noteId === undefined) {
     throw new Error("Book ID or Note ID is not defined in the URL");
   }
-  const result = useApiQuery(["note", bookId, noteId], () =>
+  const result = useApiSuspenseQuery(["note", bookId, noteId], () =>
     notesService.getNote(bookId, noteId),
   );
   const navigate = useNavigate();

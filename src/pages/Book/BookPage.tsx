@@ -1,5 +1,5 @@
 import { useParams } from "react-router";
-import { notesService, useApiQuery } from "src/api";
+import { notesService, useApiSuspenseQuery } from "src/api";
 import { BookDescription } from "./BookDescription";
 import { NoteList } from "./NoteList";
 
@@ -8,7 +8,7 @@ export function BookPage() {
   if (bookId === undefined) {
     throw new Error("Book ID is not defined in the URL");
   }
-  const result = useApiQuery(["notes", bookId], () =>
+  const result = useApiSuspenseQuery(["notes", bookId], () =>
     notesService.getNotesFromBook(bookId),
   );
   return (
