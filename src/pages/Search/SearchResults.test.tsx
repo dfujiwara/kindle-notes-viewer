@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 import type { KindleNoteBundle } from "src/models";
 import { SearchResults } from "./SearchResults";
 
@@ -40,7 +41,11 @@ const mockNoteBundles: KindleNoteBundle[] = [
 
 describe("SearchResults", () => {
   it("displays initial message when status is idle", () => {
-    render(<SearchResults status="idle" />);
+    render(
+      <MemoryRouter>
+        <SearchResults status="idle" />
+      </MemoryRouter>,
+    );
 
     expect(
       screen.getByText("Enter a search query and press Enter to find notes"),
@@ -49,7 +54,9 @@ describe("SearchResults", () => {
 
   it("displays error message when status is error", () => {
     render(
-      <SearchResults status="error" errorMessage="Network error occurred" />,
+      <MemoryRouter>
+        <SearchResults status="error" errorMessage="Network error occurred" />
+      </MemoryRouter>,
     );
 
     expect(
@@ -58,19 +65,31 @@ describe("SearchResults", () => {
   });
 
   it("displays loading state when status is loading", () => {
-    render(<SearchResults status="loading" />);
+    render(
+      <MemoryRouter>
+        <SearchResults status="loading" />
+      </MemoryRouter>,
+    );
 
     expect(screen.getByText("Searching...")).toBeInTheDocument();
   });
 
   it("displays no results message when status is success with empty notes", () => {
-    render(<SearchResults status="success" notes={[]} />);
+    render(
+      <MemoryRouter>
+        <SearchResults status="success" notes={[]} />
+      </MemoryRouter>,
+    );
 
     expect(screen.getByText("No notes found")).toBeInTheDocument();
   });
 
   it("renders all note bundles with book titles and authors", () => {
-    render(<SearchResults status="success" notes={mockNoteBundles} />);
+    render(
+      <MemoryRouter>
+        <SearchResults status="success" notes={mockNoteBundles} />
+      </MemoryRouter>,
+    );
 
     expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
     expect(screen.getByText("F. Scott Fitzgerald")).toBeInTheDocument();
@@ -79,7 +98,11 @@ describe("SearchResults", () => {
   });
 
   it("renders all notes within each bundle", () => {
-    render(<SearchResults status="success" notes={mockNoteBundles} />);
+    render(
+      <MemoryRouter>
+        <SearchResults status="success" notes={mockNoteBundles} />
+      </MemoryRouter>,
+    );
 
     expect(
       screen.getByText("In my younger and more vulnerable years"),
@@ -95,9 +118,36 @@ describe("SearchResults", () => {
   });
 
   it("formats and displays note creation dates", () => {
-    render(<SearchResults status="success" notes={mockNoteBundles} />);
+    render(
+      <MemoryRouter>
+        <SearchResults status="success" notes={mockNoteBundles} />
+      </MemoryRouter>,
+    );
 
     const expectedDate = new Date("2024-01-15T10:30:00Z").toLocaleDateString();
     expect(screen.getByText(expectedDate)).toBeInTheDocument();
+  });
+
+  it("renders notes as clickable links with correct URLs", () => {
+    render(
+      <MemoryRouter>
+        <SearchResults status="success" notes={mockNoteBundles} />
+      </MemoryRouter>,
+    );
+
+    const firstNoteLink = screen.getByRole("link", {
+      name: /In my younger and more vulnerable years/i,
+    });
+    expect(firstNoteLink).toHaveAttribute("href", "/books/1/notes/note-1");
+
+    const secondNoteLink = screen.getByRole("link", {
+      name: /So we beat on, boats against the current/i,
+    });
+    expect(secondNoteLink).toHaveAttribute("href", "/books/1/notes/note-2");
+
+    const thirdNoteLink = screen.getByRole("link", {
+      name: /War is peace/i,
+    });
+    expect(thirdNoteLink).toHaveAttribute("href", "/books/2/notes/note-3");
   });
 });

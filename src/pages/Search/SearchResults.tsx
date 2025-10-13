@@ -1,3 +1,4 @@
+import { NavLink } from "react-router";
 import type { KindleNoteBundle } from "src/models";
 
 export type SearchResultsProps =
@@ -46,15 +47,16 @@ export function SearchResults(props: SearchResultsProps) {
           </div>
           <div className="space-y-2 pl-4">
             {bundle.notes.map((note) => (
-              <div
+              <NavLink
                 key={note.id}
-                className="p-3 rounded-lg border border-zinc-700 bg-zinc-800 hover:border-zinc-600 transition-colors"
+                to={`/books/${bundle.book.id}/notes/${note.id}`}
+                className="block p-3 rounded-lg border border-zinc-700 bg-zinc-800 hover:border-zinc-600 transition-colors"
               >
                 <p className="text-zinc-200">{note.content}</p>
                 <p className="text-xs text-zinc-500 mt-2">
                   {new Date(note.createdAt).toLocaleDateString()}
                 </p>
-              </div>
+              </NavLink>
             ))}
           </div>
         </div>
