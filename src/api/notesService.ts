@@ -1,6 +1,53 @@
-import type { KindleDetailedNote, KindleNoteBundle } from "../models";
+import type {
+  KindleBook,
+  KindleDetailedNote,
+  KindleNote,
+  KindleNoteBundle,
+} from "../models";
 import { httpClient } from "./httpClient";
 import type { ApiResponse } from "./types";
+
+// API response interfaces with snake_case fields
+interface KindleNoteApiResponse {
+  id: string;
+  content: string;
+  created_at: string;
+}
+
+interface KindleDetailedNoteApiResponse {
+  book: KindleBook;
+  note: KindleNoteApiResponse;
+  additional_context: string;
+  related_notes: KindleNoteApiResponse[];
+}
+
+interface KindleNoteBundleApiResponse {
+  book: KindleBook;
+  notes: KindleNoteApiResponse[];
+}
+
+// Mapping functions
+const mapNote = (apiNote: KindleNoteApiResponse): KindleNote => ({
+  id: apiNote.id,
+  content: apiNote.content,
+  createdAt: apiNote.created_at,
+});
+
+const mapNoteBundle = (
+  apiBundle: KindleNoteBundleApiResponse,
+): KindleNoteBundle => ({
+  book: apiBundle.book,
+  notes: apiBundle.notes.map(mapNote),
+});
+
+const mapDetailedNote = (
+  apiNote: KindleDetailedNoteApiResponse,
+): KindleDetailedNote => ({
+  book: apiNote.book,
+  note: mapNote(apiNote.note),
+  additionalContext: apiNote.additional_context,
+  relatedNotes: apiNote.related_notes.map(mapNote),
+});
 
 const ENDPOINTS = {
   LIST: (bookId: string) => `/books/${bookId}/notes`,
@@ -12,20 +59,36 @@ export class NotesService {
   async getNotesFromBook(
     bookId: string,
   ): Promise<ApiResponse<KindleNoteBundle>> {
-    return httpClient.request<KindleNoteBundle>(ENDPOINTS.LIST(bookId));
+    const response = await httpClient.request<KindleNoteBundleApiResponse>(
+      ENDPOINTS.LIST(bookId),
+    );
+    return {
+      ...response,
+      data: mapNoteBundle(response.data),
+    };
   }
 
   async getNote(
     bookId: string,
     noteId: string,
   ): Promise<ApiResponse<KindleDetailedNote>> {
-    return httpClient.request<KindleDetailedNote>(
+    const response = await httpClient.request<KindleDetailedNoteApiResponse>(
       ENDPOINTS.NOTE(bookId, noteId),
     );
+    return {
+      ...response,
+      data: mapDetailedNote(response.data),
+    };
   }
 
   async getRandomNote(): Promise<ApiResponse<KindleDetailedNote>> {
-    return httpClient.request<KindleDetailedNote>(ENDPOINTS.RANDOM);
+    const response = await httpClient.request<KindleDetailedNoteApiResponse>(
+      ENDPOINTS.RANDOM,
+    );
+    return {
+      ...response,
+      data: mapDetailedNote(response.data),
+    };
   }
 }
 
