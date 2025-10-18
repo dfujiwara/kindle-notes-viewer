@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { type ApiError, booksService, useApiMutation } from "src/api";
 import { FileDropZone } from "src/components/FileDropZone";
@@ -9,8 +10,13 @@ export function UploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const mutation = useApiMutation(
     (file: File) => booksService.uploadBook(file),
-    () => navigate("/"),
-    (error: ApiError) => console.error(error),
+    () => {
+      toast.success("Book uploaded successfully!");
+      navigate("/");
+    },
+    (error: ApiError) => {
+      toast.error(`Upload failed: ${error.message}`);
+    },
     ["books"],
   );
 
