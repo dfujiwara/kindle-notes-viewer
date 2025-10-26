@@ -18,6 +18,11 @@ RUN npm ci
 # Copy local code to the container image.
 COPY . ./
 
+# Accept build-time argument for API URL (Railway will provide this)
+# If not provided, Vite will fall back to .env.production
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Build the app.
 RUN npm run build
 
