@@ -22,11 +22,13 @@ npm run check:fix    # Run Biome checks with auto-fix
 ## Technology Stack
 
 - **React 19.1.0** with TypeScript
+- **React Router 7.8.2** for client-side routing
 - **Vite 6.3.5** for build tooling and dev server
 - **Vitest 3.2.4** for testing (Vite-native test runner)
 - **TanStack React Query 5.81.5** for server state management
 - **Tailwind CSS 4.1.11** for styling
 - **React Error Boundary 6.0.0** for error handling
+- **react-hot-toast 2.6.0** for toast notifications
 - **Biome 2.0.4** for linting and formatting
 - **Testing Library** for component testing
 - **jsdom** for DOM simulation in tests
@@ -36,120 +38,96 @@ npm run check:fix    # Run Biome checks with auto-fix
 ### Project Structure
 ```
 src/
-├── main.tsx                 # Application entry point
-├── App.tsx                  # Main application component with error boundary
-├── App.css                  # Application styles
-├── ErrorFallback.tsx        # Error boundary fallback component
-├── LoadingIndicator.tsx     # Loading state component
-├── api/                     # API layer
-│   ├── index.ts            # API exports
-│   ├── types.ts            # API type definitions
-│   ├── httpClient.ts       # HTTP client configuration
-│   ├── queries.ts          # React Query configurations
-│   ├── booksService.ts     # Books API service
-│   ├── notesService.ts     # Notes API service
-│   └── searchService.ts    # Search API service
-├── components/             # Reusable UI components
-│   ├── Header.tsx          # Application header
-│   ├── Footer.tsx          # Application footer
-│   ├── BookList.tsx        # Book listing component
-│   └── BookItem.tsx        # Individual book component
-├── models/                 # Data models and types
-│   ├── index.ts            # Model exports
-│   ├── book.ts             # KindleBook interface
-│   └── note.ts             # KindleNote interface
-└── test/
-    └── setup.ts            # Test setup file (imports jest-dom matchers)
+├── api/          # API layer: httpClient, queries, services (books, notes, search)
+├── components/   # Reusable UI components (Header, Footer, FileDropZone, FileUploadControl)
+├── pages/        # Page components organized by route (Home, Book, Note, Search, Upload)
+├── models/       # TypeScript interfaces (KindleBook, KindleNote, KindleNoteBundle, etc.)
+└── test/         # Test setup
 ```
 
 ### Data Models
-- **KindleBook**: `{ id, title, author }`
-- **KindleNote**: `{ id, title, author, content, location, createdAt, updatedAt }`
-- **ApiResponse<T>**: Generic API response wrapper
-- **ApiError**: Error response structure
 
-### Configuration Files
-- `vite.config.ts` - Vite configuration with React and Tailwind plugins, Vitest integration
-- `tsconfig.json` - Main TypeScript config (ES2020, strict mode, react-jsx)
-- `tsconfig.node.json` - TypeScript config for Node.js files (like vite.config.ts)
-- `biome.json` - Biome configuration for linting and formatting
+API returns snake_case but services transform to camelCase for TypeScript:
+
+- **KindleBook**: `{ id, title, author }`
+- **KindleNote**: `{ id, content, createdAt }`
+- **KindleNoteBundle**: Book with its notes array
+- **KindleDetailedNote**: Note with additionalContext and relatedNotes
+- **SearchResult**: Query results with count
+- **ApiResponse<T>**: Generic API response wrapper
 
 ## Code Quality & Linting
 
-The project uses **Biome** for linting and formatting:
-- **Formatting**: 2-space indentation, double quotes
-- **Linting**: Recommended rules enabled
-- **Git integration**: VCS-aware with ignore file support
-- **Auto-organize imports**: Enabled
-- Run `npm run check` to validate code quality
-- Run `npm run check:fix` to auto-fix issues
+Uses **Biome** (2-space indentation, double quotes). **IMPORTANT**: After code changes, always run `npm run check` and `npm run test:run`.
 
-**IMPORTANT**: After making any code changes, always run `npm run check` and `npm run test:run` to ensure code quality and formatting standards are met.
+## Testing
 
-## Testing Setup
+Uses **Vitest** with jsdom environment, global test APIs, and Testing Library. Test files: `*.test.tsx` or `*.test.ts`.
 
-The project uses Vitest with the following configuration:
-- **Environment**: jsdom (provides DOM APIs for React component testing)
-- **Global APIs**: Enabled (no need to import `describe`, `it`, `expect`)
-- **Setup file**: `src/test/setup.ts` (automatically imports jest-dom matchers)
+**IMPORTANT**: Test component logic and behavior, NOT styles or visual output. Use `npm run test` for watch mode, `npm run test:run` for CI.
 
-**IMPORTANT**: Don't write tests that checks the style of the components. Make sure unit tests are meant to test the logic instead of pure visual.
+## Routing
 
-### Running Tests
-- Use `npm run test` for development (watch mode with file change detection)
-- Test files should be named `*.test.tsx` or `*.test.ts`
-- Testing Library is configured for React component testing
+Uses **React Router v7** with BrowserRouter. Routes configured in [App.tsx](src/App.tsx):
 
-## Styling
+- `/` - Book listing
+- `/books/:bookId` - Notes for a book
+- `/books/:bookId/notes/:noteId` - Detailed note view
+- `/random` - Random note
+- `/search` - Search (minimum 3 characters)
+- `/upload` - File upload with drag-and-drop
 
-The project uses **Tailwind CSS v4** with Vite integration:
-- Utility-first CSS framework
-- Configured via `@tailwindcss/vite` plugin
-- Styles in `src/index.css` and `src/App.css`
-
-## Error Handling
-
-- **React Error Boundary**: Wraps the main application
-- **ErrorFallback component**: Provides user-friendly error display
-- **LoadingIndicator component**: Handles loading states
+Header uses `NavLink` for navigation. All routes wrapped in Suspense + Error Boundary.
 
 ## API Integration
 
-- **TanStack React Query**: For server state management
-- **Centralized HTTP client**: Located in `src/api/httpClient.ts`
-- **Service layer**: Separate services for books, notes, and search
-- **Environment variables**: API URL configured via `VITE_API_URL`
+Uses **TanStack React Query** for server state. HTTP client at [api/httpClient.ts](src/api/httpClient.ts) supports JSON and FormData. API URL from `VITE_API_URL` environment variable.
+
+### Endpoints
+- `GET /books` - List books
+- `POST /books` - Upload book (FormData: `.txt` or `.html`, max 10MB)
+- `GET /books/{bookId}/notes` - Book notes
+- `GET /books/{bookId}/notes/{noteId}` - Detailed note
+- `GET /random` - Random note
+- `GET /search?q={query}` - Search (min 3 chars)
+
+### Query Hooks
+- `useApiSuspenseQuery<T>` - Used in page components for automatic loading/error states
+- `useApiQuery<T>` - Used in SearchPage with `enabled` flag
+- `useApiMutation<T, P>` - Used for file upload
 
 ## Architectural Decisions
 
-### State Management Strategy
-- **Server State**: TanStack React Query for API data caching, synchronization, and mutations
-- **Client State**: React hooks (`useState`, `useReducer`) for local component state
-- **Global State**: Minimal - prefer lifting state up or React Query for shared data
+### State Management
+- **Server State**: TanStack React Query for API data
+- **Client State**: React hooks (`useState`, `useReducer`)
+- **Global State**: Minimal - prefer lifting state up or React Query
 
-### API Layer Architecture
-- **HTTP Client**: Custom `HttpClient` class with standardized error handling and response wrapping
-- **Service Layer**: Domain-specific services (`booksService`, `notesService`, `searchService`) for API calls
-- **Query Abstractions**: Custom hooks (`useApiQuery`, `useApiMutation`) that wrap React Query with consistent error handling
-- **Type Safety**: Strongly typed API responses with `ApiResponse<T>` wrapper and `ApiError` interface
+### API Layer
+- **HTTP Client** ([api/httpClient.ts](src/api/httpClient.ts)): Supports JSON and FormData, handles errors, wraps responses in `ApiResponse<T>`
+- **Services** ([api/](src/api/)): `booksService`, `notesService`, `searchService` - transform snake_case API to camelCase TypeScript
+- **Query Hooks** ([api/queries.ts](src/api/queries.ts)): `useApiQuery`, `useApiSuspenseQuery`, `useApiMutation`
 
-### Component Architecture
-- **Functional Components**: All components use React function syntax with hooks
-- **Composition over Inheritance**: Components accept props and compose smaller components
-- **Single Responsibility**: Each component has one clear purpose (e.g., `BookItem`, `BookList`)
-- **Props Interface**: All component props are explicitly typed with TypeScript interfaces
+### Component Patterns
+- Functional components with TypeScript interfaces
+- Page-based routing: `src/pages/` organized by route (Home, Book, Note, Search, Upload)
+- Composition over inheritance, single responsibility principle
+- Error boundaries + Suspense for loading/error states
+- Toast notifications (react-hot-toast) for user feedback
 
-### Error Handling Strategy
-- **React Error Boundary**: Top-level error boundary with `ErrorFallback` component
-- **Suspense Integration**: Use `useSuspenseQuery` with Suspense boundary for loading states
-- **API Error Handling**: Centralized error handling in HTTP client with typed `ApiError`
-- **Graceful Degradation**: Components handle empty states (e.g., "No Books Found")
+## Deployment
 
-### Performance Considerations
-- **Suspense + React Query**: Automatic loading states and error boundaries
-- **Component Memoization**: Use when needed for expensive renders (not premature optimization)
-- **Bundle Optimization**: Vite handles code splitting and tree shaking automatically
+Multi-stage Docker build ([Dockerfile](Dockerfile)): Node.js for building, Caddy for serving.
 
-## Module System
+**Key points**:
+- Build argument: `VITE_API_URL` (set at build time)
+- Caddy serves SPA from `/usr/share/caddy`
+- Port from `$PORT` env var (default: 3000)
+- Health check: `GET /health` returns "OK"
+- SPA routing: `try_files {path} /index.html`
+- Optimized for platforms like Railway (auto HTTPS, JSON logging)
 
-This project uses ES modules (`"type": "module"` in package.json). All imports/exports should use ES module syntax.
+```bash
+docker build --build-arg VITE_API_URL=https://your-api.com -t kindle-notes-frontend .
+docker run -p 3000:3000 -e PORT=3000 kindle-notes-frontend
+```
