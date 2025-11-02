@@ -1,4 +1,5 @@
-import type { ApiError, ApiRequestConfig, ApiResponse } from "./types";
+import type { ApiRequestConfig, ApiResponse } from "./types";
+import { ApiError } from "./types";
 
 export class HttpClient {
   private baseUrl: string;
@@ -35,11 +36,7 @@ export class HttpClient {
       const data = await response.json();
 
       if (!response.ok) {
-        const error: ApiError = {
-          message: "An api error",
-          status: response.status,
-        };
-        throw error;
+        throw new ApiError("An api error", response.status);
       }
 
       return {
@@ -47,15 +44,16 @@ export class HttpClient {
         status: response.status,
       };
     } catch (error) {
-      if (error instanceof Error && "status" in error) {
+      // If it's already an ApiError, rethrow it
+      if (error instanceof ApiError) {
         throw error;
       }
 
-      const apiError: ApiError = {
-        message: error instanceof Error ? error.message : "Network error",
-        status: 0,
-      };
-      throw apiError;
+      // Otherwise, wrap it as an ApiError with status 0 (network/other error)
+      throw new ApiError(
+        error instanceof Error ? error.message : "Network error",
+        0,
+      );
     }
   }
 }

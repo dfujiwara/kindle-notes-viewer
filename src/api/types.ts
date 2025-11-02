@@ -3,9 +3,14 @@ export interface ApiResponse<T = unknown> {
   status: number;
 }
 
-export interface ApiError {
-  message: string;
+export class ApiError extends Error {
   status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+    this.name = "ApiError";
+  }
 }
 
 export interface ApiRequestConfig {
