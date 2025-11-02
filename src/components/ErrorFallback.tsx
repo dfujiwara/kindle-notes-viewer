@@ -16,7 +16,7 @@ export function ErrorFallback({
         <h2 className="text-2xl font-bold text-red-800 mb-4">
           Something went wrong
         </h2>
-        <pre className="text-sm text-red-600 bg-white p-4 rounded border border-red-100 mb-6 overflow-x-auto">
+        <pre className="text-sm text-red-600 bg-white p-4 rounded border border-red-100 mb-6 whitespace-pre-wrap break-words">
           {error.message}
         </pre>
         <button
