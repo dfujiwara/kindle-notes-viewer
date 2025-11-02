@@ -12,7 +12,7 @@ export function BookPage() {
     notesService.getNotesFromBook(bookId),
   );
   return (
-    <div>
+    <div className="px-4 py-4 sm:px-6 sm:py-6 max-w-4xl mx-auto">
       <BookDescription book={result.data.book} />
       <NoteList bookId={bookId} notes={result.data.notes} />
     </div>
