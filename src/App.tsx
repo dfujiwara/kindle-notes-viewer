@@ -17,9 +17,9 @@ import "./App.css";
 
 function App() {
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <div className="min-h-screen flex flex-col">
-        <Header />
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
         <Suspense fallback={<LoadingIndicator />}>
           <main className="flex-1 p-4 md:p-8">
             <Routes>
@@ -35,10 +35,10 @@ function App() {
             </Routes>
           </main>
         </Suspense>
-        <Footer />
-      </div>
+      </ErrorBoundary>
+      <Footer />
       <Toaster position="bottom-right" />
-    </ErrorBoundary>
+    </div>
   );
 }
 
