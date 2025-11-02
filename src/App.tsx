@@ -21,7 +21,7 @@ function App() {
       <div className="min-h-screen flex flex-col">
         <Header />
         <Suspense fallback={<LoadingIndicator />}>
-          <main className="flex-1 p-8">
+          <main className="flex-1 p-4 md:p-8">
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/books/:bookId" element={<BookPage />} />
