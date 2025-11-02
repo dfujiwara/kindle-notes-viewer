@@ -36,7 +36,10 @@ export class HttpClient {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new ApiError("An api error", response.status);
+        throw new ApiError(
+          `An api error from ${endpoint} with status of ${response.status}`,
+          response.status,
+        );
       }
 
       return {
