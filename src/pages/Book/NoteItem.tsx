@@ -9,12 +9,12 @@ export function NoteItem({ note, onClick }: NoteItemProps) {
   return (
     <button
       type="button"
-      className="bg-zinc-800 rounded-lg p-4 border border-zinc-700 hover:border-zinc-600 transition-colors cursor-pointer w-full text-left"
+      className="bg-zinc-800 rounded-lg p-3 sm:p-4 border border-zinc-700 hover:border-zinc-600 active:border-zinc-500 transition-colors cursor-pointer w-full text-left touch-manipulation"
       onClick={onClick}
     >
-      <div className="mb-3">
-        <p className="text-zinc-300 leading-relaxed">{note.content}</p>
-      </div>
+      <p className="text-zinc-300 leading-relaxed text-sm sm:text-base break-words">
+        {note.content}
+      </p>
     </button>
   );
 }
