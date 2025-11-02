@@ -15,17 +15,21 @@ interface SelectedFilesViewProps {
 function SelectedFilesView({ files }: SelectedFilesViewProps) {
   return (
     <div className="w-full">
-      <div className="border-2 border-gray-300 rounded-lg p-6 bg-gray-50">
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Selected Files:</h3>
+      <div className="border-2 border-gray-300 rounded-lg p-3 sm:p-6 bg-gray-50">
+        <div className="space-y-2 sm:space-y-3">
+          <h3 className="text-xs sm:text-sm font-medium text-gray-700">
+            File Selection:
+          </h3>
           {files.map((file) => (
             <div
               key={file.name}
-              className="flex items-center justify-between bg-white p-3 rounded border border-gray-200"
+              className="flex items-start sm:items-center gap-2 bg-white p-2.5 sm:p-3 rounded border border-gray-200"
             >
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                <p className="text-xs text-gray-500">
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <p className="text-xs sm:text-sm font-medium text-gray-900 break-words">
+                  {file.name}
+                </p>
+                <p className="text-xs text-gray-500 mt-0.5">
                   {(file.size / 1024 / 1024).toFixed(2)} MB
                 </p>
               </div>
@@ -73,7 +77,7 @@ function DropZoneView({
         onDragOver={onDragOver}
         onDrop={onDrop}
         className={`
-          border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer
+          border-2 border-dashed rounded-lg p-6 sm:p-8 text-center transition-colors cursor-pointer
           ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-gray-50 hover:border-gray-400"}
         `}
       >
@@ -86,9 +90,9 @@ function DropZoneView({
           onChange={onFileInput}
         />
         <label htmlFor={fileInputId} className="cursor-pointer">
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-2 sm:gap-3">
             <svg
-              className="w-12 h-12 text-gray-400"
+              className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -103,10 +107,14 @@ function DropZoneView({
                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
               />
             </svg>
-            <p className="text-lg text-gray-700">
-              Drag and drop your file here, or click to browse
+            <p className="text-base sm:text-lg text-gray-700 font-medium">
+              <span className="hidden sm:inline">
+                Drag and drop your file here, or{" "}
+              </span>
+              <span className="sm:hidden">Tap to upload or </span>
+              click to browse
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-xs sm:text-sm text-gray-500">
               Accepted formats: {formattedTypeString} (max {maxSizeMB}MB)
             </p>
           </div>
