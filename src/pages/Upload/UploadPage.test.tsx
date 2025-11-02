@@ -63,7 +63,7 @@ describe("UploadPage", () => {
     renderWithProviders(<UploadPage />);
 
     expect(
-      screen.getByRole("heading", { name: /upload kindle notes/i }),
+      screen.getByRole("heading", { name: /upload notes/i }),
     ).toBeInTheDocument();
   });
 
