@@ -1,3 +1,4 @@
+import Markdown from "react-markdown";
 import type { KindleDetailedNote } from "src/models";
 
 interface NoteDescriptionProps {
@@ -34,7 +35,7 @@ export function NoteDescription({
           Additional Context
         </h3>
         <p className="text-zinc-300 text-sm md:text-base">
-          {detailedNote.additionalContext}
+          <Markdown>{detailedNote.additionalContext}</Markdown>
         </p>
       </div>
 
