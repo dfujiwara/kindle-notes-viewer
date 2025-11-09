@@ -34,9 +34,9 @@ export function NoteDescription({
         <h3 className="text-base md:text-lg font-semibold text-white mb-2">
           Additional Context
         </h3>
-        <p className="text-zinc-300 text-sm md:text-base">
+        <div className="text-zinc-300 text-sm md:text-base [&_p]:mb-3 md:[&_p]:mb-4">
           <Markdown>{detailedNote.additionalContext}</Markdown>
-        </p>
+        </div>
       </div>
 
       <div className="mb-3 md:mb-4">
