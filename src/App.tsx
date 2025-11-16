@@ -46,14 +46,7 @@ function App() {
                 </Suspense>
               }
             />
-            <Route
-              path="/random"
-              element={
-                <Suspense fallback={<LoadingIndicator />}>
-                  <RandomNotePage />
-                </Suspense>
-              }
-            />
+            <Route path="/random" element={<RandomNotePage />} />
             <Route
               path="/search"
               element={
