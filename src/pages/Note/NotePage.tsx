@@ -7,8 +7,10 @@ export function NotePage() {
   if (bookId === undefined || noteId === undefined) {
     throw new Error("Book ID or Note ID is not defined in the URL");
   }
-  const result = useApiSuspenseQuery(["note", bookId, noteId], () =>
-    notesService.getNote(bookId, noteId),
+  const result = useApiSuspenseQuery(
+    ["note", bookId, noteId],
+    () => notesService.getNote(bookId, noteId),
+    { refetchOnWindowFocus: false },
   );
   const navigate = useNavigate();
   return (
