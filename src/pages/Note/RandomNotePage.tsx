@@ -3,8 +3,9 @@ import { notesService, useApiSuspenseQuery } from "src/api";
 import { NoteDescription } from "./NoteDescription";
 
 export function RandomNotePage() {
-  const result = useApiSuspenseQuery(["random"], () =>
-    notesService.getRandomNote(),
+  const result = useApiSuspenseQuery(
+    ["notes", "random", crypto.randomUUID()],
+    () => notesService.getRandomNote(),
   );
   const navigate = useNavigate();
   const { book } = result.data;
