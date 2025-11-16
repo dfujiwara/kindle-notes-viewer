@@ -20,21 +20,58 @@ function App() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <Suspense fallback={<LoadingIndicator />}>
-          <main className="flex-1 p-4 md:p-8">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/books/:bookId" element={<BookPage />} />
-              <Route
-                path="/books/:bookId/notes/:noteId"
-                element={<NotePage />}
-              />
-              <Route path="/random" element={<RandomNotePage />} />
-              <Route path="/search" element={<SearchPage />} />
-              <Route path="/upload" element={<UploadPage />} />
-            </Routes>
-          </main>
-        </Suspense>
+        <main className="flex-1 p-4 md:p-8">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Suspense fallback={<LoadingIndicator />}>
+                  <HomePage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/books/:bookId"
+              element={
+                <Suspense fallback={<LoadingIndicator />}>
+                  <BookPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/books/:bookId/notes/:noteId"
+              element={
+                <Suspense fallback={<LoadingIndicator />}>
+                  <NotePage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/random"
+              element={
+                <Suspense fallback={<LoadingIndicator />}>
+                  <RandomNotePage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/search"
+              element={
+                <Suspense fallback={<LoadingIndicator />}>
+                  <SearchPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/upload"
+              element={
+                <Suspense fallback={<LoadingIndicator />}>
+                  <UploadPage />
+                </Suspense>
+              }
+            />
+          </Routes>
+        </main>
       </ErrorBoundary>
       <Footer />
       <Toaster position="bottom-right" />
