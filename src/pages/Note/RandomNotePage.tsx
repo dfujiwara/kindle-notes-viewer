@@ -4,8 +4,11 @@ import { NoteDescription } from "./NoteDescription";
 
 export function RandomNotePage() {
   const result = useApiSuspenseQuery(
-    ["notes", "random", crypto.randomUUID()],
+    ["notes", "random"],
     () => notesService.getRandomNote(),
+    {
+      staleTime: 0,
+    },
   );
   const navigate = useNavigate();
   const { book } = result.data;
