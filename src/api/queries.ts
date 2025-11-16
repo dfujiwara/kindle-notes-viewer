@@ -15,6 +15,7 @@ export function useApiSuspenseQuery<T>(
   options?: {
     staleTime?: number;
     gcTime?: number;
+    refetchOnWindowFocus?: boolean;
   },
 ): UseSuspenseQueryResult<T> {
   return useSuspenseQuery({
