@@ -8,6 +8,7 @@ export function RandomNotePage() {
     () => notesService.getRandomNote(),
     {
       refetchOnWindowFocus: false,
+      gcTime: 0,
     },
   );
   const navigate = useNavigate();
