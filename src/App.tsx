@@ -9,8 +9,8 @@ import {
   BookPage,
   HomePage,
   NotePage,
-  RandomNotePage,
   SearchPage,
+  StreamedRandomNotePage,
   UploadPage,
 } from "src/pages";
 import "./App.css";
@@ -46,7 +46,7 @@ function App() {
                 </Suspense>
               }
             />
-            <Route path="/random" element={<RandomNotePage />} />
+            <Route path="/random" element={<StreamedRandomNotePage />} />
             <Route
               path="/search"
               element={

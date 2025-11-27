@@ -5,6 +5,7 @@ import type {
   KindleNoteBundle,
 } from "../models";
 import { httpClient } from "./httpClient";
+import { sseClient } from "./sseClient";
 import type { ApiResponse } from "./types";
 
 // API response interfaces with snake_case fields
@@ -12,6 +13,12 @@ interface KindleNoteApiResponse {
   id: string;
   content: string;
   created_at: string;
+}
+
+interface KindleInitialNoteApiResponse {
+  book: KindleBook;
+  note: KindleNoteApiResponse;
+  related_notes: KindleNoteApiResponse[];
 }
 
 interface KindleDetailedNoteApiResponse {
@@ -40,6 +47,15 @@ const mapNoteBundle = (
   notes: apiBundle.notes.map(mapNote),
 });
 
+const mapInitialDetailedNote = (
+  apiNote: KindleInitialNoteApiResponse,
+): KindleDetailedNote => ({
+  book: apiNote.book,
+  note: mapNote(apiNote.note),
+  additionalContext: "",
+  relatedNotes: apiNote.related_notes.map(mapNote),
+});
+
 const mapDetailedNote = (
   apiNote: KindleDetailedNoteApiResponse,
 ): KindleDetailedNote => ({
@@ -53,7 +69,17 @@ const ENDPOINTS = {
   LIST: (bookId: string) => `/books/${bookId}/notes`,
   NOTE: (bookId: string, noteId: string) => `/books/${bookId}/notes/${noteId}`,
   RANDOM: "/random",
+  STREAM_RANDOM: "/random/stream",
+  STREAM_NOTE: (bookId: string, noteId: string) =>
+    `/books/${bookId}/notes/${noteId}/stream`,
 } as const;
+
+type NoteStreamEvents = {
+  metadata: KindleInitialNoteApiResponse;
+  context_chunk: { content: string };
+  context_complete: Record<string, never>;
+  error: { detail: string };
+};
 
 export class NotesService {
   async getNotesFromBook(
@@ -89,6 +115,86 @@ export class NotesService {
       ...response,
       data: mapDetailedNote(response.data),
     };
+  }
+
+  /**
+   * Creates a streaming connection for a specific note
+   * @param bookId - The book ID
+   * @param noteId - The note ID
+   * @param onChunk - Callback for each data chunk received
+   * @param onComplete - Callback when stream completes
+   * @param onError - Callback for errors
+   * @returns EventSource instance (caller must close it)
+   */
+  getStreamedNote(
+    bookId: string,
+    noteId: string,
+    onMetadata: (note: KindleDetailedNote) => void,
+    onContextChunk: (content: string) => void,
+    onComplete: () => void,
+    onInStreamError: () => void,
+    onError?: (error: Event) => void,
+  ): EventSource {
+    return sseClient.createEventSourceWithHandlers<NoteStreamEvents>(
+      ENDPOINTS.STREAM_NOTE(bookId, noteId),
+      {
+        metadata: (data, _es) => {
+          const mappedData = mapInitialDetailedNote(data);
+          onMetadata(mappedData);
+        },
+        context_chunk: (data, _es) => {
+          onContextChunk(data.content);
+        },
+        context_complete: (_data, es) => {
+          onComplete();
+          es.close();
+        },
+        error: (data, es) => {
+          console.log(data.detail);
+          onInStreamError();
+          es.close();
+        },
+      },
+      onError,
+    );
+  }
+
+  /**
+   * Creates a streaming connection for random notes
+   * @param onChunk - Callback for each data chunk received
+   * @param onComplete - Callback when stream completes
+   * @param onError - Callback for errors
+   * @returns EventSource instance (caller must close it)
+   */
+  getStreamedRandomNote(
+    onMetadata: (note: KindleDetailedNote) => void,
+    onContextChunk: (content: string) => void,
+    onComplete: () => void,
+    onInStreamError: () => void,
+    onError?: (error: Event) => void,
+  ): EventSource {
+    return sseClient.createEventSourceWithHandlers<NoteStreamEvents>(
+      ENDPOINTS.STREAM_RANDOM,
+      {
+        metadata: (data, _es) => {
+          const mappedData = mapInitialDetailedNote(data);
+          onMetadata(mappedData);
+        },
+        context_chunk: (data, _es) => {
+          onContextChunk(data.content);
+        },
+        context_complete: (_data, es) => {
+          onComplete();
+          es.close();
+        },
+        error: (data, es) => {
+          console.log(data.detail);
+          onInStreamError();
+          es.close();
+        },
+      },
+      onError,
+    );
   }
 }
 
