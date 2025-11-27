@@ -1,18 +1,23 @@
 import Markdown from "react-markdown";
-import type { KindleDetailedNote } from "src/models";
+import type { KindleBook, KindleNote } from "src/models";
 
 interface NoteDescriptionProps {
-  detailedNote: KindleDetailedNote;
+  book: KindleBook;
+  note: KindleNote;
+  relatedNotes: KindleNote[];
+  additionalContext: string;
   onRelatedNoteClick: (noteId: string) => void;
   onBookClick: () => void;
 }
 
 export function NoteDescription({
-  detailedNote,
+  book,
+  note,
+  relatedNotes,
+  additionalContext,
   onRelatedNoteClick,
   onBookClick,
 }: NoteDescriptionProps) {
-  const { note, book } = detailedNote;
   return (
     <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 md:p-6 mb-4 md:mb-6">
       <button
@@ -35,7 +40,7 @@ export function NoteDescription({
           Additional Context
         </h3>
         <div className="text-zinc-300 text-sm md:text-base [&_p]:mb-3 md:[&_p]:mb-4">
-          <Markdown>{detailedNote.additionalContext}</Markdown>
+          <Markdown>{additionalContext}</Markdown>
         </div>
       </div>
 
@@ -44,8 +49,8 @@ export function NoteDescription({
           Related Notes
         </h3>
         <div className="space-y-2">
-          {detailedNote.relatedNotes.length > 0 ? (
-            detailedNote.relatedNotes.map((relatedNote) => (
+          {relatedNotes.length > 0 ? (
+            relatedNotes.map((relatedNote) => (
               <button
                 key={relatedNote.id}
                 type="button"

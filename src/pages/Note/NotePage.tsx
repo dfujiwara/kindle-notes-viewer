@@ -16,7 +16,10 @@ export function NotePage() {
   return (
     <div>
       <NoteDescription
-        detailedNote={result.data}
+        book={result.data.book}
+        note={result.data.note}
+        additionalContext={result.data.additionalContext}
+        relatedNotes={result.data.relatedNotes}
         onBookClick={() => navigate(`/books/${bookId}`)}
         onRelatedNoteClick={(relatedNoteId) => {
           navigate(`/books/${bookId}/notes/${relatedNoteId}`);

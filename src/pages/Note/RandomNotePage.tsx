@@ -27,12 +27,15 @@ export function RandomNotePage() {
     return <LoadingIndicator />;
   }
 
-  const { book } = data;
+  const { book, note, additionalContext, relatedNotes } = data;
 
   return (
     <div>
       <NoteDescription
-        detailedNote={data}
+        book={book}
+        note={note}
+        additionalContext={additionalContext}
+        relatedNotes={relatedNotes}
         onBookClick={() => {
           navigate(`/books/${book.id}/`);
         }}
