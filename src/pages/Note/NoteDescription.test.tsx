@@ -57,7 +57,10 @@ describe("NoteDescription", () => {
   it("renders book title and author", () => {
     render(
       <NoteDescription
-        detailedNote={mockDetailedNote}
+        book={mockDetailedNote.book}
+        note={mockDetailedNote.note}
+        additionalContext={mockDetailedNote.additionalContext}
+        relatedNotes={mockDetailedNote.relatedNotes}
         onBookClick={mockOnBookClick}
         onRelatedNoteClick={mockOnRelatedNoteClick}
       />,
@@ -70,8 +73,11 @@ describe("NoteDescription", () => {
   it("renders main note content", () => {
     render(
       <NoteDescription
+        book={mockDetailedNote.book}
+        note={mockDetailedNote.note}
+        additionalContext={mockDetailedNote.additionalContext}
+        relatedNotes={mockDetailedNote.relatedNotes}
         onBookClick={mockOnBookClick}
-        detailedNote={mockDetailedNote}
         onRelatedNoteClick={mockOnRelatedNoteClick}
       />,
     );
@@ -86,8 +92,11 @@ describe("NoteDescription", () => {
   it("renders additional context section", () => {
     render(
       <NoteDescription
+        book={mockDetailedNote.book}
+        note={mockDetailedNote.note}
+        additionalContext={mockDetailedNote.additionalContext}
+        relatedNotes={mockDetailedNote.relatedNotes}
         onBookClick={mockOnBookClick}
-        detailedNote={mockDetailedNote}
         onRelatedNoteClick={mockOnRelatedNoteClick}
       />,
     );
@@ -103,8 +112,11 @@ describe("NoteDescription", () => {
   it("renders related notes section with notes", () => {
     render(
       <NoteDescription
+        book={mockDetailedNote.book}
+        note={mockDetailedNote.note}
+        additionalContext={mockDetailedNote.additionalContext}
+        relatedNotes={mockDetailedNote.relatedNotes}
         onBookClick={mockOnBookClick}
-        detailedNote={mockDetailedNote}
         onRelatedNoteClick={mockOnRelatedNoteClick}
       />,
     );
@@ -117,8 +129,11 @@ describe("NoteDescription", () => {
   it("renders related notes as clickable buttons", () => {
     render(
       <NoteDescription
+        book={mockDetailedNote.book}
+        note={mockDetailedNote.note}
+        additionalContext={mockDetailedNote.additionalContext}
+        relatedNotes={mockDetailedNote.relatedNotes}
         onBookClick={mockOnBookClick}
-        detailedNote={mockDetailedNote}
         onRelatedNoteClick={mockOnRelatedNoteClick}
       />,
     );
@@ -132,8 +147,11 @@ describe("NoteDescription", () => {
 
     render(
       <NoteDescription
+        book={mockDetailedNote.book}
+        note={mockDetailedNote.note}
+        additionalContext={mockDetailedNote.additionalContext}
+        relatedNotes={mockDetailedNote.relatedNotes}
         onBookClick={mockOnBookClick}
-        detailedNote={mockDetailedNote}
         onRelatedNoteClick={mockOnRelatedNoteClick}
       />,
     );
@@ -148,8 +166,11 @@ describe("NoteDescription", () => {
   it("displays 'No related notes found' when no related notes exist", () => {
     render(
       <NoteDescription
+        book={mockDetailedNoteWithoutRelated.book}
+        note={mockDetailedNoteWithoutRelated.note}
+        additionalContext={mockDetailedNoteWithoutRelated.additionalContext}
+        relatedNotes={mockDetailedNoteWithoutRelated.relatedNotes}
         onBookClick={mockOnBookClick}
-        detailedNote={mockDetailedNoteWithoutRelated}
         onRelatedNoteClick={mockOnRelatedNoteClick}
       />,
     );
