@@ -50,7 +50,7 @@ describe("SSEClient", () => {
   const baseUrl = "http://localhost:3000";
 
   beforeEach(() => {
-    global.EventSource = MockEventSource as any;
+    global.EventSource = MockEventSource as unknown as typeof EventSource;
     client = new SSEClient(baseUrl);
   });
 
