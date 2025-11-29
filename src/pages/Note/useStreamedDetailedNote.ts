@@ -24,10 +24,6 @@ export function useStreamedDetailedNote(): StreamState {
       (content: string) => {
         setState((prev) => {
           if (prev.status !== "streaming") {
-            console.error(
-              "Received context chunk in unexpected state:",
-              prev.status,
-            );
             throw new Error(
               `Cannot process context chunk in ${prev.status} state`,
             );
@@ -48,10 +44,6 @@ export function useStreamedDetailedNote(): StreamState {
       () => {
         setState((prev) => {
           if (prev.status !== "streaming") {
-            console.error(
-              "Received context_complete in unexpected state:",
-              prev.status,
-            );
             throw new Error(
               `Cannot complete streaming in ${prev.status} state`,
             );
@@ -68,12 +60,11 @@ export function useStreamedDetailedNote(): StreamState {
           error: new Error("Failed to stream note"),
         });
       },
-      (streamError) => {
+      (_streamErrorEvent) => {
         setState({
           status: "error",
           error: new Error("Failed to stream note"),
         });
-        console.error("Stream error:", streamError);
       },
     );
 
