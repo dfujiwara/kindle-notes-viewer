@@ -56,12 +56,12 @@ describe("useStreamedDetailedNote", () => {
   beforeEach(() => {
     mockEventSource = new MockEventSource();
     vi.mocked(notesService.getStreamedRandomNote).mockImplementation(
-      (onMetadata, onContextChunk, onComplete, onInStreamError, onError) => {
-        onMetadataCallback = onMetadata;
-        onContextChunkCallback = onContextChunk;
-        onCompleteCallback = onComplete;
-        onInStreamErrorCallback = onInStreamError;
-        onErrorCallback = onError;
+      (handlers) => {
+        onMetadataCallback = handlers.onMetadata;
+        onContextChunkCallback = handlers.onContextChunk;
+        onCompleteCallback = handlers.onComplete;
+        onInStreamErrorCallback = handlers.onInStreamError;
+        onErrorCallback = handlers.onError;
         return mockEventSource as unknown as EventSource;
       },
     );

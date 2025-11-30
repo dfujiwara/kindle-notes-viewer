@@ -14,14 +14,14 @@ export function useStreamedDetailedNote(): StreamState {
   });
 
   useEffect(() => {
-    const eventSource = notesService.getStreamedRandomNote(
-      (note: KindleDetailedNote) => {
+    const handlers = {
+      onMetadata: (note: KindleDetailedNote) => {
         setState({
           status: "streaming",
           note,
         });
       },
-      (content: string) => {
+      onContextChunk: (content: string) => {
         setState((prev) => {
           if (prev.status !== "streaming") {
             throw new Error(
@@ -41,7 +41,7 @@ export function useStreamedDetailedNote(): StreamState {
           };
         });
       },
-      () => {
+      onComplete: () => {
         setState((prev) => {
           if (prev.status !== "streaming") {
             throw new Error(
@@ -54,19 +54,21 @@ export function useStreamedDetailedNote(): StreamState {
           };
         });
       },
-      () => {
+      onInStreamError: () => {
         setState({
           status: "error",
           error: new Error("Failed to stream note"),
         });
       },
-      (_streamErrorEvent) => {
+      onError: (_streamErrorEvent: Event) => {
         setState({
           status: "error",
           error: new Error("Failed to stream note"),
         });
       },
-    );
+    };
+
+    const eventSource = notesService.getStreamedRandomNote(handlers);
 
     return () => {
       eventSource.close();

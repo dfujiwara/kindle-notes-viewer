@@ -81,6 +81,14 @@ type NoteStreamEvents = {
   error: { detail: string };
 };
 
+export type StreamHandlers = {
+  onMetadata: (note: KindleDetailedNote) => void;
+  onContextChunk: (content: string) => void;
+  onComplete: () => void;
+  onInStreamError: () => void;
+  onError?: (error: Event) => void;
+};
+
 export class NotesService {
   async getNotesFromBook(
     bookId: string,
@@ -121,79 +129,65 @@ export class NotesService {
    * Creates a streaming connection for a specific note
    * @param bookId - The book ID
    * @param noteId - The note ID
-   * @param onChunk - Callback for each data chunk received
-   * @param onComplete - Callback when stream completes
-   * @param onError - Callback for errors
+   * @param handlers - Object containing all stream event handlers
    * @returns EventSource instance (caller must close it)
    */
   getStreamedNote(
     bookId: string,
     noteId: string,
-    onMetadata: (note: KindleDetailedNote) => void,
-    onContextChunk: (content: string) => void,
-    onComplete: () => void,
-    onInStreamError: () => void,
-    onError?: (error: Event) => void,
+    handlers: StreamHandlers,
   ): EventSource {
     return sseClient.createEventSourceWithHandlers<NoteStreamEvents>(
       ENDPOINTS.STREAM_NOTE(bookId, noteId),
       {
         metadata: (data, _es) => {
           const mappedData = mapInitialDetailedNote(data);
-          onMetadata(mappedData);
+          handlers.onMetadata(mappedData);
         },
         context_chunk: (data, _es) => {
-          onContextChunk(data.content);
+          handlers.onContextChunk(data.content);
         },
         context_complete: (_data, es) => {
-          onComplete();
+          handlers.onComplete();
           es.close();
         },
         error: (data, es) => {
           console.log(data.detail);
-          onInStreamError();
+          handlers.onInStreamError();
           es.close();
         },
       },
-      onError,
+      handlers.onError,
     );
   }
 
   /**
    * Creates a streaming connection for random notes
-   * @param onChunk - Callback for each data chunk received
-   * @param onComplete - Callback when stream completes
-   * @param onError - Callback for errors
+   * @param handlers - Object containing all stream event handlers
    * @returns EventSource instance (caller must close it)
    */
-  getStreamedRandomNote(
-    onMetadata: (note: KindleDetailedNote) => void,
-    onContextChunk: (content: string) => void,
-    onComplete: () => void,
-    onInStreamError: () => void,
-    onError?: (error: Event) => void,
-  ): EventSource {
+  getStreamedRandomNote(handlers: StreamHandlers): EventSource {
     return sseClient.createEventSourceWithHandlers<NoteStreamEvents>(
       ENDPOINTS.STREAM_RANDOM,
       {
         metadata: (data, _es) => {
           const mappedData = mapInitialDetailedNote(data);
-          onMetadata(mappedData);
+          handlers.onMetadata(mappedData);
         },
         context_chunk: (data, _es) => {
-          onContextChunk(data.content);
+          handlers.onContextChunk(data.content);
         },
         context_complete: (_data, es) => {
-          onComplete();
+          handlers.onComplete();
           es.close();
         },
         error: (data, es) => {
           console.log(data.detail);
-          onInStreamError();
+          handlers.onInStreamError();
           es.close();
         },
       },
-      onError,
+      handlers.onError,
     );
   }
 }
