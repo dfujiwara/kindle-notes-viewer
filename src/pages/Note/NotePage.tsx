@@ -3,7 +3,7 @@ import { LoadingIndicator } from "src/components/LoadingIndicator";
 import { NoteDescription } from "./NoteDescription";
 import { useStreamedDetailedNote } from "./useStreamedDetailedNote";
 
-export function StreamedNotePage() {
+export function NotePage() {
   const navigate = useNavigate();
   const { bookId, noteId } = useParams<{ bookId: string; noteId: string }>();
   if (bookId === undefined || noteId === undefined) {
