@@ -8,9 +8,9 @@ import { LoadingIndicator } from "src/components/LoadingIndicator.tsx";
 import {
   BookPage,
   HomePage,
+  RandomNotePage,
   SearchPage,
   StreamedNotePage,
-  StreamedRandomNotePage,
   UploadPage,
 } from "src/pages";
 import "./App.css";
@@ -46,7 +46,7 @@ function App() {
                 </Suspense>
               }
             />
-            <Route path="/random" element={<StreamedRandomNotePage />} />
+            <Route path="/random" element={<RandomNotePage />} />
             <Route
               path="/search"
               element={
