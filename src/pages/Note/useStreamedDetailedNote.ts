@@ -8,7 +8,18 @@ type StreamState =
   | { status: "success"; note: KindleDetailedNote }
   | { status: "error"; error: Error };
 
-export function useStreamedDetailedNote(): StreamState {
+// Overload signatures
+export function useStreamedDetailedNote(): StreamState;
+export function useStreamedDetailedNote(
+  bookId: string,
+  noteId: string,
+): StreamState;
+
+// Implementation
+export function useStreamedDetailedNote(
+  bookId?: string,
+  noteId?: string,
+): StreamState {
   const [state, setState] = useState<StreamState>({
     status: "loading",
   });
@@ -68,12 +79,15 @@ export function useStreamedDetailedNote(): StreamState {
       },
     };
 
-    const eventSource = notesService.getStreamedRandomNote(handlers);
+    const eventSource =
+      bookId && noteId
+        ? notesService.getStreamedNote(bookId, noteId, handlers)
+        : notesService.getStreamedRandomNote(handlers);
 
     return () => {
       eventSource.close();
     };
-  }, []);
+  }, [bookId, noteId]);
 
   return state;
 }
