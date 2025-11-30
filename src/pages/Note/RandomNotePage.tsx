@@ -3,7 +3,7 @@ import { LoadingIndicator } from "src/components/LoadingIndicator";
 import { NoteDescription } from "./NoteDescription";
 import { useStreamedDetailedNote } from "./useStreamedDetailedNote";
 
-export function StreamedRandomNotePage() {
+export function RandomNotePage() {
   const navigate = useNavigate();
   const state = useStreamedDetailedNote();
 
