@@ -8,8 +8,8 @@ import { LoadingIndicator } from "src/components/LoadingIndicator.tsx";
 import {
   BookPage,
   HomePage,
-  NotePage,
   SearchPage,
+  StreamedNotePage,
   StreamedRandomNotePage,
   UploadPage,
 } from "src/pages";
@@ -42,7 +42,7 @@ function App() {
               path="/books/:bookId/notes/:noteId"
               element={
                 <Suspense fallback={<LoadingIndicator />}>
-                  <NotePage />
+                  <StreamedNotePage />
                 </Suspense>
               }
             />
