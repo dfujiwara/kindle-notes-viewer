@@ -51,9 +51,9 @@ const mapInitialDetailedNote = (
 
 const ENDPOINTS = {
   LIST: (bookId: string) => `/books/${bookId}/notes`,
-  STREAM_RANDOM: "/random/stream",
+  STREAM_RANDOM: "/random",
   STREAM_NOTE: (bookId: string, noteId: string) =>
-    `/books/${bookId}/notes/${noteId}/stream`,
+    `/books/${bookId}/notes/${noteId}`,
 } as const;
 
 type NoteStreamEvents = {
