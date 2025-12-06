@@ -1,3 +1,4 @@
+import { logger } from "src/utils/logger";
 import type {
   KindleBook,
   KindleDetailedNote,
@@ -111,7 +112,7 @@ export class NotesService {
           es.close();
         },
         error: (data, es) => {
-          console.log(data.detail);
+          logger.error(data.detail);
           handlers.onInStreamError();
           es.close();
         },
@@ -141,7 +142,7 @@ export class NotesService {
           es.close();
         },
         error: (data, es) => {
-          console.log(data.detail);
+          logger.error(data.detail);
           handlers.onInStreamError();
           es.close();
         },
