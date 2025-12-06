@@ -1,3 +1,5 @@
+import { logger } from "src/utils/logger";
+
 export class SSEClient {
   private baseUrl: string;
 
@@ -39,12 +41,12 @@ export class SSEClient {
     // Attach handlers for each event type
     for (const [eventName, handler] of Object.entries(handlers)) {
       eventSource.addEventListener(eventName, (event: MessageEvent) => {
-        console.log(`fetched event data is : ${event.data} for ${eventName}`);
+        logger.log(`fetched event data is : ${event.data} for ${eventName}`);
         try {
           const parsed = JSON.parse(event.data);
           handler(parsed, eventSource);
         } catch (error) {
-          console.error(
+          logger.error(
             `Failed to parse SSE data for event ${eventName}:`,
             error,
           );
