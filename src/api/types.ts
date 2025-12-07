@@ -17,4 +17,5 @@ export interface ApiRequestConfig {
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   headers: Record<string, string>;
   body?: BodyInit;
+  signal?: AbortSignal;
 }
