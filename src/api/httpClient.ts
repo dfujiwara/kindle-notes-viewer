@@ -23,6 +23,7 @@ export class HttpClient {
     const requestConfig: RequestInit = {
       method: config.method,
       headers,
+      signal: config.signal,
     };
 
     if (config.body && config.method !== "GET") {

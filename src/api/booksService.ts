@@ -8,9 +8,10 @@ const ENDPOINTS = {
 } as const;
 
 export class BooksService {
-  async getBooks(): Promise<ApiResponse<KindleBook[]>> {
+  async getBooks(signal?: AbortSignal): Promise<ApiResponse<KindleBook[]>> {
     const response = await httpClient.request<{ books: KindleBook[] }>(
       ENDPOINTS.LIST,
+      { method: "GET", headers: {}, signal },
     );
     const data = response.data.books || [];
     return { ...response, data };
