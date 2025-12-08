@@ -39,9 +39,13 @@ const ENDPOINTS = {
 } as const;
 
 export class SearchService {
-  async search(query: string): Promise<ApiResponse<SearchResult>> {
+  async search(
+    query: string,
+    signal?: AbortSignal,
+  ): Promise<ApiResponse<SearchResult>> {
     const response = await httpClient.request<SearchResultApiResponse>(
       ENDPOINTS.SEARCH(query),
+      { method: "GET", headers: {}, signal },
     );
     return {
       ...response,

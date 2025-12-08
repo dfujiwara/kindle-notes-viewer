@@ -75,9 +75,11 @@ export type StreamHandlers = {
 export class NotesService {
   async getNotesFromBook(
     bookId: string,
+    signal?: AbortSignal,
   ): Promise<ApiResponse<KindleNoteBundle>> {
     const response = await httpClient.request<KindleNoteBundleApiResponse>(
       ENDPOINTS.LIST(bookId),
+      { method: "GET", headers: {}, signal },
     );
     return {
       ...response,
