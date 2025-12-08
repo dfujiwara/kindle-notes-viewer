@@ -23,6 +23,7 @@ export default defineConfig({
       exclude: [
         "node_modules/",
         "src/test/",
+        "dist",
         "**/*.test.{ts,tsx}",
         "**/*.config.{ts,js}",
         "**/index.ts",
