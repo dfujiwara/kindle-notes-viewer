@@ -103,3 +103,9 @@ temp/
 
 # OS generated files
 Thumbs.db
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
