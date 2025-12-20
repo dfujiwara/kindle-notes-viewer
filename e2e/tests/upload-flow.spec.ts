@@ -42,16 +42,14 @@ test.describe("Upload Flow", () => {
     await expect(fileInput).toBeAttached();
 
     // Check for upload instructions
-    await expect(
-      page.getByText(/drag.*drop|choose.*file|upload/i),
-    ).toBeVisible();
+    await expect(page.getByText(/Drag and drop your file here/i)).toBeVisible();
   });
 
   test("should navigate back to home after upload", async ({ page }) => {
     await page.goto("/upload");
 
     // Click home link in navigation
-    const homeLink = page.getByRole("link", { name: /home/i });
+    const homeLink = page.getByRole("link", { name: /Kindle Notes/i });
     await homeLink.click();
 
     // Verify we're back on home page
