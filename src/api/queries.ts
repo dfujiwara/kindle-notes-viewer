@@ -11,7 +11,7 @@ import type { ApiError, ApiResponse } from "./types";
 
 export function useApiSuspenseQuery<T>(
   queryKey: string[],
-  apiCall: () => Promise<ApiResponse<T>>,
+  apiCall: (signal?: AbortSignal) => Promise<ApiResponse<T>>,
   options?: {
     staleTime?: number;
     gcTime?: number;
@@ -20,8 +20,8 @@ export function useApiSuspenseQuery<T>(
 ): UseSuspenseQueryResult<T> {
   return useSuspenseQuery({
     queryKey,
-    queryFn: async () => {
-      const response = await apiCall();
+    queryFn: async ({ signal }) => {
+      const response = await apiCall(signal);
       return response.data;
     },
     ...options,
@@ -30,7 +30,7 @@ export function useApiSuspenseQuery<T>(
 
 export function useApiQuery<T>(
   queryKey: string[],
-  apiCall: () => Promise<ApiResponse<T>>,
+  apiCall: (signal?: AbortSignal) => Promise<ApiResponse<T>>,
   options?: {
     enabled?: boolean;
     staleTime?: number;
@@ -40,8 +40,8 @@ export function useApiQuery<T>(
 ): UseQueryResult<T, ApiError> {
   return useQuery({
     queryKey,
-    queryFn: async () => {
-      const response = await apiCall();
+    queryFn: async ({ signal }) => {
+      const response = await apiCall(signal);
       return response.data;
     },
     ...options,
