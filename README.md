@@ -58,22 +58,9 @@ npm run preview      # Preview production build
 This project uses two testing approaches:
 
 - **Unit/Component Tests**: Vitest + Testing Library for component and hook testing
-- **E2E Tests**: Playwright for end-to-end user flow testing
+- **E2E Tests**: Playwright for end-to-end user flow testing (requires backend server)
 
-### Running E2E Tests
-
-E2E tests require a running backend server. See [e2e/README.md](e2e/README.md) for detailed setup instructions.
-
-```bash
-# First time setup: Install browsers
-npx playwright install chromium
-
-# Run E2E tests
-npm run test:e2e
-
-# Run with UI mode (interactive debugging)
-npm run test:e2e:ui
-```
+For E2E test setup and backend configuration, see [e2e/README.md](e2e/README.md).
 
 ## Contributing
 
