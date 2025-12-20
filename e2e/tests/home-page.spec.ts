@@ -8,8 +8,8 @@ test.describe("Home Page", () => {
     await expect(page).toHaveTitle(/Kindle Notes/i);
 
     // Check for main navigation elements
-    const homeLink = page.getByRole("link", { name: /home/i });
-    await expect(homeLink).toBeVisible();
+    const randomLink = page.getByRole("link", { name: /random/i });
+    await expect(randomLink).toBeVisible();
 
     const searchLink = page.getByRole("link", { name: /search/i });
     await expect(searchLink).toBeVisible();
@@ -18,23 +18,14 @@ test.describe("Home Page", () => {
     await expect(uploadLink).toBeVisible();
   });
 
-  test("should display 'No books found' message when no books exist", async ({
-    page,
-  }) => {
+  test("should navigate to random page", async ({ page }) => {
     await page.goto("/");
 
-    // Wait for the page to load
-    await page.waitForLoadState("networkidle");
+    const searchLink = page.getByRole("link", { name: /random/i });
+    await searchLink.click();
 
-    // Check for either books or empty state message
-    const noBooksMessage = page.getByText(/no books found/i);
-    const bookList = page.locator('[data-testid="book-list"]');
-
-    // At least one should be visible (either books or empty state)
-    const hasBooks = await bookList.isVisible().catch(() => false);
-    const hasEmptyMessage = await noBooksMessage.isVisible().catch(() => false);
-
-    expect(hasBooks || hasEmptyMessage).toBe(true);
+    // Verify navigation to search page
+    await expect(page).toHaveURL(/\/random/);
   });
 
   test("should navigate to search page", async ({ page }) => {
