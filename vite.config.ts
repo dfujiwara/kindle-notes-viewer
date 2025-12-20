@@ -3,7 +3,7 @@
 import { resolve } from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { configDefaults, defineConfig } from "vitest/config";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,15 +17,14 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     setupFiles: "./src/test/setup.ts",
+    exclude: [...configDefaults.exclude, "**/e2e/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
       exclude: [
-        "node_modules/",
+        ...(configDefaults.coverage.exclude ?? []),
         "src/test/",
-        "dist",
-        "**/*.test.{ts,tsx}",
-        "**/*.config.{ts,js}",
+        "**/e2e/**",
         "**/index.ts",
       ],
     },
