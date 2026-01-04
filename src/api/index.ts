@@ -6,3 +6,4 @@ export type {
   ApiError,
   ApiResponse,
 } from "./types";
+export { urlService } from "./urlService";

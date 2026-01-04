@@ -13,7 +13,9 @@ vi.mock("src/api", async () => {
     ...actual,
     booksService: {
       uploadBook: vi.fn(),
-      uploadBookFromUrl: vi.fn(),
+    },
+    urlService: {
+      uploadUrl: vi.fn(),
     },
   };
 });
@@ -401,11 +403,11 @@ describe("UploadPage", () => {
       ).toBeInTheDocument();
     });
 
-    it("calls uploadBookFromUrl with valid URL", async () => {
-      const { booksService } = await import("src/api");
+    it("calls uploadUrl with valid URL", async () => {
+      const { urlService } = await import("src/api");
       const user = userEvent.setup();
 
-      vi.mocked(booksService.uploadBookFromUrl).mockResolvedValue({
+      vi.mocked(urlService.uploadUrl).mockResolvedValue({
         data: { success: true },
         status: 200,
       });
@@ -432,17 +434,17 @@ describe("UploadPage", () => {
 
       // Should call the API
       await waitFor(() => {
-        expect(booksService.uploadBookFromUrl).toHaveBeenCalledWith(
+        expect(urlService.uploadUrl).toHaveBeenCalledWith(
           "https://example.com",
         );
       });
     });
 
     it("shows loading state during URL upload", async () => {
-      const { booksService } = await import("src/api");
+      const { urlService } = await import("src/api");
       const user = userEvent.setup();
 
-      vi.mocked(booksService.uploadBookFromUrl).mockImplementation(
+      vi.mocked(urlService.uploadUrl).mockImplementation(
         () =>
           new Promise(() => {
             // Never resolves
@@ -475,10 +477,10 @@ describe("UploadPage", () => {
     });
 
     it("shows success toast and navigates on successful URL upload", async () => {
-      const { booksService } = await import("src/api");
+      const { urlService } = await import("src/api");
       const user = userEvent.setup();
 
-      vi.mocked(booksService.uploadBookFromUrl).mockResolvedValue({
+      vi.mocked(urlService.uploadUrl).mockResolvedValue({
         data: { success: true },
         status: 200,
       });
@@ -512,11 +514,11 @@ describe("UploadPage", () => {
     });
 
     it("shows error toast on failed URL upload", async () => {
-      const { booksService } = await import("src/api");
+      const { urlService } = await import("src/api");
       const user = userEvent.setup();
 
       const error = new Error("URL upload failed");
-      vi.mocked(booksService.uploadBookFromUrl).mockRejectedValue(error);
+      vi.mocked(urlService.uploadUrl).mockRejectedValue(error);
 
       renderWithProviders(<UploadPage />);
 

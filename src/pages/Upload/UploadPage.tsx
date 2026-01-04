@@ -1,7 +1,12 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
-import { type ApiError, booksService, useApiMutation } from "src/api";
+import {
+  type ApiError,
+  booksService,
+  urlService,
+  useApiMutation,
+} from "src/api";
 import { FileDropZone } from "src/components/FileDropZone";
 import { FileUploadControl } from "src/components/FileUploadControl";
 import { UrlInputZone } from "src/components/UrlInputZone";
@@ -28,7 +33,7 @@ export function UploadPage() {
   );
 
   const urlMutation = useApiMutation(
-    (url: string) => booksService.uploadBookFromUrl(url),
+    (url: string) => urlService.uploadUrl(url),
     () => {
       toast.success("Book uploaded successfully!");
       navigate("/");
