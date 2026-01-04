@@ -235,7 +235,7 @@ describe("UploadPage", () => {
 
       // Should show URL input
       expect(
-        screen.getByPlaceholderText("https://example.com/article"),
+        screen.getByPlaceholderText("Enter URL to extract and upload"),
       ).toBeInTheDocument();
       expect(
         screen.queryByText(/drag and drop your file here/i),
@@ -250,7 +250,7 @@ describe("UploadPage", () => {
       const urlButton = screen.getByRole("button", { name: /url upload/i });
       await user.click(urlButton);
       expect(
-        screen.getByPlaceholderText("https://example.com/article"),
+        screen.getByPlaceholderText("Enter URL to extract and upload"),
       ).toBeInTheDocument();
 
       // Switch back to file mode
@@ -262,7 +262,7 @@ describe("UploadPage", () => {
         screen.getByText(/drag and drop your file here/i),
       ).toBeInTheDocument();
       expect(
-        screen.queryByPlaceholderText("https://example.com/article"),
+        screen.queryByPlaceholderText("Enter URL to extract and upload"),
       ).not.toBeInTheDocument();
     });
 
@@ -299,7 +299,7 @@ describe("UploadPage", () => {
       await user.click(urlButton);
 
       const urlInput = screen.getByPlaceholderText(
-        "https://example.com/article",
+        "Enter URL to extract and upload",
       );
       await user.type(urlInput, "https://example.com");
 
@@ -312,7 +312,7 @@ describe("UploadPage", () => {
 
       // URL should be cleared
       const urlInputAfter = screen.getByPlaceholderText(
-        "https://example.com/article",
+        "Enter URL to extract and upload",
       );
       expect(urlInputAfter).toHaveValue("");
     });
@@ -327,7 +327,7 @@ describe("UploadPage", () => {
       await user.click(urlButton);
 
       expect(
-        screen.getByPlaceholderText("https://example.com/article"),
+        screen.getByPlaceholderText("Enter URL to extract and upload"),
       ).toBeInTheDocument();
     });
 
@@ -341,7 +341,7 @@ describe("UploadPage", () => {
 
       // Enter URL
       const urlInput = screen.getByPlaceholderText(
-        "https://example.com/article",
+        "Enter URL to extract and upload",
       );
       await user.type(urlInput, "https://example.com");
 
@@ -361,7 +361,7 @@ describe("UploadPage", () => {
 
       // Enter invalid URL
       const urlInput = screen.getByPlaceholderText(
-        "https://example.com/article",
+        "Enter URL to extract and upload",
       );
       await user.type(urlInput, "not-a-url");
 
@@ -386,7 +386,7 @@ describe("UploadPage", () => {
 
       // Enter ftp URL
       const urlInput = screen.getByPlaceholderText(
-        "https://example.com/article",
+        "Enter URL to extract and upload",
       );
       await user.type(urlInput, "ftp://example.com");
 
@@ -420,7 +420,7 @@ describe("UploadPage", () => {
 
       // Enter valid URL (paste to avoid character-by-character validation)
       const urlInput = screen.getByPlaceholderText(
-        "https://example.com/article",
+        "Enter URL to extract and upload",
       );
       await user.click(urlInput);
       await user.paste("https://example.com");
@@ -459,7 +459,7 @@ describe("UploadPage", () => {
 
       // Enter valid URL
       const urlInput = screen.getByPlaceholderText(
-        "https://example.com/article",
+        "Enter URL to extract and upload",
       );
       await user.type(urlInput, "https://example.com");
 
@@ -493,7 +493,7 @@ describe("UploadPage", () => {
 
       // Enter valid URL
       const urlInput = screen.getByPlaceholderText(
-        "https://example.com/article",
+        "Enter URL to extract and upload",
       );
       await user.type(urlInput, "https://example.com");
 
@@ -528,7 +528,7 @@ describe("UploadPage", () => {
 
       // Enter valid URL
       const urlInput = screen.getByPlaceholderText(
-        "https://example.com/article",
+        "Enter URL to extract and upload",
       );
       await user.type(urlInput, "https://example.com");
 
@@ -557,7 +557,7 @@ describe("UploadPage", () => {
 
       // Enter URL
       const urlInput = screen.getByPlaceholderText(
-        "https://example.com/article",
+        "Enter URL to extract and upload",
       );
       await user.type(urlInput, "https://example.com");
 
@@ -570,7 +570,7 @@ describe("UploadPage", () => {
 
       // URL should be cleared - input should be visible again
       expect(
-        screen.getByPlaceholderText("https://example.com/article"),
+        screen.getByPlaceholderText("Enter URL to extract and upload"),
       ).toHaveValue("");
     });
   });

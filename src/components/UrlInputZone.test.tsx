@@ -8,7 +8,9 @@ describe("UrlInputZone", () => {
     const mockOnUrlChange = vi.fn();
     render(<UrlInputZone url="" onUrlChange={mockOnUrlChange} error={null} />);
 
-    const input = screen.getByPlaceholderText("https://example.com/article");
+    const input = screen.getByPlaceholderText(
+      "Enter URL to extract and upload",
+    );
     expect(input).toBeInTheDocument();
   });
 
@@ -17,7 +19,9 @@ describe("UrlInputZone", () => {
     const mockOnUrlChange = vi.fn();
     render(<UrlInputZone url="" onUrlChange={mockOnUrlChange} error={null} />);
 
-    const input = screen.getByPlaceholderText("https://example.com/article");
+    const input = screen.getByPlaceholderText(
+      "Enter URL to extract and upload",
+    );
     await user.type(input, "https://example.com");
 
     expect(mockOnUrlChange).toHaveBeenCalled();
@@ -43,7 +47,9 @@ describe("UrlInputZone", () => {
       <UrlInputZone url="" onUrlChange={mockOnUrlChange} error={null} />,
     );
 
-    const input = screen.getByPlaceholderText("https://example.com/article");
+    const input = screen.getByPlaceholderText(
+      "Enter URL to extract and upload",
+    );
     await user.type(input, "http://example.com");
 
     // Rerender with the URL to simulate state update
@@ -66,7 +72,9 @@ describe("UrlInputZone", () => {
       <UrlInputZone url="" onUrlChange={mockOnUrlChange} error={null} />,
     );
 
-    const input = screen.getByPlaceholderText("https://example.com/article");
+    const input = screen.getByPlaceholderText(
+      "Enter URL to extract and upload",
+    );
     await user.type(input, "https://example.com");
 
     // Rerender with the URL to simulate state update
@@ -94,7 +102,7 @@ describe("UrlInputZone", () => {
 
     // Should still show input field, not display view
     expect(
-      screen.getByPlaceholderText("https://example.com/article"),
+      screen.getByPlaceholderText("Enter URL to extract and upload"),
     ).toBeInTheDocument();
   });
 
@@ -110,7 +118,7 @@ describe("UrlInputZone", () => {
 
     // Should still show input field, not display view
     expect(
-      screen.getByPlaceholderText("https://example.com/article"),
+      screen.getByPlaceholderText("Enter URL to extract and upload"),
     ).toBeInTheDocument();
   });
 

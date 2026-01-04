@@ -16,14 +16,11 @@ function UrlDisplayView({ url }: UrlDisplayViewProps) {
   return (
     <div className="w-full">
       <div className="border-2 border-gray-300 rounded-lg p-3 sm:p-6 bg-gray-50">
-        <div className="space-y-2 sm:space-y-3">
-          <h3 className="text-xs sm:text-sm font-medium text-gray-700">URL:</h3>
-          <div className="flex items-start sm:items-center gap-2 bg-white p-2.5 sm:p-3 rounded border border-gray-200">
-            <div className="flex-1 min-w-0 overflow-hidden">
-              <p className="text-xs sm:text-sm font-medium text-gray-900 break-all">
-                {displayUrl}
-              </p>
-            </div>
+        <div className="flex items-start sm:items-center gap-2 bg-white p-2.5 sm:p-3 rounded border border-gray-200">
+          <div className="flex-1 min-w-0 overflow-hidden">
+            <p className="text-xs sm:text-sm font-medium text-gray-900 break-all">
+              {displayUrl}
+            </p>
           </div>
         </div>
       </div>
@@ -41,23 +38,18 @@ function UrlInputView({ url, onUrlChange, inputId }: UrlInputViewProps) {
   return (
     <div className="w-full">
       <div className="border-2 border-gray-300 rounded-lg p-6 sm:p-8 bg-gray-50">
-        <div className="flex flex-col items-center gap-3 sm:gap-4">
-          <div className="w-full">
-            <label htmlFor={inputId} className="sr-only">
-              Enter URL
-            </label>
-            <input
-              type="url"
-              id={inputId}
-              value={url}
-              onChange={(e) => onUrlChange(e.target.value)}
-              placeholder="https://example.com/article"
-              className="w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400"
-            />
-          </div>
-          <p className="text-xs sm:text-sm text-gray-500 text-center">
-            Enter a URL to extract and upload content
-          </p>
+        <div className="w-full">
+          <label htmlFor={inputId} className="sr-only">
+            Enter URL
+          </label>
+          <input
+            type="url"
+            id={inputId}
+            value={url}
+            onChange={(e) => onUrlChange(e.target.value)}
+            placeholder="Enter URL to extract and upload"
+            className="w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400"
+          />
         </div>
       </div>
     </div>
