@@ -6,7 +6,7 @@ import { UrlInputZone } from "./UrlInputZone";
 describe("UrlInputZone", () => {
   it("renders input field with placeholder", () => {
     const mockOnUrlChange = vi.fn();
-    render(<UrlInputZone url="" onUrlChange={mockOnUrlChange} error={null} />);
+    render(<UrlInputZone url="" onUrlChange={mockOnUrlChange} />);
 
     const input = screen.getByPlaceholderText(
       "Enter URL to extract and upload",
@@ -17,7 +17,7 @@ describe("UrlInputZone", () => {
   it("calls onUrlChange when user types", async () => {
     const user = userEvent.setup();
     const mockOnUrlChange = vi.fn();
-    render(<UrlInputZone url="" onUrlChange={mockOnUrlChange} error={null} />);
+    render(<UrlInputZone url="" onUrlChange={mockOnUrlChange} />);
 
     const input = screen.getByPlaceholderText(
       "Enter URL to extract and upload",
@@ -27,24 +27,11 @@ describe("UrlInputZone", () => {
     expect(mockOnUrlChange).toHaveBeenCalled();
   });
 
-  it("shows validation error when error prop is provided", () => {
-    const mockOnUrlChange = vi.fn();
-    render(
-      <UrlInputZone
-        url="invalid-url"
-        onUrlChange={mockOnUrlChange}
-        error="Invalid URL format"
-      />,
-    );
-
-    expect(screen.getByText("Invalid URL format")).toBeInTheDocument();
-  });
-
   it("displays entered URL when valid http URL is entered", async () => {
     const user = userEvent.setup();
     const mockOnUrlChange = vi.fn();
     const { rerender } = render(
-      <UrlInputZone url="" onUrlChange={mockOnUrlChange} error={null} />,
+      <UrlInputZone url="" onUrlChange={mockOnUrlChange} />,
     );
 
     const input = screen.getByPlaceholderText(
@@ -54,11 +41,7 @@ describe("UrlInputZone", () => {
 
     // Rerender with the URL to simulate state update
     rerender(
-      <UrlInputZone
-        url="http://example.com"
-        onUrlChange={mockOnUrlChange}
-        error={null}
-      />,
+      <UrlInputZone url="http://example.com" onUrlChange={mockOnUrlChange} />,
     );
 
     // Should show the URL in display view
@@ -69,7 +52,7 @@ describe("UrlInputZone", () => {
     const user = userEvent.setup();
     const mockOnUrlChange = vi.fn();
     const { rerender } = render(
-      <UrlInputZone url="" onUrlChange={mockOnUrlChange} error={null} />,
+      <UrlInputZone url="" onUrlChange={mockOnUrlChange} />,
     );
 
     const input = screen.getByPlaceholderText(
@@ -79,11 +62,7 @@ describe("UrlInputZone", () => {
 
     // Rerender with the URL to simulate state update
     rerender(
-      <UrlInputZone
-        url="https://example.com"
-        onUrlChange={mockOnUrlChange}
-        error={null}
-      />,
+      <UrlInputZone url="https://example.com" onUrlChange={mockOnUrlChange} />,
     );
 
     // Should show the URL in display view
@@ -92,13 +71,7 @@ describe("UrlInputZone", () => {
 
   it("does not display URL view for invalid URLs", () => {
     const mockOnUrlChange = vi.fn();
-    render(
-      <UrlInputZone
-        url="not-a-url"
-        onUrlChange={mockOnUrlChange}
-        error={null}
-      />,
-    );
+    render(<UrlInputZone url="not-a-url" onUrlChange={mockOnUrlChange} />);
 
     // Should still show input field, not display view
     expect(
@@ -109,11 +82,7 @@ describe("UrlInputZone", () => {
   it("does not display URL view for non-http(s) protocols", () => {
     const mockOnUrlChange = vi.fn();
     render(
-      <UrlInputZone
-        url="ftp://example.com"
-        onUrlChange={mockOnUrlChange}
-        error={null}
-      />,
+      <UrlInputZone url="ftp://example.com" onUrlChange={mockOnUrlChange} />,
     );
 
     // Should still show input field, not display view
@@ -126,9 +95,7 @@ describe("UrlInputZone", () => {
     const mockOnUrlChange = vi.fn();
     const longUrl =
       "https://example.com/very/long/path/that/should/be/truncated/for/display";
-    render(
-      <UrlInputZone url={longUrl} onUrlChange={mockOnUrlChange} error={null} />,
-    );
+    render(<UrlInputZone url={longUrl} onUrlChange={mockOnUrlChange} />);
 
     // Should show truncated URL (first 57 chars + ...)
     expect(screen.getByText(/\.\.\./)).toBeInTheDocument();

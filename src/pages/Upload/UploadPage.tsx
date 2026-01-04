@@ -9,7 +9,7 @@ import {
 } from "src/api";
 import { FileDropZone } from "src/components/FileDropZone";
 import { FileUploadControl } from "src/components/FileUploadControl";
-import { UrlInputZone } from "src/components/UrlInputZone";
+import { UrlInputZone, validateUrl } from "src/components/UrlInputZone";
 
 type UploadMode = "file" | "url";
 
@@ -18,7 +18,6 @@ export function UploadPage() {
   const [uploadMode, setUploadMode] = useState<UploadMode>("file");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [urlInput, setUrlInput] = useState<string>("");
-  const [urlError, setUrlError] = useState<string | null>(null);
 
   const fileMutation = useApiMutation(
     (file: File) => booksService.uploadBook(file),
@@ -35,32 +34,14 @@ export function UploadPage() {
   const urlMutation = useApiMutation(
     (url: string) => urlService.uploadUrl(url),
     () => {
-      toast.success("Book uploaded successfully!");
+      toast.success("URL uploaded successfully!");
       navigate("/");
     },
     (error: ApiError) => {
       toast.error(`Upload failed: ${error.message}`);
     },
-    ["books"],
+    ["urls"],
   );
-
-  const validateUrl = (
-    url: string,
-  ): { valid: boolean; error: string | null } => {
-    if (!url.trim()) {
-      return { valid: false, error: "URL is required" };
-    }
-
-    try {
-      const parsed = new URL(url);
-      if (!["http:", "https:"].includes(parsed.protocol)) {
-        return { valid: false, error: "URL must use HTTP or HTTPS protocol" };
-      }
-      return { valid: true, error: null };
-    } catch {
-      return { valid: false, error: "Invalid URL format" };
-    }
-  };
 
   const handleFilesSelected = (files: File[]) => {
     setSelectedFile(files[0]);
@@ -71,7 +52,6 @@ export function UploadPage() {
       setSelectedFile(null);
     } else {
       setUrlInput("");
-      setUrlError(null);
     }
   };
 
@@ -82,12 +62,6 @@ export function UploadPage() {
       }
       fileMutation.mutate(selectedFile);
     } else {
-      const validation = validateUrl(urlInput);
-      if (!validation.valid) {
-        setUrlError(validation.error);
-        return;
-      }
-      setUrlError(null);
       urlMutation.mutate(urlInput);
     }
   };
@@ -99,12 +73,11 @@ export function UploadPage() {
       setSelectedFile(null);
     } else {
       setUrlInput("");
-      setUrlError(null);
     }
   };
 
   const hasContent =
-    uploadMode === "file" ? selectedFile !== null : urlInput.trim() !== "";
+    uploadMode === "file" ? selectedFile !== null : validateUrl(urlInput);
   const isUploading =
     uploadMode === "file" ? fileMutation.isPending : urlMutation.isPending;
 
@@ -152,11 +125,7 @@ export function UploadPage() {
           maxSizeMB={10}
         />
       ) : (
-        <UrlInputZone
-          url={urlInput}
-          onUrlChange={setUrlInput}
-          error={urlError}
-        />
+        <UrlInputZone url={urlInput} onUrlChange={setUrlInput} />
       )}
 
       {/* Upload Control */}

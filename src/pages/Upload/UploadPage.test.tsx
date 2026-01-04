@@ -351,58 +351,6 @@ describe("UploadPage", () => {
       ).toBeInTheDocument();
     });
 
-    it("shows error for invalid URL", async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<UploadPage />);
-
-      // Switch to URL mode
-      const urlButton = screen.getByRole("button", { name: /url upload/i });
-      await user.click(urlButton);
-
-      // Enter invalid URL
-      const urlInput = screen.getByPlaceholderText(
-        "Enter URL to extract and upload",
-      );
-      await user.type(urlInput, "not-a-url");
-
-      // Upload button appears because text is entered
-      const uploadButton = screen.getByRole("button", {
-        name: "Upload",
-        exact: true,
-      });
-      await user.click(uploadButton);
-
-      // Should show validation error
-      expect(screen.getByText(/invalid url format/i)).toBeInTheDocument();
-    });
-
-    it("shows error for non-http(s) URLs", async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<UploadPage />);
-
-      // Switch to URL mode
-      const urlButton = screen.getByRole("button", { name: /url upload/i });
-      await user.click(urlButton);
-
-      // Enter ftp URL
-      const urlInput = screen.getByPlaceholderText(
-        "Enter URL to extract and upload",
-      );
-      await user.type(urlInput, "ftp://example.com");
-
-      // Upload button appears
-      const uploadButton = screen.getByRole("button", {
-        name: "Upload",
-        exact: true,
-      });
-      await user.click(uploadButton);
-
-      // Should show validation error
-      expect(
-        screen.getByText(/url must use http or https protocol/i),
-      ).toBeInTheDocument();
-    });
-
     it("calls uploadUrl with valid URL", async () => {
       const { urlService } = await import("src/api");
       const user = userEvent.setup();
@@ -507,7 +455,7 @@ describe("UploadPage", () => {
       // Should show success and navigate
       await waitFor(() => {
         expect(toast.success).toHaveBeenCalledWith(
-          "Book uploaded successfully!",
+          "URL uploaded successfully!",
         );
         expect(mockNavigate).toHaveBeenCalledWith("/");
       });

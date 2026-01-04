@@ -3,7 +3,6 @@ import { useId } from "react";
 interface UrlInputZoneProps {
   url: string;
   onUrlChange: (url: string) => void;
-  error?: string | null;
 }
 
 interface UrlDisplayViewProps {
@@ -11,7 +10,7 @@ interface UrlDisplayViewProps {
 }
 
 // Validate URL - only allow http/https protocols
-function validateUrl(urlString: string): boolean {
+export function validateUrl(urlString: string): boolean {
   if (!urlString.trim()) {
     return false;
   }
@@ -66,7 +65,7 @@ function UrlInputView({ url, onUrlChange, inputId }: UrlInputViewProps) {
   );
 }
 
-export function UrlInputZone({ url, onUrlChange, error }: UrlInputZoneProps) {
+export function UrlInputZone({ url, onUrlChange }: UrlInputZoneProps) {
   const inputId = useId();
   const hasValidUrl = validateUrl(url);
 
@@ -74,10 +73,5 @@ export function UrlInputZone({ url, onUrlChange, error }: UrlInputZoneProps) {
     return <UrlDisplayView url={url} />;
   }
 
-  return (
-    <>
-      <UrlInputView url={url} onUrlChange={onUrlChange} inputId={inputId} />
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
-    </>
-  );
+  return <UrlInputView url={url} onUrlChange={onUrlChange} inputId={inputId} />;
 }
