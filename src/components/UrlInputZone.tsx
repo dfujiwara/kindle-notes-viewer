@@ -10,6 +10,20 @@ interface UrlDisplayViewProps {
   url: string;
 }
 
+// Validate URL - only allow http/https protocols
+function validateUrl(urlString: string): boolean {
+  if (!urlString.trim()) {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(urlString);
+    return ["http:", "https:"].includes(parsed.protocol);
+  } catch {
+    return false;
+  }
+}
+
 function UrlDisplayView({ url }: UrlDisplayViewProps) {
   const displayUrl = url.length > 60 ? `${url.slice(0, 57)}...` : url;
 
@@ -58,22 +72,6 @@ function UrlInputView({ url, onUrlChange, inputId }: UrlInputViewProps) {
 
 export function UrlInputZone({ url, onUrlChange, error }: UrlInputZoneProps) {
   const inputId = useId();
-
-  // Validate URL
-  const validateUrl = (urlString: string): boolean => {
-    if (!urlString.trim()) {
-      return false;
-    }
-
-    try {
-      const parsed = new URL(urlString);
-      // Only allow http/https protocols
-      return ["http:", "https:"].includes(parsed.protocol);
-    } catch {
-      return false;
-    }
-  };
-
   const hasValidUrl = validateUrl(url);
 
   if (hasValidUrl && url.trim()) {
