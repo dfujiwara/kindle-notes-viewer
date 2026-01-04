@@ -27,77 +27,63 @@ describe("UrlInputZone", () => {
     expect(mockOnUrlChange).toHaveBeenCalled();
   });
 
-  it("displays entered URL when valid http URL is entered", async () => {
-    const user = userEvent.setup();
+  it("shows green border when valid http URL is entered", () => {
     const mockOnUrlChange = vi.fn();
-    const { rerender } = render(
-      <UrlInputZone url="" onUrlChange={mockOnUrlChange} />,
-    );
-
-    const input = screen.getByPlaceholderText(
-      "Enter URL to extract and upload",
-    );
-    await user.type(input, "http://example.com");
-
-    // Rerender with the URL to simulate state update
-    rerender(
+    render(
       <UrlInputZone url="http://example.com" onUrlChange={mockOnUrlChange} />,
     );
 
-    // Should show the URL in display view
-    expect(screen.getByText(/http:\/\/example\.com/)).toBeInTheDocument();
+    const input = screen.getByPlaceholderText(
+      "Enter URL to extract and upload",
+    );
+    expect(input).toHaveValue("http://example.com");
+    expect(input).toHaveClass("border-green-500");
   });
 
-  it("displays entered URL when valid https URL is entered", async () => {
-    const user = userEvent.setup();
+  it("shows green border when valid https URL is entered", () => {
     const mockOnUrlChange = vi.fn();
-    const { rerender } = render(
-      <UrlInputZone url="" onUrlChange={mockOnUrlChange} />,
+    render(
+      <UrlInputZone url="https://example.com" onUrlChange={mockOnUrlChange} />,
     );
 
     const input = screen.getByPlaceholderText(
       "Enter URL to extract and upload",
     );
-    await user.type(input, "https://example.com");
-
-    // Rerender with the URL to simulate state update
-    rerender(
-      <UrlInputZone url="https://example.com" onUrlChange={mockOnUrlChange} />,
-    );
-
-    // Should show the URL in display view
-    expect(screen.getByText(/https:\/\/example\.com/)).toBeInTheDocument();
+    expect(input).toHaveValue("https://example.com");
+    expect(input).toHaveClass("border-green-500");
   });
 
-  it("does not display URL view for invalid URLs", () => {
+  it("shows gray border for invalid URLs", () => {
     const mockOnUrlChange = vi.fn();
     render(<UrlInputZone url="not-a-url" onUrlChange={mockOnUrlChange} />);
 
-    // Should still show input field, not display view
-    expect(
-      screen.getByPlaceholderText("Enter URL to extract and upload"),
-    ).toBeInTheDocument();
+    const input = screen.getByPlaceholderText(
+      "Enter URL to extract and upload",
+    );
+    expect(input).toHaveClass("border-gray-300");
   });
 
-  it("does not display URL view for non-http(s) protocols", () => {
+  it("shows gray border for non-http(s) protocols", () => {
     const mockOnUrlChange = vi.fn();
     render(
       <UrlInputZone url="ftp://example.com" onUrlChange={mockOnUrlChange} />,
     );
 
-    // Should still show input field, not display view
-    expect(
-      screen.getByPlaceholderText("Enter URL to extract and upload"),
-    ).toBeInTheDocument();
+    const input = screen.getByPlaceholderText(
+      "Enter URL to extract and upload",
+    );
+    expect(input).toHaveClass("border-gray-300");
   });
 
-  it("truncates long URLs in display view", () => {
+  it("allows editing long URLs without truncation", () => {
     const mockOnUrlChange = vi.fn();
     const longUrl =
-      "https://example.com/very/long/path/that/should/be/truncated/for/display";
+      "https://example.com/very/long/path/that/should/not/be/truncated";
     render(<UrlInputZone url={longUrl} onUrlChange={mockOnUrlChange} />);
 
-    // Should show truncated URL (first 57 chars + ...)
-    expect(screen.getByText(/\.\.\./)).toBeInTheDocument();
+    const input = screen.getByPlaceholderText(
+      "Enter URL to extract and upload",
+    );
+    expect(input).toHaveValue(longUrl);
   });
 });
