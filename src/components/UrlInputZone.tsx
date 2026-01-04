@@ -68,7 +68,7 @@ function UrlInputView({ url, onUrlChange, inputId }: UrlInputViewProps) {
               value={url}
               onChange={(e) => onUrlChange(e.target.value)}
               placeholder="https://example.com/article"
-              className="w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400"
             />
           </div>
           <p className="text-xs sm:text-sm text-gray-500 text-center">
