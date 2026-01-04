@@ -62,153 +62,169 @@ describe("UploadPage", () => {
     vi.clearAllMocks();
   });
 
-  it("renders the upload page with title", () => {
-    renderWithProviders(<UploadPage />);
+  describe("File upload", () => {
+    it("renders the upload page with title", () => {
+      renderWithProviders(<UploadPage />);
 
-    expect(
-      screen.getByRole("heading", { name: /upload notes/i }),
-    ).toBeInTheDocument();
-  });
-
-  it("renders file drop zone without upload button", () => {
-    renderWithProviders(<UploadPage />);
-
-    expect(
-      screen.getByText(/drag and drop your file here/i),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/accepted formats: .txt, .html/i),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: "Upload", exact: true }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("shows selected file name and upload button when file is selected", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<UploadPage />);
-
-    const file = new File(["test content"], "test.txt", { type: "text/plain" });
-    const input = screen.getByLabelText(/drag and drop your file here/i);
-
-    await user.upload(input, file);
-
-    expect(screen.getByText("test.txt")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Upload", exact: true }),
-    ).toBeInTheDocument();
-  });
-
-  it("clears selected file when clear button is clicked", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<UploadPage />);
-
-    const file = new File(["test content"], "test.txt", { type: "text/plain" });
-    const input = screen.getByLabelText(/drag and drop your file here/i);
-
-    await user.upload(input, file);
-    expect(screen.getByText("test.txt")).toBeInTheDocument();
-
-    const clearButton = screen.getByRole("button", {
-      name: "Clear Selection",
-      exact: true,
-    });
-    await user.click(clearButton);
-
-    expect(screen.queryByText("test.txt")).not.toBeInTheDocument();
-    expect(
-      screen.getByText(/drag and drop your file here/i),
-    ).toBeInTheDocument();
-  });
-
-  it("shows loading state when uploading", async () => {
-    const { booksService } = await import("src/api");
-    const user = userEvent.setup();
-
-    // Mock upload to delay resolution
-    vi.mocked(booksService.uploadBook).mockImplementation(
-      () =>
-        new Promise(() => {
-          // Never resolves to keep loading state
-        }),
-    );
-
-    renderWithProviders(<UploadPage />);
-
-    const file = new File(["test content"], "test.txt", { type: "text/plain" });
-    const input = screen.getByLabelText(/drag and drop your file here/i);
-
-    await user.upload(input, file);
-
-    const uploadButton = screen.getByRole("button", {
-      name: "Upload",
-      exact: true,
-    });
-    await user.click(uploadButton);
-
-    expect(
-      screen.getByRole("button", { name: "Uploading...", exact: true }),
-    ).toBeDisabled();
-  });
-
-  it("calls toast.success and navigates on successful upload", async () => {
-    const { booksService } = await import("src/api");
-    const user = userEvent.setup();
-
-    // Mock successful upload
-    vi.mocked(booksService.uploadBook).mockResolvedValue({
-      data: { success: true },
-      status: 200,
+      expect(
+        screen.getByRole("heading", { name: /upload notes/i }),
+      ).toBeInTheDocument();
     });
 
-    renderWithProviders(<UploadPage />);
+    it("renders file drop zone without upload button", () => {
+      renderWithProviders(<UploadPage />);
 
-    const file = new File(["test content"], "test.txt", { type: "text/plain" });
-    const input = screen.getByLabelText(/drag and drop your file here/i);
-
-    await user.upload(input, file);
-
-    const uploadButton = screen.getByRole("button", {
-      name: "Upload",
-      exact: true,
+      expect(
+        screen.getByText(/drag and drop your file here/i),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/accepted formats: .txt, .html/i),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Upload", exact: true }),
+      ).not.toBeInTheDocument();
     });
-    await user.click(uploadButton);
 
-    // Wait for async operations
-    await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith("Book uploaded successfully!");
-      expect(mockNavigate).toHaveBeenCalledWith("/");
+    it("shows selected file name and upload button when file is selected", async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<UploadPage />);
+
+      const file = new File(["test content"], "test.txt", {
+        type: "text/plain",
+      });
+      const input = screen.getByLabelText(/drag and drop your file here/i);
+
+      await user.upload(input, file);
+
+      expect(screen.getByText("test.txt")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Upload", exact: true }),
+      ).toBeInTheDocument();
+    });
+
+    it("clears selected file when clear button is clicked", async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<UploadPage />);
+
+      const file = new File(["test content"], "test.txt", {
+        type: "text/plain",
+      });
+      const input = screen.getByLabelText(/drag and drop your file here/i);
+
+      await user.upload(input, file);
+      expect(screen.getByText("test.txt")).toBeInTheDocument();
+
+      const clearButton = screen.getByRole("button", {
+        name: "Clear Selection",
+        exact: true,
+      });
+      await user.click(clearButton);
+
+      expect(screen.queryByText("test.txt")).not.toBeInTheDocument();
+      expect(
+        screen.getByText(/drag and drop your file here/i),
+      ).toBeInTheDocument();
+    });
+
+    it("shows loading state when uploading", async () => {
+      const { booksService } = await import("src/api");
+      const user = userEvent.setup();
+
+      // Mock upload to delay resolution
+      vi.mocked(booksService.uploadBook).mockImplementation(
+        () =>
+          new Promise(() => {
+            // Never resolves to keep loading state
+          }),
+      );
+
+      renderWithProviders(<UploadPage />);
+
+      const file = new File(["test content"], "test.txt", {
+        type: "text/plain",
+      });
+      const input = screen.getByLabelText(/drag and drop your file here/i);
+
+      await user.upload(input, file);
+
+      const uploadButton = screen.getByRole("button", {
+        name: "Upload",
+        exact: true,
+      });
+      await user.click(uploadButton);
+
+      expect(
+        screen.getByRole("button", { name: "Uploading...", exact: true }),
+      ).toBeDisabled();
+    });
+
+    it("calls toast.success and navigates on successful upload", async () => {
+      const { booksService } = await import("src/api");
+      const user = userEvent.setup();
+
+      // Mock successful upload
+      vi.mocked(booksService.uploadBook).mockResolvedValue({
+        data: { success: true },
+        status: 200,
+      });
+
+      renderWithProviders(<UploadPage />);
+
+      const file = new File(["test content"], "test.txt", {
+        type: "text/plain",
+      });
+      const input = screen.getByLabelText(/drag and drop your file here/i);
+
+      await user.upload(input, file);
+
+      const uploadButton = screen.getByRole("button", {
+        name: "Upload",
+        exact: true,
+      });
+      await user.click(uploadButton);
+
+      // Wait for async operations
+      await waitFor(() => {
+        expect(toast.success).toHaveBeenCalledWith(
+          "Book uploaded successfully!",
+        );
+        expect(mockNavigate).toHaveBeenCalledWith("/");
+      });
+    });
+
+    it("calls toast.error on failed upload", async () => {
+      const { booksService } = await import("src/api");
+      const user = userEvent.setup();
+
+      // Mock failed upload
+      const error = new Error("Upload failed");
+      vi.mocked(booksService.uploadBook).mockRejectedValue(error);
+
+      renderWithProviders(<UploadPage />);
+
+      const file = new File(["test content"], "test.txt", {
+        type: "text/plain",
+      });
+      const input = screen.getByLabelText(/drag and drop your file here/i);
+
+      await user.upload(input, file);
+
+      const uploadButton = screen.getByRole("button", {
+        name: "Upload",
+        exact: true,
+      });
+      await user.click(uploadButton);
+
+      // Wait for async operations
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalledWith(
+          "Upload failed: Upload failed",
+        );
+      });
     });
   });
 
-  it("calls toast.error on failed upload", async () => {
-    const { booksService } = await import("src/api");
-    const user = userEvent.setup();
-
-    // Mock failed upload
-    const error = new Error("Upload failed");
-    vi.mocked(booksService.uploadBook).mockRejectedValue(error);
-
-    renderWithProviders(<UploadPage />);
-
-    const file = new File(["test content"], "test.txt", { type: "text/plain" });
-    const input = screen.getByLabelText(/drag and drop your file here/i);
-
-    await user.upload(input, file);
-
-    const uploadButton = screen.getByRole("button", {
-      name: "Upload",
-      exact: true,
-    });
-    await user.click(uploadButton);
-
-    // Wait for async operations
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("Upload failed: Upload failed");
-    });
-  });
-
-  describe("Mode Toggle", () => {
+  describe("Mode toggle", () => {
     it("renders both file and url mode buttons", () => {
       renderWithProviders(<UploadPage />);
 
