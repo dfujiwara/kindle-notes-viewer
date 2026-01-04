@@ -22,7 +22,7 @@ export function UrlInputZone({ url, onUrlChange }: UrlInputZoneProps) {
           value={url}
           onChange={(e) => onUrlChange(e.target.value)}
           placeholder="Enter URL to extract and upload"
-          className={`w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 rounded-md focus:outline-none focus:ring-2 placeholder:text-gray-400 transition-colors ${
+          className={`w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base text-gray-900 bg-white border-2 rounded-md focus:outline-none focus:ring-2 placeholder:text-gray-400 transition-colors ${
             isValid
               ? "border-green-500 focus:ring-green-500 focus:border-green-500"
               : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
