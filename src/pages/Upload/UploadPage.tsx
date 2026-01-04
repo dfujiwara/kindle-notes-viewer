@@ -8,8 +8,9 @@ import {
   useApiMutation,
 } from "src/api";
 import { FileDropZone } from "src/components/FileDropZone";
-import { FileUploadControl } from "src/components/FileUploadControl";
-import { UrlInputZone, validateUrl } from "src/components/UrlInputZone";
+import { UploadControl } from "src/components/UploadControl";
+import { UrlInputZone } from "src/components/UrlInputZone";
+import { validateUrl } from "src/utils/validation";
 
 type UploadMode = "file" | "url";
 
@@ -48,11 +49,8 @@ export function UploadPage() {
   };
 
   const handleClear = () => {
-    if (uploadMode === "file") {
-      setSelectedFile(null);
-    } else {
-      setUrlInput("");
-    }
+    setSelectedFile(null);
+    setUrlInput("");
   };
 
   const handleUpload = () => {
@@ -69,11 +67,7 @@ export function UploadPage() {
   const handleModeChange = (mode: UploadMode) => {
     setUploadMode(mode);
     // Clear state when switching modes
-    if (mode === "url") {
-      setSelectedFile(null);
-    } else {
-      setUrlInput("");
-    }
+    handleClear();
   };
 
   const hasContent =
@@ -89,13 +83,13 @@ export function UploadPage() {
 
       {/* Mode Toggle */}
       <div className="mb-6">
-        <div className="inline-flex rounded-lg border border-gray-300 p-1 bg-white">
+        <div className="inline-flex gap-2 rounded-lg border border-gray-300 p-1 bg-white">
           <button
             type="button"
             onClick={() => handleModeChange("file")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
               uploadMode === "file"
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-600 text-white shadow-sm ring-2 ring-blue-600 ring-offset-1"
                 : "text-gray-700 hover:bg-gray-100"
             }`}
           >
@@ -104,9 +98,9 @@ export function UploadPage() {
           <button
             type="button"
             onClick={() => handleModeChange("url")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
               uploadMode === "url"
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-600 text-white shadow-sm ring-2 ring-blue-600 ring-offset-1"
                 : "text-gray-700 hover:bg-gray-100"
             }`}
           >
@@ -129,14 +123,12 @@ export function UploadPage() {
       )}
 
       {/* Upload Control */}
-      {hasContent && (
-        <FileUploadControl
-          selectedFiles={hasContent ? [new File([], "")] : []}
-          onClearFiles={handleClear}
-          onUpload={handleUpload}
-          isUploading={isUploading}
-        />
-      )}
+      <UploadControl
+        hasContent={hasContent}
+        onClear={handleClear}
+        onUpload={handleUpload}
+        isUploading={isUploading}
+      />
     </div>
   );
 }
