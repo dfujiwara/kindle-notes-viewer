@@ -368,19 +368,26 @@ For each new component/service:
 
 **Approach**: Implement incrementally, testing at each step before moving forward.
 
-### Step 1: API Layer Foundation
+### Step 1: API Layer Foundation ✅
 **Purpose**: Set up all data models, services, and query hooks
 
-- [ ] Create URL data models in `src/models/url.ts`
+- [x] Create URL data models in `src/models/url.ts`
   - `Url`, `UrlChunk`, `UrlChunkBundle`, `UrlDetailedChunk`
-- [ ] Update existing `urlService.ts` with new methods
+- [x] Update existing `urlService.ts` with new methods
   - `getUrls()`, `getChunksFromUrl()`, `getStreamedChunk()`, `getStreamedRandomChunk()`
   - Add API response interfaces and mapping functions
-- [ ] Create query hooks for URL data fetching
-  - Following existing patterns (useApiSuspenseQuery, useApiQuery)
-- [ ] Add unit tests for service layer
-- [ ] Update `src/api/index.ts` and `src/models/index.ts` exports
-- [ ] Run checks: `npm run check && npm run test:run`
+  - Added `isSummary` field to `UrlChunk` for distinguishing summary chunks
+  - Simplified CHUNKS endpoint to `/urls/:id` (from `/urls/:id/chunks`)
+- [x] Create query hooks for URL data fetching
+  - Using existing generic hooks (useApiSuspenseQuery, useApiQuery)
+- [x] Add unit tests for service layer
+  - 6 comprehensive tests covering all service methods
+  - Tests verify snake_case → camelCase transformation
+  - SSE streaming handler tests included
+- [x] Update `src/api/index.ts` and `src/models/index.ts` exports
+- [x] Run checks: `npm run check && npm run test:run`
+  - All 94 tests passing
+  - No lint/format issues
 
 ### Step 2: URL List Page
 **Purpose**: Allow users to view all uploaded URLs
@@ -482,6 +489,27 @@ For each new component/service:
 7. **Service Naming**: ✅ Keep as `urlService.ts` (not `urlsService.ts`).
 
 8. **Testing Strategy**: ✅ Focus on unit/component tests initially. E2E Playwright tests will be addressed later.
+
+### Phase 1 Implementation Notes (Completed 2026-01-05)
+
+**Data Model Refinements**:
+- Added `isSummary: boolean` field to `UrlChunk` to distinguish summary chunks from content chunks
+- This allows future UI enhancements (e.g., highlighting summaries, filtering)
+
+**API Endpoint Simplification**:
+- Simplified CHUNKS endpoint from `/urls/:urlId/chunks` to `/urls/:urlId`
+- More RESTful and cleaner API design
+
+**Testing Improvements**:
+- Moved logger mock to global test setup (`src/test/setup.ts`)
+- All future test files automatically benefit from logger mocking
+- Removed redundant/unnecessary test cases (empty array handling, missing fields)
+- Final test suite: 6 focused tests covering all service methods and edge cases
+
+**Code Quality**:
+- All snake_case → camelCase transformations properly tested
+- SSE streaming handlers tested for both specific chunk and random chunk endpoints
+- No defensive null handling needed (backend contract guarantees field presence)
 
 ### Open Questions
 
