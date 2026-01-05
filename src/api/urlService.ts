@@ -21,6 +21,7 @@ interface UrlApiResponse {
 interface UrlChunkApiResponse {
   id: string;
   content: string;
+  is_summary: boolean;
   created_at: string;
 }
 
@@ -47,6 +48,7 @@ const mapUrl = (apiUrl: UrlApiResponse): Url => ({
 const mapChunk = (apiChunk: UrlChunkApiResponse): UrlChunk => ({
   id: apiChunk.id,
   content: apiChunk.content,
+  isSummary: apiChunk.is_summary,
   createdAt: apiChunk.created_at,
 });
 
@@ -69,7 +71,7 @@ const mapInitialDetailedChunk = (
 const ENDPOINTS = {
   LIST: "/urls",
   UPLOAD: "/urls",
-  CHUNKS: (urlId: string) => `/urls/${urlId}/chunks`,
+  CHUNKS: (urlId: string) => `/urls/${urlId}`,
   STREAM_CHUNK: (urlId: string, chunkId: string) =>
     `/urls/${urlId}/chunks/${chunkId}`,
   STREAM_RANDOM: "/urls/random",
@@ -98,7 +100,7 @@ export class UrlService {
     const response = await httpClient.request<{ urls: UrlApiResponse[] }>(
       ENDPOINTS.LIST,
     );
-    const data = response.data.urls?.map(mapUrl) || [];
+    const data = response.data.urls.map(mapUrl);
     return { ...response, data };
   }
 
