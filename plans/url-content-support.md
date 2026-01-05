@@ -389,18 +389,29 @@ For each new component/service:
   - All 94 tests passing
   - No lint/format issues
 
-### Step 2: URL List Page
+### Step 2: URL List Page ✅
 **Purpose**: Allow users to view all uploaded URLs
 
-- [ ] Create `UrlList` component in `src/pages/Home/`
+- [x] Create `UrlList` component in `src/pages/Home/`
   - Display grid of URL cards
   - Use query hook to fetch URLs
-- [ ] Create `UrlItem` component
+  - Responsive grid layout: 1→2→3 columns (mobile→tablet→desktop)
+  - Empty state handling with centered message
+- [x] Create `UrlItem` component
   - Display: title, URL, chunk count, upload date
-  - Link to URL detail page
-- [ ] Write component tests for UrlList and UrlItem
-- [ ] Temporarily add to HomePage for testing (before tabs)
-- [ ] Run checks: `npm run check && npm run test:run`
+  - Link to URL detail page via onClick callback
+  - Card styling following BookItem pattern
+  - Singular/plural chunk count handling
+- [x] Write component tests for UrlList and UrlItem
+  - UrlList: 5 tests (render, empty state, click, count, single item)
+  - UrlItem: 4 tests (render, singular chunk, click, optional callback)
+- [x] Temporarily add to HomePage for testing (before tabs)
+  - HomePage now shows both "Books" and "URLs" sections
+  - Each section has heading and list component
+  - Both sections use useApiSuspenseQuery for data fetching
+- [x] Run checks: `npm run check && npm run test:run`
+  - All 103 tests passing
+  - No lint/format issues
 
 ### Step 3: URL Detail Page with Streaming
 **Purpose**: Display URL chunks with SSE streaming for detailed view
@@ -510,6 +521,41 @@ For each new component/service:
 - All snake_case → camelCase transformations properly tested
 - SSE streaming handlers tested for both specific chunk and random chunk endpoints
 - No defensive null handling needed (backend contract guarantees field presence)
+
+### Phase 2 Implementation Notes (Completed 2026-01-05)
+
+**Component Architecture**:
+- Followed existing BookList/BookItem pattern exactly for consistency
+- UrlItem and UrlList mirror their book counterparts in structure and styling
+- All components use semantic HTML (`<button>` instead of `<div>` for clickable items)
+
+**UI/UX Design**:
+- Responsive grid layout with Tailwind classes: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`
+- Card styling matches BookItem: `bg-zinc-800 border border-zinc-700 rounded-lg`
+- URL display includes: title (line-clamp-2), URL (line-clamp-1), chunk count with singular/plural, formatted date
+- Empty state shows centered "No URLs Found" message matching books pattern
+
+**HomePage Integration**:
+- Temporarily displays both "Books" and "URLs" sections vertically
+- Each section has a heading and uses `useApiSuspenseQuery` for data fetching
+- Navigation handled at page level via onClick callbacks (not in list components)
+- Will be replaced with tabbed interface in Step 4
+
+**Testing Coverage**:
+- 9 new tests added (4 for UrlItem, 5 for UrlList)
+- All tests follow existing patterns (mocking, userEvent, assertions)
+- Updated App.test.tsx to mock urlService.getUrls() to prevent failures
+- Total project tests: 103 (all passing)
+
+**Files Created**:
+- `src/pages/Home/UrlList.tsx` (16 lines)
+- `src/pages/Home/UrlList.test.tsx` (48 lines)
+- `src/pages/Home/UrlItem.tsx` (33 lines)
+- `src/pages/Home/UrlItem.test.tsx` (42 lines)
+
+**Files Modified**:
+- `src/pages/Home/HomePage.tsx` - Added URLs section with urlService query
+- `src/App.test.tsx` - Added urlService mock
 
 ### Open Questions
 
