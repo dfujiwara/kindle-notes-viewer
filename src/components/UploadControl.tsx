@@ -1,17 +1,17 @@
-interface FileUploadControlProps {
-  selectedFiles: File[];
-  onClearFiles: () => void;
+interface UploadControlProps {
+  hasContent: boolean;
+  onClear: () => void;
   onUpload: () => void;
   isUploading?: boolean;
 }
 
-export function FileUploadControl({
-  selectedFiles,
-  onClearFiles,
+export function UploadControl({
+  hasContent,
+  onClear,
   onUpload,
   isUploading = false,
-}: FileUploadControlProps) {
-  if (selectedFiles.length === 0) {
+}: UploadControlProps) {
+  if (!hasContent) {
     return null;
   }
 
@@ -19,7 +19,7 @@ export function FileUploadControl({
     <div className="mt-4 flex flex-col sm:flex-row gap-3">
       <button
         type="button"
-        onClick={onClearFiles}
+        onClick={onClear}
         disabled={isUploading}
         className="flex-1 px-4 py-2.5 sm:py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >

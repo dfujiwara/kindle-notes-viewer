@@ -16,5 +16,5 @@ export class ApiError extends Error {
 export interface ApiRequestConfig {
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   headers: Record<string, string>;
-  body?: BodyInit;
+  body?: BodyInit | Record<string, unknown>;
 }

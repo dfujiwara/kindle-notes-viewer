@@ -3,6 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import toast from "react-hot-toast";
 import { MemoryRouter } from "react-router";
+import { booksService, urlService } from "src/api";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { UploadPage } from "./UploadPage";
 
@@ -13,6 +14,9 @@ vi.mock("src/api", async () => {
     ...actual,
     booksService: {
       uploadBook: vi.fn(),
+    },
+    urlService: {
+      uploadUrl: vi.fn(),
     },
   };
 });
@@ -54,138 +58,401 @@ function renderWithProviders(ui: React.ReactElement) {
   );
 }
 
+// Test helpers
+function createTestFile(name = "test.txt", content = "test content") {
+  return new File([content], name, { type: "text/plain" });
+}
+
+async function switchToUrlMode(user: ReturnType<typeof userEvent.setup>) {
+  const urlButton = screen.getByRole("button", { name: /url upload/i });
+  await user.click(urlButton);
+}
+
+async function switchToFileMode(user: ReturnType<typeof userEvent.setup>) {
+  const fileButton = screen.getByRole("button", { name: /file upload/i });
+  await user.click(fileButton);
+}
+
 describe("UploadPage", () => {
+  let user: ReturnType<typeof userEvent.setup>;
+
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  it("renders the upload page with title", () => {
+    user = userEvent.setup();
     renderWithProviders(<UploadPage />);
-
-    expect(
-      screen.getByRole("heading", { name: /upload notes/i }),
-    ).toBeInTheDocument();
   });
 
-  it("renders file drop zone without upload button", () => {
-    renderWithProviders(<UploadPage />);
-
-    expect(
-      screen.getByText(/drag and drop your file here/i),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/accepted formats: .txt, .html/i),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: /upload/i }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("shows selected file name and upload button when file is selected", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<UploadPage />);
-
-    const file = new File(["test content"], "test.txt", { type: "text/plain" });
-    const input = screen.getByLabelText(/drag and drop your file here/i);
-
-    await user.upload(input, file);
-
-    expect(screen.getByText("test.txt")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /upload/i })).toBeInTheDocument();
-  });
-
-  it("clears selected file when clear button is clicked", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<UploadPage />);
-
-    const file = new File(["test content"], "test.txt", { type: "text/plain" });
-    const input = screen.getByLabelText(/drag and drop your file here/i);
-
-    await user.upload(input, file);
-    expect(screen.getByText("test.txt")).toBeInTheDocument();
-
-    const clearButton = screen.getByRole("button", { name: /clear/i });
-    await user.click(clearButton);
-
-    expect(screen.queryByText("test.txt")).not.toBeInTheDocument();
-    expect(
-      screen.getByText(/drag and drop your file here/i),
-    ).toBeInTheDocument();
-  });
-
-  it("shows loading state when uploading", async () => {
-    const { booksService } = await import("src/api");
-    const user = userEvent.setup();
-
-    // Mock upload to delay resolution
-    vi.mocked(booksService.uploadBook).mockImplementation(
-      () =>
-        new Promise(() => {
-          // Never resolves to keep loading state
-        }),
-    );
-
-    renderWithProviders(<UploadPage />);
-
-    const file = new File(["test content"], "test.txt", { type: "text/plain" });
-    const input = screen.getByLabelText(/drag and drop your file here/i);
-
-    await user.upload(input, file);
-
-    const uploadButton = screen.getByRole("button", { name: /upload/i });
-    await user.click(uploadButton);
-
-    expect(screen.getByRole("button", { name: /uploading/i })).toBeDisabled();
-  });
-
-  it("calls toast.success and navigates on successful upload", async () => {
-    const { booksService } = await import("src/api");
-    const user = userEvent.setup();
-
-    // Mock successful upload
-    vi.mocked(booksService.uploadBook).mockResolvedValue({
-      data: { success: true },
-      status: 200,
+  describe("File upload", () => {
+    it("renders the upload page with title", () => {
+      expect(
+        screen.getByRole("heading", { name: /upload notes/i }),
+      ).toBeInTheDocument();
     });
 
-    renderWithProviders(<UploadPage />);
+    it("renders file drop zone without upload button", () => {
+      expect(
+        screen.getByText(/drag and drop your file here/i),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/accepted formats: .txt, .html/i),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /^Upload$/ }),
+      ).not.toBeInTheDocument();
+    });
 
-    const file = new File(["test content"], "test.txt", { type: "text/plain" });
-    const input = screen.getByLabelText(/drag and drop your file here/i);
+    it("shows selected file name and upload button when file is selected", async () => {
+      const file = createTestFile();
+      const input = screen.getByLabelText(/drag and drop your file here/i);
 
-    await user.upload(input, file);
+      await user.upload(input, file);
 
-    const uploadButton = screen.getByRole("button", { name: /upload/i });
-    await user.click(uploadButton);
+      expect(screen.getByText("test.txt")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /^Upload$/ }),
+      ).toBeInTheDocument();
+    });
 
-    // Wait for async operations
-    await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith("Book uploaded successfully!");
-      expect(mockNavigate).toHaveBeenCalledWith("/");
+    it("clears selected file when clear button is clicked", async () => {
+      const file = createTestFile();
+      const input = screen.getByLabelText(/drag and drop your file here/i);
+
+      await user.upload(input, file);
+      expect(screen.getByText("test.txt")).toBeInTheDocument();
+
+      const clearButton = screen.getByRole("button", {
+        name: /^Clear Selection$/,
+      });
+      await user.click(clearButton);
+
+      expect(screen.queryByText("test.txt")).not.toBeInTheDocument();
+      expect(
+        screen.getByText(/drag and drop your file here/i),
+      ).toBeInTheDocument();
+    });
+
+    it("shows loading state when uploading", async () => {
+      // Mock upload to delay resolution
+      vi.mocked(booksService.uploadBook).mockImplementation(
+        () =>
+          new Promise(() => {
+            // Never resolves to keep loading state
+          }),
+      );
+
+      const file = createTestFile();
+      const input = screen.getByLabelText(/drag and drop your file here/i);
+
+      await user.upload(input, file);
+
+      const uploadButton = screen.getByRole("button", {
+        name: /^Upload$/,
+      });
+      await user.click(uploadButton);
+
+      expect(
+        screen.getByRole("button", { name: /^Uploading...$/ }),
+      ).toBeDisabled();
+    });
+
+    it("calls toast.success and navigates on successful upload", async () => {
+      // Mock successful upload
+      vi.mocked(booksService.uploadBook).mockResolvedValue({
+        data: { success: true },
+        status: 200,
+      });
+
+      const file = createTestFile();
+      const input = screen.getByLabelText(/drag and drop your file here/i);
+
+      await user.upload(input, file);
+
+      const uploadButton = screen.getByRole("button", {
+        name: /^Upload$/,
+      });
+      await user.click(uploadButton);
+
+      // Wait for async operations
+      await waitFor(() => {
+        expect(toast.success).toHaveBeenCalledWith(
+          "Book uploaded successfully!",
+        );
+        expect(mockNavigate).toHaveBeenCalledWith("/");
+      });
+    });
+
+    it("calls toast.error on failed upload", async () => {
+      // Mock failed upload
+      const error = new Error("Upload failed");
+      vi.mocked(booksService.uploadBook).mockRejectedValue(error);
+
+      const file = createTestFile();
+      const input = screen.getByLabelText(/drag and drop your file here/i);
+
+      await user.upload(input, file);
+
+      const uploadButton = screen.getByRole("button", {
+        name: /^Upload$/,
+      });
+      await user.click(uploadButton);
+
+      // Wait for async operations
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalledWith(
+          "Upload failed: Upload failed",
+        );
+      });
     });
   });
 
-  it("calls toast.error on failed upload", async () => {
-    const { booksService } = await import("src/api");
-    const user = userEvent.setup();
+  describe("Mode toggle", () => {
+    it("renders both file and url mode buttons", () => {
+      expect(
+        screen.getByRole("button", { name: /file upload/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /url upload/i }),
+      ).toBeInTheDocument();
+    });
 
-    // Mock failed upload
-    const error = new Error("Upload failed");
-    vi.mocked(booksService.uploadBook).mockRejectedValue(error);
+    it("switches from file mode to url mode", async () => {
+      // Default is file mode
+      expect(
+        screen.getByText(/drag and drop your file here/i),
+      ).toBeInTheDocument();
 
-    renderWithProviders(<UploadPage />);
+      // Click URL Upload button
+      await switchToUrlMode(user);
 
-    const file = new File(["test content"], "test.txt", { type: "text/plain" });
-    const input = screen.getByLabelText(/drag and drop your file here/i);
+      // Should show URL input
+      expect(
+        screen.getByPlaceholderText("Enter URL to extract and upload"),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(/drag and drop your file here/i),
+      ).not.toBeInTheDocument();
+    });
 
-    await user.upload(input, file);
+    it("switches from url mode to file mode", async () => {
+      // Switch to URL mode
+      await switchToUrlMode(user);
+      expect(
+        screen.getByPlaceholderText("Enter URL to extract and upload"),
+      ).toBeInTheDocument();
 
-    const uploadButton = screen.getByRole("button", { name: /upload/i });
-    await user.click(uploadButton);
+      // Switch back to file mode
+      await switchToFileMode(user);
 
-    // Wait for async operations
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("Upload failed: Upload failed");
+      // Should show file drop zone
+      expect(
+        screen.getByText(/drag and drop your file here/i),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByPlaceholderText("Enter URL to extract and upload"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("clears file when switching to URL mode", async () => {
+      // Select a file
+      const file = createTestFile();
+      const input = screen.getByLabelText(/drag and drop your file here/i);
+      await user.upload(input, file);
+      expect(screen.getByText("test.txt")).toBeInTheDocument();
+
+      // Switch to URL mode
+      await switchToUrlMode(user);
+
+      // Switch back to file mode
+      await switchToFileMode(user);
+
+      // File should be cleared
+      expect(screen.queryByText("test.txt")).not.toBeInTheDocument();
+    });
+
+    it("clears URL when switching to file mode", async () => {
+      // Switch to URL mode and enter URL
+      await switchToUrlMode(user);
+
+      const urlInput = screen.getByPlaceholderText(
+        "Enter URL to extract and upload",
+      );
+      await user.type(urlInput, "https://example.com");
+
+      // Switch to file mode
+      await switchToFileMode(user);
+
+      // Switch back to URL mode
+      await switchToUrlMode(user);
+
+      // URL should be cleared
+      const urlInputAfter = screen.getByPlaceholderText(
+        "Enter URL to extract and upload",
+      );
+      expect(urlInputAfter).toHaveValue("");
+    });
+  });
+
+  describe("URL Upload", () => {
+    it("shows URL input in URL mode", async () => {
+      await switchToUrlMode(user);
+
+      expect(
+        screen.getByPlaceholderText("Enter URL to extract and upload"),
+      ).toBeInTheDocument();
+    });
+
+    it("shows upload button when valid URL is entered", async () => {
+      // Switch to URL mode
+      await switchToUrlMode(user);
+
+      // Enter URL
+      const urlInput = screen.getByPlaceholderText(
+        "Enter URL to extract and upload",
+      );
+      await user.type(urlInput, "https://example.com");
+
+      // Upload button should appear (exact match to avoid mode toggle buttons)
+      expect(
+        screen.getByRole("button", { name: /^Upload$/ }),
+      ).toBeInTheDocument();
+    });
+
+    it("calls uploadUrl with valid URL", async () => {
+      vi.mocked(urlService.uploadUrl).mockResolvedValue({
+        data: { success: true },
+        status: 200,
+      });
+
+      // Switch to URL mode
+      await switchToUrlMode(user);
+
+      // Enter valid URL (paste to avoid character-by-character validation)
+      const urlInput = screen.getByPlaceholderText(
+        "Enter URL to extract and upload",
+      );
+      await user.click(urlInput);
+      await user.paste("https://example.com");
+
+      // Click upload
+      const uploadButton = screen.getByRole("button", {
+        name: /^Upload$/,
+      });
+      await user.click(uploadButton);
+
+      // Should call the API
+      await waitFor(() => {
+        expect(urlService.uploadUrl).toHaveBeenCalledWith(
+          "https://example.com",
+        );
+      });
+    });
+
+    it("shows loading state during URL upload", async () => {
+      vi.mocked(urlService.uploadUrl).mockImplementation(
+        () =>
+          new Promise(() => {
+            // Never resolves
+          }),
+      );
+
+      // Switch to URL mode
+      await switchToUrlMode(user);
+
+      // Enter valid URL
+      const urlInput = screen.getByPlaceholderText(
+        "Enter URL to extract and upload",
+      );
+      await user.type(urlInput, "https://example.com");
+
+      // Click upload
+      const uploadButton = screen.getByRole("button", {
+        name: /^Upload$/,
+      });
+      await user.click(uploadButton);
+
+      // Should show loading state
+      expect(
+        screen.getByRole("button", { name: /^Uploading...$/ }),
+      ).toBeDisabled();
+    });
+
+    it("shows success toast and navigates on successful URL upload", async () => {
+      vi.mocked(urlService.uploadUrl).mockResolvedValue({
+        data: { success: true },
+        status: 200,
+      });
+
+      // Switch to URL mode
+      await switchToUrlMode(user);
+
+      // Enter valid URL
+      const urlInput = screen.getByPlaceholderText(
+        "Enter URL to extract and upload",
+      );
+      await user.type(urlInput, "https://example.com");
+
+      // Click upload
+      const uploadButton = screen.getByRole("button", {
+        name: /^Upload$/,
+      });
+      await user.click(uploadButton);
+
+      // Should show success and navigate
+      await waitFor(() => {
+        expect(toast.success).toHaveBeenCalledWith(
+          "URL uploaded successfully!",
+        );
+        expect(mockNavigate).toHaveBeenCalledWith("/");
+      });
+    });
+
+    it("shows error toast on failed URL upload", async () => {
+      const error = new Error("URL upload failed");
+      vi.mocked(urlService.uploadUrl).mockRejectedValue(error);
+
+      // Switch to URL mode
+      await switchToUrlMode(user);
+
+      // Enter valid URL
+      const urlInput = screen.getByPlaceholderText(
+        "Enter URL to extract and upload",
+      );
+      await user.type(urlInput, "https://example.com");
+
+      // Click upload
+      const uploadButton = screen.getByRole("button", {
+        name: /^Upload$/,
+      });
+      await user.click(uploadButton);
+
+      // Should show error
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalledWith(
+          "Upload failed: URL upload failed",
+        );
+      });
+    });
+
+    it("clears URL when clear button is clicked", async () => {
+      // Switch to URL mode
+      await switchToUrlMode(user);
+
+      // Enter URL
+      const urlInput = screen.getByPlaceholderText(
+        "Enter URL to extract and upload",
+      );
+      await user.type(urlInput, "https://example.com");
+
+      // Click clear
+      const clearButton = screen.getByRole("button", {
+        name: /^Clear Selection$/,
+      });
+      await user.click(clearButton);
+
+      // URL should be cleared - input should be visible again
+      expect(
+        screen.getByPlaceholderText("Enter URL to extract and upload"),
+      ).toHaveValue("");
     });
   });
 });
