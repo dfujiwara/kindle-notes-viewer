@@ -57,23 +57,38 @@ function renderWithProviders(ui: React.ReactElement) {
   );
 }
 
+// Test helpers
+function createTestFile(name = "test.txt", content = "test content") {
+  return new File([content], name, { type: "text/plain" });
+}
+
+async function switchToUrlMode(user: ReturnType<typeof userEvent.setup>) {
+  const urlButton = screen.getByRole("button", { name: /url upload/i });
+  await user.click(urlButton);
+}
+
+async function switchToFileMode(user: ReturnType<typeof userEvent.setup>) {
+  const fileButton = screen.getByRole("button", { name: /file upload/i });
+  await user.click(fileButton);
+}
+
 describe("UploadPage", () => {
+  let user: ReturnType<typeof userEvent.setup>;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    user = userEvent.setup();
+    renderWithProviders(<UploadPage />);
   });
 
   describe("File upload", () => {
     it("renders the upload page with title", () => {
-      renderWithProviders(<UploadPage />);
-
       expect(
         screen.getByRole("heading", { name: /upload notes/i }),
       ).toBeInTheDocument();
     });
 
     it("renders file drop zone without upload button", () => {
-      renderWithProviders(<UploadPage />);
-
       expect(
         screen.getByText(/drag and drop your file here/i),
       ).toBeInTheDocument();
@@ -86,12 +101,7 @@ describe("UploadPage", () => {
     });
 
     it("shows selected file name and upload button when file is selected", async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<UploadPage />);
-
-      const file = new File(["test content"], "test.txt", {
-        type: "text/plain",
-      });
+      const file = createTestFile();
       const input = screen.getByLabelText(/drag and drop your file here/i);
 
       await user.upload(input, file);
@@ -103,12 +113,7 @@ describe("UploadPage", () => {
     });
 
     it("clears selected file when clear button is clicked", async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<UploadPage />);
-
-      const file = new File(["test content"], "test.txt", {
-        type: "text/plain",
-      });
+      const file = createTestFile();
       const input = screen.getByLabelText(/drag and drop your file here/i);
 
       await user.upload(input, file);
@@ -127,7 +132,6 @@ describe("UploadPage", () => {
 
     it("shows loading state when uploading", async () => {
       const { booksService } = await import("src/api");
-      const user = userEvent.setup();
 
       // Mock upload to delay resolution
       vi.mocked(booksService.uploadBook).mockImplementation(
@@ -137,11 +141,7 @@ describe("UploadPage", () => {
           }),
       );
 
-      renderWithProviders(<UploadPage />);
-
-      const file = new File(["test content"], "test.txt", {
-        type: "text/plain",
-      });
+      const file = createTestFile();
       const input = screen.getByLabelText(/drag and drop your file here/i);
 
       await user.upload(input, file);
@@ -158,7 +158,6 @@ describe("UploadPage", () => {
 
     it("calls toast.success and navigates on successful upload", async () => {
       const { booksService } = await import("src/api");
-      const user = userEvent.setup();
 
       // Mock successful upload
       vi.mocked(booksService.uploadBook).mockResolvedValue({
@@ -166,11 +165,7 @@ describe("UploadPage", () => {
         status: 200,
       });
 
-      renderWithProviders(<UploadPage />);
-
-      const file = new File(["test content"], "test.txt", {
-        type: "text/plain",
-      });
+      const file = createTestFile();
       const input = screen.getByLabelText(/drag and drop your file here/i);
 
       await user.upload(input, file);
@@ -191,17 +186,12 @@ describe("UploadPage", () => {
 
     it("calls toast.error on failed upload", async () => {
       const { booksService } = await import("src/api");
-      const user = userEvent.setup();
 
       // Mock failed upload
       const error = new Error("Upload failed");
       vi.mocked(booksService.uploadBook).mockRejectedValue(error);
 
-      renderWithProviders(<UploadPage />);
-
-      const file = new File(["test content"], "test.txt", {
-        type: "text/plain",
-      });
+      const file = createTestFile();
       const input = screen.getByLabelText(/drag and drop your file here/i);
 
       await user.upload(input, file);
@@ -222,8 +212,6 @@ describe("UploadPage", () => {
 
   describe("Mode toggle", () => {
     it("renders both file and url mode buttons", () => {
-      renderWithProviders(<UploadPage />);
-
       expect(
         screen.getByRole("button", { name: /file upload/i }),
       ).toBeInTheDocument();
@@ -233,17 +221,13 @@ describe("UploadPage", () => {
     });
 
     it("switches from file mode to url mode", async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<UploadPage />);
-
       // Default is file mode
       expect(
         screen.getByText(/drag and drop your file here/i),
       ).toBeInTheDocument();
 
       // Click URL Upload button
-      const urlButton = screen.getByRole("button", { name: /url upload/i });
-      await user.click(urlButton);
+      await switchToUrlMode(user);
 
       // Should show URL input
       expect(
@@ -255,19 +239,14 @@ describe("UploadPage", () => {
     });
 
     it("switches from url mode to file mode", async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<UploadPage />);
-
       // Switch to URL mode
-      const urlButton = screen.getByRole("button", { name: /url upload/i });
-      await user.click(urlButton);
+      await switchToUrlMode(user);
       expect(
         screen.getByPlaceholderText("Enter URL to extract and upload"),
       ).toBeInTheDocument();
 
       // Switch back to file mode
-      const fileButton = screen.getByRole("button", { name: /file upload/i });
-      await user.click(fileButton);
+      await switchToFileMode(user);
 
       // Should show file drop zone
       expect(
@@ -279,36 +258,25 @@ describe("UploadPage", () => {
     });
 
     it("clears file when switching to URL mode", async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<UploadPage />);
-
       // Select a file
-      const file = new File(["test content"], "test.txt", {
-        type: "text/plain",
-      });
+      const file = createTestFile();
       const input = screen.getByLabelText(/drag and drop your file here/i);
       await user.upload(input, file);
       expect(screen.getByText("test.txt")).toBeInTheDocument();
 
       // Switch to URL mode
-      const urlButton = screen.getByRole("button", { name: /url upload/i });
-      await user.click(urlButton);
+      await switchToUrlMode(user);
 
       // Switch back to file mode
-      const fileButton = screen.getByRole("button", { name: /file upload/i });
-      await user.click(fileButton);
+      await switchToFileMode(user);
 
       // File should be cleared
       expect(screen.queryByText("test.txt")).not.toBeInTheDocument();
     });
 
     it("clears URL when switching to file mode", async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<UploadPage />);
-
       // Switch to URL mode and enter URL
-      const urlButton = screen.getByRole("button", { name: /url upload/i });
-      await user.click(urlButton);
+      await switchToUrlMode(user);
 
       const urlInput = screen.getByPlaceholderText(
         "Enter URL to extract and upload",
@@ -316,11 +284,10 @@ describe("UploadPage", () => {
       await user.type(urlInput, "https://example.com");
 
       // Switch to file mode
-      const fileButton = screen.getByRole("button", { name: /file upload/i });
-      await user.click(fileButton);
+      await switchToFileMode(user);
 
       // Switch back to URL mode
-      await user.click(urlButton);
+      await switchToUrlMode(user);
 
       // URL should be cleared
       const urlInputAfter = screen.getByPlaceholderText(
@@ -332,11 +299,7 @@ describe("UploadPage", () => {
 
   describe("URL Upload", () => {
     it("shows URL input in URL mode", async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<UploadPage />);
-
-      const urlButton = screen.getByRole("button", { name: /url upload/i });
-      await user.click(urlButton);
+      await switchToUrlMode(user);
 
       expect(
         screen.getByPlaceholderText("Enter URL to extract and upload"),
@@ -344,12 +307,8 @@ describe("UploadPage", () => {
     });
 
     it("shows upload button when valid URL is entered", async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<UploadPage />);
-
       // Switch to URL mode
-      const urlButton = screen.getByRole("button", { name: /url upload/i });
-      await user.click(urlButton);
+      await switchToUrlMode(user);
 
       // Enter URL
       const urlInput = screen.getByPlaceholderText(
@@ -365,18 +324,14 @@ describe("UploadPage", () => {
 
     it("calls uploadUrl with valid URL", async () => {
       const { urlService } = await import("src/api");
-      const user = userEvent.setup();
 
       vi.mocked(urlService.uploadUrl).mockResolvedValue({
         data: { success: true },
         status: 200,
       });
 
-      renderWithProviders(<UploadPage />);
-
       // Switch to URL mode
-      const urlButton = screen.getByRole("button", { name: /url upload/i });
-      await user.click(urlButton);
+      await switchToUrlMode(user);
 
       // Enter valid URL (paste to avoid character-by-character validation)
       const urlInput = screen.getByPlaceholderText(
@@ -401,7 +356,6 @@ describe("UploadPage", () => {
 
     it("shows loading state during URL upload", async () => {
       const { urlService } = await import("src/api");
-      const user = userEvent.setup();
 
       vi.mocked(urlService.uploadUrl).mockImplementation(
         () =>
@@ -410,11 +364,8 @@ describe("UploadPage", () => {
           }),
       );
 
-      renderWithProviders(<UploadPage />);
-
       // Switch to URL mode
-      const urlButton = screen.getByRole("button", { name: /url upload/i });
-      await user.click(urlButton);
+      await switchToUrlMode(user);
 
       // Enter valid URL
       const urlInput = screen.getByPlaceholderText(
@@ -436,18 +387,14 @@ describe("UploadPage", () => {
 
     it("shows success toast and navigates on successful URL upload", async () => {
       const { urlService } = await import("src/api");
-      const user = userEvent.setup();
 
       vi.mocked(urlService.uploadUrl).mockResolvedValue({
         data: { success: true },
         status: 200,
       });
 
-      renderWithProviders(<UploadPage />);
-
       // Switch to URL mode
-      const urlButton = screen.getByRole("button", { name: /url upload/i });
-      await user.click(urlButton);
+      await switchToUrlMode(user);
 
       // Enter valid URL
       const urlInput = screen.getByPlaceholderText(
@@ -472,16 +419,12 @@ describe("UploadPage", () => {
 
     it("shows error toast on failed URL upload", async () => {
       const { urlService } = await import("src/api");
-      const user = userEvent.setup();
 
       const error = new Error("URL upload failed");
       vi.mocked(urlService.uploadUrl).mockRejectedValue(error);
 
-      renderWithProviders(<UploadPage />);
-
       // Switch to URL mode
-      const urlButton = screen.getByRole("button", { name: /url upload/i });
-      await user.click(urlButton);
+      await switchToUrlMode(user);
 
       // Enter valid URL
       const urlInput = screen.getByPlaceholderText(
@@ -504,12 +447,8 @@ describe("UploadPage", () => {
     });
 
     it("clears URL when clear button is clicked", async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<UploadPage />);
-
       // Switch to URL mode
-      const urlButton = screen.getByRole("button", { name: /url upload/i });
-      await user.click(urlButton);
+      await switchToUrlMode(user);
 
       // Enter URL
       const urlInput = screen.getByPlaceholderText(
