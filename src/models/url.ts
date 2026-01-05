@@ -11,6 +11,7 @@ export interface Url {
 export interface UrlChunk {
   id: string;
   content: string; // The chunk text
+  isSummary: boolean;
   createdAt: string;
 }
 
