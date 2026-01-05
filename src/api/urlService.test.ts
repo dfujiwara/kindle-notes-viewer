@@ -139,11 +139,13 @@ describe("UrlService", () => {
             {
               id: "chunk-1",
               content: "First chunk content",
+              is_summary: false,
               created_at: "2026-01-05T00:00:00Z",
             },
             {
               id: "chunk-2",
               content: "Second chunk content",
+              is_summary: false,
               created_at: "2026-01-05T00:00:00Z",
             },
           ],
@@ -155,7 +157,7 @@ describe("UrlService", () => {
 
       const result = await urlService.getChunksFromUrl("url-1");
 
-      expect(httpClient.request).toHaveBeenCalledWith("/urls/url-1/chunks");
+      expect(httpClient.request).toHaveBeenCalledWith("/urls/url-1");
       expect(result.data).toEqual({
         url: {
           id: "url-1",
@@ -168,11 +170,13 @@ describe("UrlService", () => {
           {
             id: "chunk-1",
             content: "First chunk content",
+            isSummary: false,
             createdAt: "2026-01-05T00:00:00Z",
           },
           {
             id: "chunk-2",
             content: "Second chunk content",
+            isSummary: false,
             createdAt: "2026-01-05T00:00:00Z",
           },
         ],
@@ -244,12 +248,14 @@ describe("UrlService", () => {
         chunk: {
           id: "chunk-1",
           content: "Chunk content",
+          is_summary: false,
           created_at: "2026-01-05T00:00:00Z",
         },
         related_chunks: [
           {
             id: "chunk-2",
             content: "Related content",
+            is_summary: false,
             created_at: "2026-01-05T00:00:00Z",
           },
         ],
@@ -268,6 +274,7 @@ describe("UrlService", () => {
         chunk: {
           id: "chunk-1",
           content: "Chunk content",
+          isSummary: false,
           createdAt: "2026-01-05T00:00:00Z",
         },
         additionalContext: "",
@@ -275,6 +282,7 @@ describe("UrlService", () => {
           {
             id: "chunk-2",
             content: "Related content",
+            isSummary: false,
             createdAt: "2026-01-05T00:00:00Z",
           },
         ],
