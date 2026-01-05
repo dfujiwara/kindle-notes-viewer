@@ -89,19 +89,6 @@ describe("UrlService", () => {
 
       expect(result.data).toEqual([]);
     });
-
-    it("should handle missing urls field", async () => {
-      const mockApiResponse = {
-        data: {},
-        status: 200,
-      };
-
-      vi.mocked(httpClient.request).mockResolvedValue(mockApiResponse);
-
-      const result = await urlService.getUrls();
-
-      expect(result.data).toEqual([]);
-    });
   });
 
   describe("uploadUrl", () => {

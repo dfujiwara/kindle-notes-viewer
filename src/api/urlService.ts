@@ -100,7 +100,7 @@ export class UrlService {
     const response = await httpClient.request<{ urls: UrlApiResponse[] }>(
       ENDPOINTS.LIST,
     );
-    const data = response.data.urls?.map(mapUrl) || [];
+    const data = response.data.urls.map(mapUrl);
     return { ...response, data };
   }
 
