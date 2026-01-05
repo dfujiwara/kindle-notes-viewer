@@ -81,7 +81,7 @@ describe("UploadPage", () => {
         screen.getByText(/accepted formats: .txt, .html/i),
       ).toBeInTheDocument();
       expect(
-        screen.queryByRole("button", { name: "Upload", exact: true }),
+        screen.queryByRole("button", { name: /^Upload$/ }),
       ).not.toBeInTheDocument();
     });
 
@@ -98,7 +98,7 @@ describe("UploadPage", () => {
 
       expect(screen.getByText("test.txt")).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Upload", exact: true }),
+        screen.getByRole("button", { name: /^Upload$/ }),
       ).toBeInTheDocument();
     });
 
@@ -115,8 +115,7 @@ describe("UploadPage", () => {
       expect(screen.getByText("test.txt")).toBeInTheDocument();
 
       const clearButton = screen.getByRole("button", {
-        name: "Clear Selection",
-        exact: true,
+        name: /^Clear Selection$/,
       });
       await user.click(clearButton);
 
@@ -148,13 +147,12 @@ describe("UploadPage", () => {
       await user.upload(input, file);
 
       const uploadButton = screen.getByRole("button", {
-        name: "Upload",
-        exact: true,
+        name: /^Upload$/,
       });
       await user.click(uploadButton);
 
       expect(
-        screen.getByRole("button", { name: "Uploading...", exact: true }),
+        screen.getByRole("button", { name: /^Uploading...$/ }),
       ).toBeDisabled();
     });
 
@@ -178,8 +176,7 @@ describe("UploadPage", () => {
       await user.upload(input, file);
 
       const uploadButton = screen.getByRole("button", {
-        name: "Upload",
-        exact: true,
+        name: /^Upload$/,
       });
       await user.click(uploadButton);
 
@@ -210,8 +207,7 @@ describe("UploadPage", () => {
       await user.upload(input, file);
 
       const uploadButton = screen.getByRole("button", {
-        name: "Upload",
-        exact: true,
+        name: /^Upload$/,
       });
       await user.click(uploadButton);
 
@@ -363,7 +359,7 @@ describe("UploadPage", () => {
 
       // Upload button should appear (exact match to avoid mode toggle buttons)
       expect(
-        screen.getByRole("button", { name: "Upload", exact: true }),
+        screen.getByRole("button", { name: /^Upload$/ }),
       ).toBeInTheDocument();
     });
 
@@ -391,8 +387,7 @@ describe("UploadPage", () => {
 
       // Click upload
       const uploadButton = screen.getByRole("button", {
-        name: "Upload",
-        exact: true,
+        name: /^Upload$/,
       });
       await user.click(uploadButton);
 
@@ -429,14 +424,13 @@ describe("UploadPage", () => {
 
       // Click upload
       const uploadButton = screen.getByRole("button", {
-        name: "Upload",
-        exact: true,
+        name: /^Upload$/,
       });
       await user.click(uploadButton);
 
       // Should show loading state
       expect(
-        screen.getByRole("button", { name: "Uploading...", exact: true }),
+        screen.getByRole("button", { name: /^Uploading...$/ }),
       ).toBeDisabled();
     });
 
@@ -463,8 +457,7 @@ describe("UploadPage", () => {
 
       // Click upload
       const uploadButton = screen.getByRole("button", {
-        name: "Upload",
-        exact: true,
+        name: /^Upload$/,
       });
       await user.click(uploadButton);
 
@@ -498,8 +491,7 @@ describe("UploadPage", () => {
 
       // Click upload
       const uploadButton = screen.getByRole("button", {
-        name: "Upload",
-        exact: true,
+        name: /^Upload$/,
       });
       await user.click(uploadButton);
 
@@ -527,8 +519,7 @@ describe("UploadPage", () => {
 
       // Click clear
       const clearButton = screen.getByRole("button", {
-        name: "Clear Selection",
-        exact: true,
+        name: /^Clear Selection$/,
       });
       await user.click(clearButton);
 

@@ -27,7 +27,7 @@ export class HttpClient {
 
     if (config.body && config.method !== "GET") {
       requestConfig.body = isFormData
-        ? config.body
+        ? (config.body as FormData)
         : JSON.stringify(config.body);
     }
 
