@@ -25,7 +25,7 @@ URLs (analogous to Books)
 
 **Data Flow**:
 ```
-httpClient → urlsService (transform data) → query hooks → components
+httpClient → urlService (transform data) → query hooks → components
 Backend: snake_case → Frontend: camelCase
 ```
 
@@ -41,6 +41,7 @@ export interface Url {
   id: string;
   url: string;          // The original URL
   title: string;        // Extracted page title
+  chunkCount: number;   // Number of chunks extracted
   createdAt: string;    // When it was uploaded
 }
 
@@ -70,9 +71,9 @@ export interface UrlDetailedChunk {
 
 ### 2. API Service Layer
 
-**Location**: `src/api/urlsService.ts` (new file - rename current urlService)
+**Location**: `src/api/urlService.ts` (existing file - will be updated)
 
-The current `urlService.ts` will be renamed to `urlsService.ts` for consistency with `booksService.ts` and `notesService.ts`.
+The current `urlService.ts` will be updated with new methods for listing URLs and fetching chunks.
 
 ```typescript
 // API response interfaces (snake_case from backend)
@@ -80,6 +81,7 @@ interface UrlApiResponse {
   id: string;
   url: string;
   title: string;
+  chunk_count: number;
   created_at: string;
 }
 
@@ -115,18 +117,18 @@ const ENDPOINTS = {
   CHUNKS: (urlId: string) => `/urls/${urlId}/chunks`,   // GET: Get chunks for URL
   STREAM_CHUNK: (urlId: string, chunkId: string) =>
     `/urls/${urlId}/chunks/${chunkId}`,             // SSE: Stream chunk with context
-  STREAM_RANDOM: "/urls/random",                    // SSE: Stream random chunk (optional)
+  STREAM_RANDOM: "/urls/random",                    // SSE: Stream random chunk
 } as const;
 ```
 
 **Methods**:
 ```typescript
-class UrlsService {
+class UrlService {
   async getUrls(): Promise<ApiResponse<Url[]>>
   async uploadUrl(url: string): Promise<ApiResponse<{ success: boolean }>>  // existing
   async getChunksFromUrl(urlId: string): Promise<ApiResponse<UrlChunkBundle>>
   getStreamedChunk(urlId: string, chunkId: string, handlers: StreamHandlers): EventSource
-  getStreamedRandomChunk(handlers: StreamHandlers): EventSource  // optional
+  getStreamedRandomChunk(handlers: StreamHandlers): EventSource
 }
 ```
 
@@ -140,7 +142,7 @@ type ChunkStreamEvents = {
 };
 ```
 
-**Export**: Update `src/api/index.ts` to export `urlsService`
+**Export**: Update `src/api/index.ts` to export `urlService`
 
 ### 3. Pages
 
@@ -164,7 +166,7 @@ type ChunkStreamEvents = {
 ┌─────────────────────────────────┐
 │ Page Title                       │
 │ https://example.com/article      │
-│ Uploaded: Jan 5, 2026           │
+│ 15 chunks • Jan 5, 2026         │
 └─────────────────────────────────┘
 ```
 
@@ -213,7 +215,7 @@ type ChunkStreamEvents = {
 - Show chunk content, AI context, and related chunks
 - Link to original URL and other chunks
 
-#### 3.4 RandomChunkPage (optional)
+#### 3.4 RandomChunkPage
 **Location**: `src/pages/Chunk/RandomChunkPage.tsx`
 
 **Purpose**: Display a random URL chunk (mirror of `RandomNotePage`)
@@ -236,7 +238,7 @@ const useStreamedDetailedChunk = (urlId: string, chunkId: string) => {
   });
 
   useEffect(() => {
-    const eventSource = urlsService.getStreamedChunk(urlId, chunkId, {
+    const eventSource = urlService.getStreamedChunk(urlId, chunkId, {
       onMetadata: (chunk) => { ... },
       onContextChunk: (content) => { ... },
       onComplete: () => { ... },
@@ -313,13 +315,13 @@ interface SearchResult {
 
 For each new component/service:
 
-1. **Service tests** (`urlsService.test.ts`):
+1. **Service tests** (`urlService.test.ts`):
    - Mock httpClient requests
    - Test data transformation (snake_case → camelCase)
    - Test SSE stream handler setup
 
 2. **Component tests**:
-   - Mock urlsService methods
+   - Mock urlService methods
    - Test rendering with data
    - Test user interactions (clicks, navigation)
    - Test loading/error states
@@ -332,7 +334,23 @@ For each new component/service:
 
 ### 9. Error Handling
 
-Follow existing patterns:
+**Strategy**: Show specific error messages when backend provides them, with user-friendly fallbacks.
+
+**URL Upload Error Messages**:
+- "Invalid URL format. Please enter a valid URL starting with http:// or https://"
+- "Unable to reach URL. Please check the URL and try again."
+- "Failed to extract content from this page. The site may require authentication or block automated access."
+- "This content type is not supported. Please try a different URL."
+- "Request timeout. The page took too long to load."
+- Generic fallback: "Failed to process URL. Please try again or contact support."
+
+**Implementation Approach**:
+1. **Client-side validation**: Validate URL format before upload (basic regex check)
+2. **Backend errors**: Display `error.message` from API response when specific
+3. **Fallback**: Show generic helpful message if backend doesn't provide details
+4. **UI**: Display errors as toast notifications (following existing file upload pattern)
+
+**General Error Handling** (follows existing patterns):
 - `ApiError` for all API errors
 - Error boundaries at route level
 - Toast notifications for user-facing errors
@@ -346,60 +364,128 @@ Follow existing patterns:
 - Frontend can deploy before backend if new endpoints return 404 (graceful degradation)
 - Add feature flag if gradual rollout needed
 
-## Implementation Phases
+## Implementation Phases (Step-by-Step)
 
-### Phase 1: Core Data & API Layer
-- [ ] Create URL data models (`src/models/url.ts`)
-- [ ] Rename `urlService.ts` to `urlsService.ts`
-- [ ] Implement `UrlsService` with all methods (list, chunks, streaming)
+**Approach**: Implement incrementally, testing at each step before moving forward.
+
+### Step 1: API Layer Foundation
+**Purpose**: Set up all data models, services, and query hooks
+
+- [ ] Create URL data models in `src/models/url.ts`
+  - `Url`, `UrlChunk`, `UrlChunkBundle`, `UrlDetailedChunk`
+- [ ] Update existing `urlService.ts` with new methods
+  - `getUrls()`, `getChunksFromUrl()`, `getStreamedChunk()`, `getStreamedRandomChunk()`
+  - Add API response interfaces and mapping functions
+- [ ] Create query hooks for URL data fetching
+  - Following existing patterns (useApiSuspenseQuery, useApiQuery)
 - [ ] Add unit tests for service layer
 - [ ] Update `src/api/index.ts` and `src/models/index.ts` exports
+- [ ] Run checks: `npm run check && npm run test:run`
 
-### Phase 2: URL Listing & Detail
-- [ ] Create `UrlList` and `UrlItem` components
-- [ ] Update `HomePage` to show URLs alongside books (tabs/toggle)
-- [ ] Create `UrlPage` with `ChunkList` and `ChunkItem`
-- [ ] Add routes for `/urls/:urlId`
-- [ ] Update `UploadPage` to navigate to URLs page after upload
+### Step 2: URL List Page
+**Purpose**: Allow users to view all uploaded URLs
+
+- [ ] Create `UrlList` component in `src/pages/Home/`
+  - Display grid of URL cards
+  - Use query hook to fetch URLs
+- [ ] Create `UrlItem` component
+  - Display: title, URL, chunk count, upload date
+  - Link to URL detail page
+- [ ] Write component tests for UrlList and UrlItem
+- [ ] Temporarily add to HomePage for testing (before tabs)
+- [ ] Run checks: `npm run check && npm run test:run`
+
+### Step 3: URL Detail Page with Streaming
+**Purpose**: Display URL chunks with SSE streaming for detailed view
+
+- [ ] Create `UrlPage` component in `src/pages/Url/`
+  - Display URL metadata (UrlDescription component)
+  - List all chunks (ChunkList component)
+- [ ] Create `ChunkPage` component in `src/pages/Chunk/`
+  - Implement `useStreamedDetailedChunk` hook
+  - Display streaming states (loading → streaming → success | error)
+  - Show chunk content, AI context, related chunks
+- [ ] Add routes in `App.tsx`:
+  - `/urls/:urlId`
+  - `/urls/:urlId/chunks/:chunkId`
 - [ ] Write component tests
+- [ ] Test SSE streaming functionality manually
+- [ ] Run checks: `npm run check && npm run test:run`
 
-### Phase 3: Chunk Detail & Streaming
-- [ ] Create `ChunkPage` with SSE streaming
-- [ ] Implement `useStreamedDetailedChunk` hook
-- [ ] Create `ChunkDescription` component
-- [ ] Add route for `/urls/:urlId/chunks/:chunkId`
-- [ ] Test streaming functionality
-- [ ] Write component and integration tests
+### Step 4: Home Page Tabs
+**Purpose**: Organize Books and URLs into separate tabbed views
 
-### Phase 4: Search & Navigation
-- [ ] Update search models to include chunk results
-- [ ] Update `SearchPage` to display and link to chunks
-- [ ] Add random chunk page (`/urls/random`)
-- [ ] Update navigation/header with URL links
-- [ ] Write E2E tests for full flow
+- [ ] Add tab navigation to `HomePage`
+  - Tab 1: "Books" (existing BookList)
+  - Tab 2: "URLs" (new UrlList)
+- [ ] Implement tab state management
+- [ ] Ensure proper keyboard navigation and accessibility
+- [ ] Write tests for tab switching behavior
+- [ ] Run checks: `npm run check && npm run test:run`
 
-### Phase 5: Polish & Documentation
-- [ ] Error handling and loading states
-- [ ] Accessibility review (ARIA labels, keyboard navigation)
-- [ ] Update CLAUDE.md with URL patterns
-- [ ] Update README with URL feature description
-- [ ] Final E2E test coverage
+### Step 5: Random Chunk Feature
+**Purpose**: Allow users to discover random URL chunks
 
-## Open Questions & Assumptions
+- [ ] Create `RandomChunkPage` component in `src/pages/Chunk/`
+  - Mirror `RandomNotePage` pattern
+  - Use `getStreamedRandomChunk()` service method
+- [ ] Add route: `/urls/random`
+- [ ] Add navigation link (Header or similar)
+- [ ] Write component tests
+- [ ] Run checks: `npm run check && npm run test:run`
 
-1. **Backend API contract**: Assumes backend will provide endpoints matching the specification above. May need coordination with backend team.
+### Step 6: Search Integration
+**Purpose**: Include URL chunks in search results
 
-2. **Chunking strategy**: How does the backend chunk URLs? By paragraph, token count, semantic meaning? This affects how we display chunks.
+- [ ] Update search types to include chunk results
+  - Add `type: 'note' | 'chunk'` discriminator
+  - Add chunk-specific fields (`urlId`, `chunkId`)
+- [ ] Update `SearchPage` to display both notes and chunks
+  - Render different components based on type
+  - Link to chunk detail pages
+- [ ] Update searchService mapping functions
+- [ ] Write tests for mixed search results
+- [ ] Run checks: `npm run check && npm run test:run`
 
-3. **URL deduplication**: Should uploading the same URL twice create a new entry or update existing? Affects upload flow and user messaging.
+### Step 7: Polish & Final Testing
+**Purpose**: Ensure production readiness
 
-4. **Chunk ordering**: Are chunks ordered by position in the original document? Should we show chunk numbers/positions?
+- [ ] Review all error handling and loading states
+- [ ] Accessibility audit (ARIA labels, keyboard navigation, focus management)
+- [ ] Update CLAUDE.md with URL patterns and architecture
+- [ ] Manual testing of full user flows:
+  - Upload URL → View in list → View chunks → View chunk detail
+  - Random chunk navigation
+  - Search for chunk content
+- [ ] Final checks: `npm run check && npm run test:run`
+- [ ] Commit and push to feature branch
 
-5. **URL metadata**: What additional metadata should we display? (domain, upload date, word count, number of chunks?)
+## Implementation Decisions
 
-6. **Random chunk scope**: Should "random chunk" pull from all URLs or just user's uploads (if auth added later)?
+### Resolved Questions
 
-7. **Search ranking**: Should chunk results be mixed with note results or separated in search?
+1. **Backend API Status**: ✅ All backend endpoints exist, including SSE endpoints. Event structure matches the existing notes pattern (`metadata`, `context_chunk`, `context_complete`, `error`).
+
+2. **URL Deduplication**: ✅ Handled by the backend `/urls` POST endpoint automatically.
+
+3. **Chunk Display**:
+   - ✅ Chunks are ordered by position in the original document
+   - ✅ No chunk numbers needed initially (can add later if requested)
+   - ✅ URL cards display: title, URL, chunk count, upload date
+
+4. **Home Page Navigation**: ✅ Implement tabs to switch between "Books" and "URLs" views.
+
+5. **Search Integration**: ✅ Backend API response will include both notes and chunks in a single response. Frontend will display both result types together.
+
+6. **Random Chunk Feature**: ✅ Must-have feature (not optional).
+
+7. **Service Naming**: ✅ Keep as `urlService.ts` (not `urlsService.ts`).
+
+8. **Testing Strategy**: ✅ Focus on unit/component tests initially. E2E Playwright tests will be addressed later.
+
+### Open Questions
+
+None remaining - all decisions made.
 
 ## Success Criteria
 
