@@ -74,8 +74,14 @@ async function switchToFileMode(user: ReturnType<typeof userEvent.setup>) {
 
 describe("UploadPage", () => {
   let user: ReturnType<typeof userEvent.setup>;
+  let booksService: typeof import("src/api").booksService;
+  let urlService: typeof import("src/api").urlService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    const api = await import("src/api");
+    booksService = api.booksService;
+    urlService = api.urlService;
+
     vi.clearAllMocks();
     user = userEvent.setup();
     renderWithProviders(<UploadPage />);
@@ -131,8 +137,6 @@ describe("UploadPage", () => {
     });
 
     it("shows loading state when uploading", async () => {
-      const { booksService } = await import("src/api");
-
       // Mock upload to delay resolution
       vi.mocked(booksService.uploadBook).mockImplementation(
         () =>
@@ -157,8 +161,6 @@ describe("UploadPage", () => {
     });
 
     it("calls toast.success and navigates on successful upload", async () => {
-      const { booksService } = await import("src/api");
-
       // Mock successful upload
       vi.mocked(booksService.uploadBook).mockResolvedValue({
         data: { success: true },
@@ -185,8 +187,6 @@ describe("UploadPage", () => {
     });
 
     it("calls toast.error on failed upload", async () => {
-      const { booksService } = await import("src/api");
-
       // Mock failed upload
       const error = new Error("Upload failed");
       vi.mocked(booksService.uploadBook).mockRejectedValue(error);
@@ -323,8 +323,6 @@ describe("UploadPage", () => {
     });
 
     it("calls uploadUrl with valid URL", async () => {
-      const { urlService } = await import("src/api");
-
       vi.mocked(urlService.uploadUrl).mockResolvedValue({
         data: { success: true },
         status: 200,
@@ -355,8 +353,6 @@ describe("UploadPage", () => {
     });
 
     it("shows loading state during URL upload", async () => {
-      const { urlService } = await import("src/api");
-
       vi.mocked(urlService.uploadUrl).mockImplementation(
         () =>
           new Promise(() => {
@@ -386,8 +382,6 @@ describe("UploadPage", () => {
     });
 
     it("shows success toast and navigates on successful URL upload", async () => {
-      const { urlService } = await import("src/api");
-
       vi.mocked(urlService.uploadUrl).mockResolvedValue({
         data: { success: true },
         status: 200,
@@ -418,8 +412,6 @@ describe("UploadPage", () => {
     });
 
     it("shows error toast on failed URL upload", async () => {
-      const { urlService } = await import("src/api");
-
       const error = new Error("URL upload failed");
       vi.mocked(urlService.uploadUrl).mockRejectedValue(error);
 
