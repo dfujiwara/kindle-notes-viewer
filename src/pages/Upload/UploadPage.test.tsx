@@ -3,6 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import toast from "react-hot-toast";
 import { MemoryRouter } from "react-router";
+import { booksService, urlService } from "src/api";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { UploadPage } from "./UploadPage";
 
@@ -74,14 +75,8 @@ async function switchToFileMode(user: ReturnType<typeof userEvent.setup>) {
 
 describe("UploadPage", () => {
   let user: ReturnType<typeof userEvent.setup>;
-  let booksService: typeof import("src/api").booksService;
-  let urlService: typeof import("src/api").urlService;
 
-  beforeEach(async () => {
-    const api = await import("src/api");
-    booksService = api.booksService;
-    urlService = api.urlService;
-
+  beforeEach(() => {
     vi.clearAllMocks();
     user = userEvent.setup();
     renderWithProviders(<UploadPage />);
