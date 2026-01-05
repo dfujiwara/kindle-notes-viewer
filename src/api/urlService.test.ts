@@ -18,13 +18,6 @@ vi.mock("./sseClient", () => ({
   },
 }));
 
-// Mock logger
-vi.mock("src/utils/logger", () => ({
-  logger: {
-    error: vi.fn(),
-  },
-}));
-
 describe("UrlService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
