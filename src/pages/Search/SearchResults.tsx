@@ -1,5 +1,6 @@
 import { NavLink } from "react-router";
 import type { KindleNoteBundle } from "src/models";
+import { formatDate } from "src/utils/date";
 
 export type SearchResultsProps =
   | { status: "idle" }
@@ -54,7 +55,7 @@ export function SearchResults(props: SearchResultsProps) {
               >
                 <p className="text-zinc-200">{note.content}</p>
                 <p className="text-xs text-zinc-500 mt-2">
-                  {new Date(note.createdAt).toLocaleDateString()}
+                  {formatDate(note.createdAt)}
                 </p>
               </NavLink>
             ))}
