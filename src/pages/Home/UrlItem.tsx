@@ -1,4 +1,5 @@
 import type { Url } from "src/models";
+import { formatDate } from "src/utils/date";
 
 interface UrlItemProps {
   url: Url;
@@ -6,11 +7,7 @@ interface UrlItemProps {
 }
 
 export function UrlItem({ url, onClick }: UrlItemProps) {
-  const formattedDate = new Date(url.createdAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const formattedDate = formatDate(url.createdAt);
 
   return (
     <button

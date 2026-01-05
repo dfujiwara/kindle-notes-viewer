@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import type { KindleNoteBundle } from "src/models";
+import { formatDate } from "src/utils/date";
 import { SearchResults } from "./SearchResults";
 
 const mockNoteBundles: KindleNoteBundle[] = [
@@ -124,7 +125,7 @@ describe("SearchResults", () => {
       </MemoryRouter>,
     );
 
-    const expectedDate = new Date("2024-01-15T10:30:00Z").toLocaleDateString();
+    const expectedDate = formatDate("2024-01-15T10:30:00Z");
     expect(screen.getByText(expectedDate)).toBeInTheDocument();
   });
 
