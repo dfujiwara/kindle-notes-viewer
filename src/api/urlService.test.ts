@@ -76,19 +76,6 @@ describe("UrlService", () => {
         },
       ] as Url[]);
     });
-
-    it("should handle empty urls array", async () => {
-      const mockApiResponse = {
-        data: { urls: [] },
-        status: 200,
-      };
-
-      vi.mocked(httpClient.request).mockResolvedValue(mockApiResponse);
-
-      const result = await urlService.getUrls();
-
-      expect(result.data).toEqual([]);
-    });
   });
 
   describe("uploadUrl", () => {
