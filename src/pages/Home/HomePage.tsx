@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { booksService, urlService, useApiSuspenseQuery } from "src/api";
 import type { KindleBook, Url } from "src/models";
@@ -14,24 +14,45 @@ export function HomePage() {
   const urlsTabId = useId();
   const booksPanelId = useId();
   const urlsPanelId = useId();
+  const booksTabRef = useRef<HTMLButtonElement>(null);
+  const urlsTabRef = useRef<HTMLButtonElement>(null);
 
   const booksResult = useApiSuspenseQuery(["books"], () =>
     booksService.getBooks(),
   );
   const urlsResult = useApiSuspenseQuery(["urls"], () => urlService.getUrls());
 
-  const handleKeyDown = (e: React.KeyboardEvent, tab: Tab) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
       e.preventDefault();
-      setActiveTab(tab === "books" ? "urls" : "books");
+      const newTab: Tab = activeTab === "books" ? "urls" : "books";
+      setActiveTab(newTab);
+      // Move focus to the newly activated tab
+      if (newTab === "books") {
+        booksTabRef.current?.focus();
+      } else {
+        urlsTabRef.current?.focus();
+      }
     }
+  };
+
+  const getTabClassName = (isActive: boolean) => {
+    const baseClasses =
+      "px-6 py-3 text-sm font-medium rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900";
+    const activeClasses =
+      "text-white bg-blue-600/20 border border-blue-500 hover:border-blue-400";
+    const inactiveClasses =
+      "text-zinc-400 hover:text-zinc-200 border border-zinc-700 hover:border-zinc-500";
+
+    return `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`;
   };
 
   return (
     <div className="space-y-6">
       {/* Tab Navigation */}
-      <div role="tablist" className="flex border-b border-zinc-700">
+      <div role="tablist" className="flex gap-4 mb-6">
         <button
+          ref={booksTabRef}
           type="button"
           role="tab"
           aria-selected={activeTab === "books"}
@@ -39,16 +60,13 @@ export function HomePage() {
           id={booksTabId}
           tabIndex={activeTab === "books" ? 0 : -1}
           onClick={() => setActiveTab("books")}
-          onKeyDown={(e) => handleKeyDown(e, "books")}
-          className={`px-6 py-3 text-sm font-medium transition-colors ${
-            activeTab === "books"
-              ? "text-white border-b-2 border-blue-500"
-              : "text-zinc-400 hover:text-zinc-300"
-          }`}
+          onKeyDown={handleKeyDown}
+          className={getTabClassName(activeTab === "books")}
         >
           Books
         </button>
         <button
+          ref={urlsTabRef}
           type="button"
           role="tab"
           aria-selected={activeTab === "urls"}
@@ -56,12 +74,8 @@ export function HomePage() {
           id={urlsTabId}
           tabIndex={activeTab === "urls" ? 0 : -1}
           onClick={() => setActiveTab("urls")}
-          onKeyDown={(e) => handleKeyDown(e, "urls")}
-          className={`px-6 py-3 text-sm font-medium transition-colors ${
-            activeTab === "urls"
-              ? "text-white border-b-2 border-blue-500"
-              : "text-zinc-400 hover:text-zinc-300"
-          }`}
+          onKeyDown={handleKeyDown}
+          className={getTabClassName(activeTab === "urls")}
         >
           URLs
         </button>
