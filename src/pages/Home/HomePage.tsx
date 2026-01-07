@@ -30,7 +30,7 @@ export function HomePage() {
   return (
     <div className="space-y-6">
       {/* Tab Navigation */}
-      <div role="tablist" className="flex border-b border-zinc-700">
+      <div role="tablist" className="flex gap-4 mb-6">
         <button
           type="button"
           role="tab"
@@ -40,10 +40,10 @@ export function HomePage() {
           tabIndex={activeTab === "books" ? 0 : -1}
           onClick={() => setActiveTab("books")}
           onKeyDown={(e) => handleKeyDown(e, "books")}
-          className={`px-6 py-3 text-sm font-medium transition-colors ${
+          className={`px-6 py-3 text-sm font-medium transition-colors rounded-t-lg ${
             activeTab === "books"
-              ? "text-white border-b-2 border-blue-500"
-              : "text-zinc-400 hover:text-zinc-300"
+              ? "text-white bg-zinc-800 border-b-2 border-blue-500"
+              : "text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800/50"
           }`}
         >
           Books
@@ -57,10 +57,10 @@ export function HomePage() {
           tabIndex={activeTab === "urls" ? 0 : -1}
           onClick={() => setActiveTab("urls")}
           onKeyDown={(e) => handleKeyDown(e, "urls")}
-          className={`px-6 py-3 text-sm font-medium transition-colors ${
+          className={`px-6 py-3 text-sm font-medium transition-colors rounded-t-lg ${
             activeTab === "urls"
-              ? "text-white border-b-2 border-blue-500"
-              : "text-zinc-400 hover:text-zinc-300"
+              ? "text-white bg-zinc-800 border-b-2 border-blue-500"
+              : "text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800/50"
           }`}
         >
           URLs
