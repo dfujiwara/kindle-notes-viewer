@@ -7,11 +7,13 @@ import { ErrorFallback } from "src/components/ErrorFallback";
 import { LoadingIndicator } from "src/components/LoadingIndicator.tsx";
 import {
   BookPage,
+  ChunkPage,
   HomePage,
   NotePage,
   RandomNotePage,
   SearchPage,
   UploadPage,
+  UrlPage,
 } from "src/pages";
 import "./App.css";
 
@@ -43,6 +45,22 @@ function App() {
               element={
                 <Suspense fallback={<LoadingIndicator />}>
                   <NotePage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/urls/:urlId"
+              element={
+                <Suspense fallback={<LoadingIndicator />}>
+                  <UrlPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/urls/:urlId/chunks/:chunkId"
+              element={
+                <Suspense fallback={<LoadingIndicator />}>
+                  <ChunkPage />
                 </Suspense>
               }
             />
