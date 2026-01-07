@@ -148,11 +148,9 @@ describe("HomePage", () => {
       const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
       await user.click(urlsTab);
 
-      // URLs should be visible
-      await waitFor(() => {
-        expect(screen.getByText("Example Article 1")).toBeInTheDocument();
-        expect(screen.getByText("Example Article 2")).toBeInTheDocument();
-      });
+      // URLs should be visible (data already loaded, no need to wait)
+      expect(screen.getByText("Example Article 1")).toBeInTheDocument();
+      expect(screen.getByText("Example Article 2")).toBeInTheDocument();
 
       // Books should not be visible
       expect(screen.queryByText("The Great Gatsby")).not.toBeInTheDocument();
@@ -175,19 +173,15 @@ describe("HomePage", () => {
       const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
       await user.click(urlsTab);
 
-      await waitFor(() => {
-        expect(screen.getByText("Example Article 1")).toBeInTheDocument();
-      });
+      expect(screen.getByText("Example Article 1")).toBeInTheDocument();
 
       // Switch back to Books
       const booksTab = screen.getByRole("tab", { name: /^Books$/i });
       await user.click(booksTab);
 
       // Books should be visible again
-      await waitFor(() => {
-        expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
-        expect(screen.getByText("1984")).toBeInTheDocument();
-      });
+      expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
+      expect(screen.getByText("1984")).toBeInTheDocument();
 
       // URLs should not be visible
       expect(screen.queryByText("Example Article 1")).not.toBeInTheDocument();
@@ -211,10 +205,8 @@ describe("HomePage", () => {
       booksTab.focus();
       await user.keyboard("{ArrowRight}");
 
-      // Should switch to URLs
-      await waitFor(() => {
-        expect(screen.getByText("Example Article 1")).toBeInTheDocument();
-      });
+      // Should switch to URLs (data already loaded)
+      expect(screen.getByText("Example Article 1")).toBeInTheDocument();
 
       const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
       expect(urlsTab).toHaveAttribute("aria-selected", "true");
@@ -231,18 +223,14 @@ describe("HomePage", () => {
       const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
       await user.click(urlsTab);
 
-      await waitFor(() => {
-        expect(screen.getByText("Example Article 1")).toBeInTheDocument();
-      });
+      expect(screen.getByText("Example Article 1")).toBeInTheDocument();
 
       // Focus on URLs tab and press ArrowLeft
       urlsTab.focus();
       await user.keyboard("{ArrowLeft}");
 
       // Should switch back to Books
-      await waitFor(() => {
-        expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
-      });
+      expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
 
       const booksTab = screen.getByRole("tab", { name: /^Books$/i });
       expect(booksTab).toHaveAttribute("aria-selected", "true");
@@ -312,7 +300,7 @@ describe("HomePage", () => {
     it("navigates to URL detail when URL is clicked", async () => {
       renderWithProviders(<HomePage />);
 
-      // Switch to URLs tab
+      // Wait for initial load
       await waitFor(() => {
         expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
       });
@@ -320,9 +308,7 @@ describe("HomePage", () => {
       const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
       await user.click(urlsTab);
 
-      await waitFor(() => {
-        expect(screen.getByText("Example Article 1")).toBeInTheDocument();
-      });
+      expect(screen.getByText("Example Article 1")).toBeInTheDocument();
 
       const urlButton = screen.getByRole("button", {
         name: /Example Article 1/i,
