@@ -1,5 +1,6 @@
 import type { Url } from "src/models";
 import { formatDate } from "src/utils/date";
+import { getCardButtonClassName } from "src/utils/styles";
 
 interface UrlItemProps {
   url: Url;
@@ -12,7 +13,7 @@ export function UrlItem({ url, onClick }: UrlItemProps) {
   return (
     <button
       type="button"
-      className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 md:p-6 hover:bg-zinc-750 transition-colors cursor-pointer text-left w-full active:bg-zinc-700"
+      className={getCardButtonClassName()}
       onClick={() => onClick(url)}
     >
       <h3 className="text-base md:text-lg font-semibold text-white mb-1 md:mb-2 line-clamp-2">
