@@ -9,7 +9,7 @@ const mockUrl: Url = {
   url: "https://example.com/article",
   title: "Example Article Title",
   chunkCount: 15,
-  createdAt: "2026-01-05T00:00:00Z",
+  createdAt: "2026-01-05T12:00:00Z",
 };
 
 describe("UrlItem", () => {
