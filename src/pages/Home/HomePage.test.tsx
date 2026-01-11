@@ -31,7 +31,7 @@ vi.mock("react-router", async () => {
   };
 });
 
-function renderWithProviders(ui: React.ReactElement) {
+async function renderWithProviders(ui: React.ReactElement) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -40,11 +40,18 @@ function renderWithProviders(ui: React.ReactElement) {
     },
   });
 
-  return render(
+  const result = render(
     <MemoryRouter>
       <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
     </MemoryRouter>,
   );
+
+  // Wait for initial data to load (Books tab is default)
+  await waitFor(() => {
+    expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
+  });
+
+  return result;
 }
 
 const mockBooks: KindleBook[] = [
@@ -97,26 +104,18 @@ describe("HomePage", () => {
 
   describe("Tab Navigation", () => {
     it("renders both Books and URLs tabs", async () => {
-      renderWithProviders(<HomePage />);
+      await renderWithProviders(<HomePage />);
 
-      await waitFor(() => {
-        expect(
-          screen.getByRole("tab", { name: /^Books$/i }),
-        ).toBeInTheDocument();
-        expect(
-          screen.getByRole("tab", { name: /^URLs$/i }),
-        ).toBeInTheDocument();
-      });
+      expect(screen.getByRole("tab", { name: /^Books$/i })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /^URLs$/i })).toBeInTheDocument();
     });
 
     it("shows Books tab as active by default", async () => {
-      renderWithProviders(<HomePage />);
+      await renderWithProviders(<HomePage />);
 
-      await waitFor(() => {
-        const booksTab = screen.getByRole("tab", { name: /^Books$/i });
-        expect(booksTab).toHaveAttribute("aria-selected", "true");
-        expect(booksTab).toHaveAttribute("tabindex", "0");
-      });
+      const booksTab = screen.getByRole("tab", { name: /^Books$/i });
+      expect(booksTab).toHaveAttribute("aria-selected", "true");
+      expect(booksTab).toHaveAttribute("tabindex", "0");
 
       const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
       expect(urlsTab).toHaveAttribute("aria-selected", "false");
@@ -124,12 +123,10 @@ describe("HomePage", () => {
     });
 
     it("displays Books content by default", async () => {
-      renderWithProviders(<HomePage />);
+      await renderWithProviders(<HomePage />);
 
-      await waitFor(() => {
-        expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
-        expect(screen.getByText("1984")).toBeInTheDocument();
-      });
+      expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
+      expect(screen.getByText("1984")).toBeInTheDocument();
 
       // URLs should not be visible
       expect(screen.queryByText("Example Article 1")).not.toBeInTheDocument();
@@ -137,12 +134,7 @@ describe("HomePage", () => {
     });
 
     it("switches to URLs tab when clicked", async () => {
-      renderWithProviders(<HomePage />);
-
-      // Wait for Books to load
-      await waitFor(() => {
-        expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
-      });
+      await renderWithProviders(<HomePage />);
 
       // Click URLs tab
       const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
@@ -162,12 +154,7 @@ describe("HomePage", () => {
     });
 
     it("switches back to Books tab when clicked", async () => {
-      renderWithProviders(<HomePage />);
-
-      // Wait for initial load
-      await waitFor(() => {
-        expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
-      });
+      await renderWithProviders(<HomePage />);
 
       // Switch to URLs
       const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
@@ -193,12 +180,7 @@ describe("HomePage", () => {
 
   describe("Keyboard Navigation", () => {
     it("switches tabs with arrow keys from Books tab", async () => {
-      renderWithProviders(<HomePage />);
-
-      // Wait for initial load
-      await waitFor(() => {
-        expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
-      });
+      await renderWithProviders(<HomePage />);
 
       // Focus on Books tab and press ArrowRight
       const booksTab = screen.getByRole("tab", { name: /^Books$/i });
@@ -213,12 +195,7 @@ describe("HomePage", () => {
     });
 
     it("switches tabs with arrow keys from URLs tab", async () => {
-      renderWithProviders(<HomePage />);
-
-      // Wait for initial load and switch to URLs
-      await waitFor(() => {
-        expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
-      });
+      await renderWithProviders(<HomePage />);
 
       const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
       await user.click(urlsTab);
@@ -239,27 +216,23 @@ describe("HomePage", () => {
 
   describe("Accessibility", () => {
     it("has proper ARIA attributes for tabs", async () => {
-      renderWithProviders(<HomePage />);
+      await renderWithProviders(<HomePage />);
 
-      await waitFor(() => {
-        const booksTab = screen.getByRole("tab", { name: /^Books$/i });
-        expect(booksTab).toHaveAttribute("aria-controls");
-        expect(booksTab).toHaveAttribute("id");
+      const booksTab = screen.getByRole("tab", { name: /^Books$/i });
+      expect(booksTab).toHaveAttribute("aria-controls");
+      expect(booksTab).toHaveAttribute("id");
 
-        const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
-        expect(urlsTab).toHaveAttribute("aria-controls");
-        expect(urlsTab).toHaveAttribute("id");
-      });
+      const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
+      expect(urlsTab).toHaveAttribute("aria-controls");
+      expect(urlsTab).toHaveAttribute("id");
     });
 
     it("has proper ARIA attributes for tab panels", async () => {
-      renderWithProviders(<HomePage />);
+      await renderWithProviders(<HomePage />);
 
-      await waitFor(() => {
-        const booksPanel = screen.getByRole("tabpanel");
-        expect(booksPanel).toHaveAttribute("id");
-        expect(booksPanel).toHaveAttribute("aria-labelledby");
-      });
+      const booksPanel = screen.getByRole("tabpanel");
+      expect(booksPanel).toHaveAttribute("id");
+      expect(booksPanel).toHaveAttribute("aria-labelledby");
 
       // Switch to URLs tab
       const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
@@ -273,21 +246,15 @@ describe("HomePage", () => {
     });
 
     it("has tablist role on tab container", async () => {
-      renderWithProviders(<HomePage />);
+      await renderWithProviders(<HomePage />);
 
-      await waitFor(() => {
-        expect(screen.getByRole("tablist")).toBeInTheDocument();
-      });
+      expect(screen.getByRole("tablist")).toBeInTheDocument();
     });
   });
 
   describe("Navigation", () => {
     it("navigates to book detail when book is clicked", async () => {
-      renderWithProviders(<HomePage />);
-
-      await waitFor(() => {
-        expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
-      });
+      await renderWithProviders(<HomePage />);
 
       const bookButton = screen.getByRole("button", {
         name: /The Great Gatsby/i,
@@ -298,12 +265,7 @@ describe("HomePage", () => {
     });
 
     it("navigates to URL detail when URL is clicked", async () => {
-      renderWithProviders(<HomePage />);
-
-      // Wait for initial load
-      await waitFor(() => {
-        expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
-      });
+      await renderWithProviders(<HomePage />);
 
       const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
       await user.click(urlsTab);
