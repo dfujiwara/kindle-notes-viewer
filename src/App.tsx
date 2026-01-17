@@ -10,7 +10,7 @@ import {
   ChunkPage,
   HomePage,
   NotePage,
-  RandomNotePage,
+  RandomPage,
   SearchPage,
   UploadPage,
   UrlPage,
@@ -64,7 +64,7 @@ function App() {
                 </Suspense>
               }
             />
-            <Route path="/random" element={<RandomNotePage />} />
+            <Route path="/random" element={<RandomPage />} />
             <Route
               path="/search"
               element={
