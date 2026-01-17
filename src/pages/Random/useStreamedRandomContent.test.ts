@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { randomService } from "src/api";
-import type { RandomContent } from "src/api/randomService";
+import type { RandomContent } from "src/models";
 import {
   afterEach,
   assert,
