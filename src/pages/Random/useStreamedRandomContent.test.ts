@@ -1,15 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { randomService } from "src/api";
-import type { RandomContent } from "src/api/randomService";
-import {
-  afterEach,
-  assert,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import type { RandomContent } from "src/models";
 import { useStreamedRandomContent } from "./useStreamedRandomContent";
 
 // Mock randomService
