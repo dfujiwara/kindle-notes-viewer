@@ -1,4 +1,5 @@
 import type { UrlChunk } from "src/models";
+import { getCardButtonClassName } from "src/utils/styles";
 
 interface ChunkItemProps {
   chunk: UrlChunk;
@@ -9,7 +10,7 @@ export function ChunkItem({ chunk, onClick }: ChunkItemProps) {
   return (
     <button
       type="button"
-      className="bg-zinc-800 rounded-lg p-3 sm:p-4 border border-zinc-700 hover:border-zinc-600 active:border-zinc-500 transition-colors cursor-pointer w-full text-left touch-manipulation"
+      className={`${getCardButtonClassName("p-3 sm:p-4")} touch-manipulation`}
       onClick={onClick}
     >
       {chunk.isSummary && (
