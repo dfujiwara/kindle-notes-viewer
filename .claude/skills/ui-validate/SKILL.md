@@ -99,23 +99,82 @@ This gives you the accessibility tree showing all interactive elements.
 - Run all of the above validations in sequence
 - Report aggregate results
 
-### Using Playwright MCP Tools
+### Available Playwright MCP Tools
 
-**Key tools available:**
+The following tools are available from the Playwright MCP server:
 
-- `browser_navigate({ url })` - Navigate to URL
-- `browser_snapshot({})` - Get accessibility tree of page
-- `browser_click({ element, ref })` - Click element (get ref from snapshot)
-- `browser_type({ element, ref, text })` - Type into input
-- `browser_wait_for({ time })` - Wait N seconds
-- `browser_take_screenshot({ filename })` - Screenshot (for debugging)
-- `browser_console_messages({})` - Get console errors
+#### Navigation
+- `mcp__playwright__browser_navigate({ url })` - Navigate to a URL
+- `mcp__playwright__browser_navigate_back()` - Go back to previous page
+- `mcp__playwright__browser_tabs({ action, index? })` - List, create, close, or select tabs
+  - Actions: `"list"`, `"new"`, `"close"`, `"select"`
 
-**Important:**
-- Always take a snapshot before trying to click elements
-- Use the `ref` values from snapshots when clicking
+#### Page Inspection
+- `mcp__playwright__browser_snapshot({ filename? })` - Capture accessibility tree (best for understanding page structure)
+- `mcp__playwright__browser_take_screenshot({ filename?, fullPage?, type?, element?, ref? })` - Take PNG/JPEG screenshot
+- `mcp__playwright__browser_console_messages({ level? })` - Get console messages (error, warning, info, debug)
+- `mcp__playwright__browser_network_requests({ includeStatic? })` - Get network requests since page load
+
+#### Interactions
+- `mcp__playwright__browser_click({ element, ref, button?, doubleClick?, modifiers? })` - Click element
+- `mcp__playwright__browser_type({ element, ref, text, slowly?, submit? })` - Type text into element
+- `mcp__playwright__browser_hover({ element, ref })` - Hover over element
+- `mcp__playwright__browser_drag({ startElement, startRef, endElement, endRef })` - Drag and drop
+- `mcp__playwright__browser_press_key({ key })` - Press keyboard key (e.g., "Enter", "Tab", "ArrowDown")
+
+#### Forms
+- `mcp__playwright__browser_fill_form({ fields })` - Fill multiple form fields at once
+  - Field types: textbox, checkbox, radio, combobox, slider
+- `mcp__playwright__browser_select_option({ element, ref, values })` - Select dropdown option(s)
+- `mcp__playwright__browser_file_upload({ paths? })` - Upload file(s) or cancel file chooser
+
+#### Dialogs & Waits
+- `mcp__playwright__browser_handle_dialog({ accept, promptText? })` - Handle alert/confirm/prompt dialogs
+- `mcp__playwright__browser_wait_for({ text?, textGone?, time? })` - Wait for text to appear/disappear or time to pass
+
+#### Advanced
+- `mcp__playwright__browser_evaluate({ function, element?, ref? })` - Execute JavaScript on page or element
+- `mcp__playwright__browser_run_code({ code })` - Run Playwright code snippet with page context
+- `mcp__playwright__browser_resize({ width, height })` - Resize browser window
+- `mcp__playwright__browser_close()` - Close the browser
+- `mcp__playwright__browser_install()` - Install browser (if not installed)
+
+#### Important Usage Notes
+
+**Working with Elements:**
+- Always take a `browser_snapshot` before interacting with elements
+- Use the `ref` values from snapshots when clicking/typing (e.g., `ref: "xyz123"`)
+- The `element` parameter is a human-readable description (e.g., `element: "Search button"`)
+
+**Common Patterns:**
+```typescript
+// 1. Navigate and inspect
+mcp__playwright__browser_navigate({ url: "http://localhost:5173" })
+mcp__playwright__browser_snapshot({})
+
+// 2. Click an element (using ref from snapshot)
+mcp__playwright__browser_click({
+  element: "Search link",
+  ref: "abc123"
+})
+
+// 3. Type into input
+mcp__playwright__browser_type({
+  element: "Search input",
+  ref: "def456",
+  text: "test query"
+})
+
+// 4. Wait and verify
+mcp__playwright__browser_wait_for({ time: 2 })
+mcp__playwright__browser_snapshot({})
+```
+
+**Best Practices:**
 - Wait 1-2 seconds after navigation for content to load
 - Check console for errors after each page load
+- Use snapshots to understand page structure before interactions
+- Take screenshots on failures for debugging
 
 ### Reporting Results
 
