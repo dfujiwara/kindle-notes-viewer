@@ -35,7 +35,11 @@ export function SearchPage() {
     if (result.error) {
       return { status: "error", errorMessage: result.error.message };
     }
-    return { status: "success", notes: result.data?.results ?? [] };
+    return {
+      status: "success",
+      books: result.data?.books ?? [],
+      urls: result.data?.urls ?? [],
+    };
   };
 
   const isTooShort =
@@ -44,16 +48,16 @@ export function SearchPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Search Notes</h1>
+      <h1 className="text-3xl font-bold mb-6">Search</h1>
       <div className="mb-8">
         <input
           type="text"
           role="searchbox"
-          aria-label="Search for notes"
+          aria-label="Search notes and URLs"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Search for notes..."
+          placeholder="Search..."
           className="w-full px-4 py-3 rounded-lg border border-zinc-700 bg-zinc-800 text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
         {isTooShort && (

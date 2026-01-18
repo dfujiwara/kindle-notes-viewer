@@ -1,4 +1,11 @@
-import type { KindleBook, SearchResult } from "../models";
+import type {
+  KindleBook,
+  KindleNoteBundle,
+  SearchResult,
+  Url,
+  UrlChunk,
+  UrlChunkBundle,
+} from "../models";
 import { httpClient } from "./httpClient";
 import type { ApiResponse } from "./types";
 
@@ -14,24 +21,72 @@ interface KindleNoteBundleApiResponse {
   notes: KindleNoteApiResponse[];
 }
 
+interface UrlApiResponse {
+  id: string;
+  url: string;
+  title: string;
+  chunk_count: number;
+  created_at: string;
+}
+
+interface UrlChunkApiResponse {
+  id: string;
+  content: string;
+  is_summary: boolean;
+  created_at: string;
+}
+
+interface UrlChunkBundleApiResponse {
+  url: UrlApiResponse;
+  chunks: UrlChunkApiResponse[];
+}
+
 interface SearchResultApiResponse {
-  q: string;
-  results: KindleNoteBundleApiResponse[];
+  query: string;
+  books: KindleNoteBundleApiResponse[];
+  urls: UrlChunkBundleApiResponse[];
   count: number;
 }
 
-// Mapping function
-const mapSearchResult = (apiResult: SearchResultApiResponse): SearchResult => ({
-  q: apiResult.q,
-  count: apiResult.count,
-  results: apiResult.results.map((bundle) => ({
-    book: bundle.book,
-    notes: bundle.notes.map((note) => ({
-      id: note.id,
-      content: note.content,
-      createdAt: note.created_at,
-    })),
+// Mapping functions
+const mapNoteBundle = (
+  bundle: KindleNoteBundleApiResponse,
+): KindleNoteBundle => ({
+  book: bundle.book,
+  notes: bundle.notes.map((note) => ({
+    id: note.id,
+    content: note.content,
+    createdAt: note.created_at,
   })),
+});
+
+const mapUrl = (apiUrl: UrlApiResponse): Url => ({
+  id: apiUrl.id,
+  url: apiUrl.url,
+  title: apiUrl.title,
+  chunkCount: apiUrl.chunk_count,
+  createdAt: apiUrl.created_at,
+});
+
+const mapUrlChunk = (apiChunk: UrlChunkApiResponse): UrlChunk => ({
+  id: apiChunk.id,
+  content: apiChunk.content,
+  isSummary: apiChunk.is_summary,
+  createdAt: apiChunk.created_at,
+});
+
+const mapUrlChunkBundle = (
+  bundle: UrlChunkBundleApiResponse,
+): UrlChunkBundle => ({
+  url: mapUrl(bundle.url),
+  chunks: bundle.chunks.map(mapUrlChunk),
+});
+
+const mapSearchResult = (apiResult: SearchResultApiResponse): SearchResult => ({
+  q: apiResult.query,
+  count: apiResult.count,
+  books: apiResult.books.map(mapNoteBundle),
+  urls: apiResult.urls.map(mapUrlChunkBundle),
 });
 
 const ENDPOINTS = {
