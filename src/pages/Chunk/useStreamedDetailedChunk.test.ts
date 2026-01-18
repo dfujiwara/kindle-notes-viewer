@@ -1,15 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { urlService } from "src/api";
 import type { UrlDetailedChunk } from "src/models";
-import {
-  afterEach,
-  assert,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
 import { useStreamedDetailedChunk } from "./useStreamedDetailedChunk";
 
 // Mock urlService
