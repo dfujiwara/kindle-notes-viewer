@@ -1,3 +1,13 @@
+---
+name: ui-validate
+description: Validates UI features using Playwright browser automation
+args:
+  feature:
+    description: Feature to validate (navigation, search, upload, home, all)
+    required: false
+    default: all
+---
+
 # UI Validation Skill
 
 Validates UI features of the Kindle Notes Viewer application using Playwright browser automation.
