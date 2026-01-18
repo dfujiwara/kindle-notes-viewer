@@ -6,9 +6,9 @@ This plan outlines the implementation of URL content support in the Kindle Notes
 
 ## Current State
 
-**Branch**: `claude/phase-4-work-oMWls` (Phases 1-4 complete)
+**Branch**: `phase5` (Phases 1-5 complete)
 
-**Implemented** (139/139 tests passing):
+**Implemented** (159/159 tests passing):
 - ✅ URL upload functionality via `UrlService.uploadUrl()`
 - ✅ `UrlInputZone` component for URL input with validation
 - ✅ Mode toggle in `UploadPage` to switch between file and URL upload
@@ -18,9 +18,10 @@ This plan outlines the implementation of URL content support in the Kindle Notes
 - ✅ Chunk detail page with real-time SSE streaming for AI-generated context
 - ✅ Home page tabbed interface (Books/URLs)
 - ✅ Full keyboard navigation and accessibility support
+- ✅ Unified random content page (`/random`) supporting both notes and URL chunks
+- ✅ Header navigation with "Random" link
 
 **Remaining**:
-- ❌ Random chunk page (`/urls/random`) - infrastructure ready, needs page component
 - ❌ Search integration for URL chunks - backend ready, frontend needs updates
 
 ## Architecture Overview
@@ -467,25 +468,20 @@ For each new component/service:
   - All 139 tests passing
   - No lint/format issues
 
-### Step 5: Random Chunk Feature ❌
-**Purpose**: Allow users to discover random URL chunks
+### Step 5: Random Content Feature ✅
+**Purpose**: Allow users to discover random content (notes or URL chunks)
 
-**Status**: NOT IMPLEMENTED (infrastructure ready)
+**Status**: COMPLETE (unified approach)
 
-**What's Ready**:
-- ✅ `urlService.getStreamedRandomChunk()` method exists
-- ✅ `useStreamedDetailedChunk()` hook supports random chunks (when called with no arguments)
-- ✅ SSE streaming tested and working
-
-**Remaining Work** (~30 lines of code):
-- [ ] Create `RandomChunkPage` component in `src/pages/Chunk/`
-  - Mirror `RandomNotePage` pattern (~20 lines)
-  - Call `useStreamedDetailedChunk()` with no arguments
-  - Display chunk with ChunkDescription component
-- [ ] Add route: `/urls/random` in App.tsx
-- [ ] Add navigation link (Header or similar component)
-- [ ] Write component tests (5-7 tests)
-- [ ] Run checks: `npm run check && npm run test:run`
+**Implementation**:
+- ✅ Created unified `RandomPage` component in `src/pages/Random/`
+- ✅ New `randomService` with `/random/v2` endpoint (returns weighted random content)
+- ✅ `useStreamedRandomContent` hook for SSE streaming
+- ✅ Discriminated union types for notes vs chunks
+- ✅ Route: `/random` in App.tsx
+- ✅ Header updated with "Random" navigation link
+- ✅ Component tests (10 tests for hook)
+- ✅ All 159 tests passing
 
 ### Step 6: Search Integration ❌
 **Purpose**: Include URL chunks in search results
@@ -713,6 +709,44 @@ For each new component/service:
 - Intuitive keyboard navigation for power users
 - Consistent with common tab interface patterns
 
+### Phase 5 Implementation Notes (Completed 2026-01-17)
+
+**Unified Random Content Approach**:
+- Instead of separate `/notes/random` and `/urls/random` endpoints, implemented unified `/random` route
+- Backend provides `/random/v2` endpoint that returns weighted random content (notes or chunks)
+- Single `RandomPage` component handles both content types via discriminated unions
+
+**New Models** (`src/models/random.ts`):
+- `Source = BookSource | UrlSource` - Source type discriminated by `type: "book" | "url"`
+- `Content = NoteContent | UrlChunkContent` - Content type discriminated by `contentType: "note" | "url_chunk"`
+- `RandomContent` - Combines source, content, additionalContext, and relatedItems
+
+**New Service** (`src/api/randomService.ts`):
+- `RandomService.getStreamedRandomContent()` - SSE streaming for random content
+- Handles snake_case → camelCase transformation for both note and chunk responses
+- Uses same SSE event pattern: `metadata`, `context_chunk`, `context_complete`, `error`
+
+**Component Architecture**:
+- `RandomPage` uses `useStreamedRandomContent` hook
+- Renders `NoteDescription` or `ChunkDescription` based on source type
+- Mapping functions convert unified API types to existing component prop types
+- Maintains full compatibility with existing description components
+
+**Files Created**:
+- `src/models/random.ts` - New unified random content types
+- `src/api/randomService.ts` - Random content service with SSE
+- `src/pages/Random/RandomPage.tsx` - Unified random page component
+- `src/pages/Random/RandomPage.test.tsx` - Page component tests
+- `src/pages/Random/useStreamedRandomContent.ts` - SSE streaming hook
+- `src/pages/Random/useStreamedRandomContent.test.ts` - Hook tests (10 tests)
+
+**Files Modified**:
+- `src/App.tsx` - Added `/random` route
+- `src/pages/index.ts` - Exported RandomPage
+- `src/api/index.ts` - Exported randomService
+- `src/models/index.ts` - Exported random types
+- `src/components/Header.tsx` - Added "Random" navigation link
+
 ### Open Questions
 
 None remaining - all decisions made.
@@ -724,13 +758,13 @@ None remaining - all decisions made.
 - [x] Users can click a chunk to see it with AI-generated context
 - [x] SSE streaming works for chunk context (smooth loading experience)
 - [ ] Search includes URL chunks in results (**Step 6 - not implemented**)
-- [ ] Random chunk feature works (**Step 5 - not implemented**)
-- [x] All tests pass (139/139 unit/component tests passing, E2E pending)
+- [x] Random content feature works (unified for notes and chunks)
+- [x] All tests pass (159/159 unit/component tests passing, E2E pending)
 - [x] No regression in existing book/note functionality
 - [x] Performance is acceptable (page loads < 1s, streaming feels instant)
 - [x] Code follows established patterns (service layer, camelCase, error handling)
 
-**Overall Progress**: 7/10 criteria met (70% complete)
+**Overall Progress**: 9/10 criteria met (90% complete)
 
 ## Risks & Mitigations
 
@@ -756,41 +790,35 @@ None remaining - all decisions made.
 
 ## Summary & Next Steps
 
-### Implementation Status: 70% Complete (Phases 1-4 of 6)
+### Implementation Status: 90% Complete (Phases 1-5 of 6)
 
-**✅ Completed** (139 tests passing):
+**✅ Completed** (159 tests passing):
 - **Phase 1**: Full API layer with SSE streaming
 - **Phase 2**: URL list view with responsive design
 - **Phase 3**: URL and chunk detail pages with real-time streaming
 - **Phase 4**: Tabbed home page with full accessibility
+- **Phase 5**: Unified random content page (`/random`) with SSE streaming
 
-**❌ Remaining** (2 phases):
-- **Phase 5**: Random chunk page (~30 lines of code, quick win)
+**❌ Remaining** (1 phase):
 - **Phase 6**: Search integration (medium effort)
 
-### Recommended Implementation Order:
+### Recommended Next Steps:
 
-1. **Complete Phase 5 first** (Random Chunk Page):
-   - Infrastructure is 100% ready
-   - Only needs page wrapper component
-   - Estimated effort: 1-2 hours
-   - Low risk, high value for discovery
-
-2. **Then implement Phase 6** (Search Integration):
+1. **Implement Phase 6** (Search Integration):
    - Requires backend API investigation
    - Type system updates for discriminated unions
    - Component updates for mixed results
-   - Estimated effort: 4-6 hours
    - Medium complexity, completes feature parity
 
 ### Architecture Health:
-- ✅ Excellent test coverage (139 tests, all passing)
+- ✅ Excellent test coverage (159 tests, all passing)
 - ✅ Consistent patterns (mirrors Books/Notes perfectly)
 - ✅ Full accessibility (WCAG compliant)
 - ✅ Type-safe throughout
 - ✅ Clean separation of concerns
 - ✅ Proper error handling
 - ✅ SSE streaming working perfectly
+- ✅ Unified random content with discriminated unions
 
 ### Technical Debt:
 - None identified
