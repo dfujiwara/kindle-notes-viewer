@@ -50,50 +50,15 @@ All services: class-based with static instance exports
 
 ## E2E Testing
 
-**Framework**: Playwright (`@playwright/test`)
+**Framework**: Playwright - Config: `playwright.config.ts`, Tests: `e2e/tests/*.spec.ts`
 
-**Configuration**:
-- Config: `playwright.config.ts`
-- Tests: `e2e/tests/*.spec.ts`
-- Helpers: `e2e/helpers/test-helpers.ts`
-- Base URL: `http://localhost:5173`
-- API URL (E2E): Set via `E2E_API_URL` env var (defaults to `http://localhost:8000`)
-
-**Test Execution**:
-- Dev server starts automatically before tests
-- Tests run in Chromium by default
-- Screenshots captured on failure
-- Retries: 2 on CI, 0 locally
-
-**Writing E2E Tests**:
-```typescript
-import { test, expect } from "@playwright/test";
-
-test("test name", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.getByRole("heading")).toContainText("Expected");
-});
-```
-
-**Best Practices**:
-- Use Playwright's auto-waiting (no manual waits needed)
-- Prefer user-facing selectors (getByRole, getByLabel, getByText)
-- Test user workflows, not implementation details
+See **[e2e/README.md](e2e/README.md)** for full documentation on test structure, setup, and best practices.
 
 ## MCP Server Integration
 
-**Playwright MCP Server** (`.mcp.json`):
-- Enables browser automation via Claude Code
-- Command: `npx -y @playwright/mcp@latest`
-- Config: `e2e/playwright-mcp.config.json`
-- Use for manual UI testing and debugging with Claude
+**Playwright MCP Server** enables browser automation via Claude Code for manual UI testing and debugging.
 
-**Configuration**:
-- Browser: Chromium (non-headless by default for visibility)
-- Viewport: 1280x720
-- Base URL: `http://localhost:5173`
-- Capabilities: Screenshots, downloads (no videos)
-- Allowed hosts: localhost, 127.0.0.1
+See **[MCP_SETUP.md](MCP_SETUP.md)** for setup, configuration, and usage documentation.
 
 ## Routes
 
