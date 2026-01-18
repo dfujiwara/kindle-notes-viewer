@@ -5,12 +5,17 @@ Guidance for Claude Code when working with this **Kindle Notes Frontend** (React
 ## Commands
 
 ```bash
-npm run dev          # Dev server
-npm run build        # Production build
-npm run test         # Tests (watch mode)
-npm run test:run     # Tests (CI)
-npm run check        # Biome lint/format check
-npm run check:fix    # Auto-fix
+npm run dev               # Dev server
+npm run build             # Production build
+npm run test              # Tests (watch mode)
+npm run test:run          # Tests (CI)
+npm run test:coverage     # Tests with coverage
+npm run test:e2e          # E2E tests (Playwright)
+npm run test:e2e:ui       # E2E tests with Playwright UI
+npm run test:e2e:headed   # E2E tests in headed mode (visible browser)
+npm run test:e2e:report   # View E2E test HTML report
+npm run check             # Biome lint/format check
+npm run check:fix         # Auto-fix
 ```
 
 **After code changes, run:** `npm run check && npm run test:run`
@@ -35,27 +40,38 @@ export const booksService = new BooksService();
 ```
 All services: class-based with static instance exports
 
-### SSE Streaming (Real-time Note Context)
+### SSE Streaming (Real-time Context)
 **Client**: `src/api/sseClient.ts` - Generic EventSource wrapper with type-safe handlers
 
-**Pattern**:
-```typescript
-createEventSourceWithHandlers<TEvents>({
-  url,
-  handlers: {
-    eventName: (data: EventType) => { ... },
-    error: (error: Error) => { ... }
-  }
-});
-```
-
-**Usage**: `useStreamedDetailedNote()` hook in NotePage
-- Streaming states: loading → streaming → success | error
+**Streaming Hooks**: `useStreamedDetailedNote`, `useStreamedDetailedChunk`, `useStreamedRandomContent`
+- All follow same pattern: loading → streaming → success | error
 - Auto-closes connection on completion/error
+- See existing hooks in `src/pages/*/useStreamed*.ts` for implementation examples
+
+## E2E Testing
+
+**Framework**: Playwright - Config: `playwright.config.ts`, Tests: `e2e/tests/*.spec.ts`
+
+See **[e2e/README.md](e2e/README.md)** for full documentation on test structure, setup, and best practices.
+
+## MCP Server Integration
+
+**Playwright MCP Server** enables browser automation via Claude Code for manual UI testing and debugging.
+
+See **[MCP_SETUP.md](MCP_SETUP.md)** for setup, configuration, and usage documentation.
 
 ## Routes
 
-All routes defined in `src/App.tsx` with Suspense + Error Boundary
+All routes defined in `src/App.tsx` with Suspense + Error Boundary:
+
+- `/` - Home (book list + URL list)
+- `/books/:bookId` - Book detail with notes list
+- `/books/:bookId/notes/:noteId` - Single note with streaming context
+- `/urls/:urlId` - URL detail with chunks list
+- `/urls/:urlId/chunks/:chunkId` - Single chunk with streaming context
+- `/random` - Random note or chunk with streaming context
+- `/search` - Search across books and URLs
+- `/upload` - Upload Kindle notes file
 
 ## API
 
@@ -68,7 +84,11 @@ All routes defined in `src/App.tsx` with Suspense + Error Boundary
 
 **Services**:
 - All services in `src/api/*Service.ts` (import from `src/api`)
-- Each service handles a domain area (books, notes, search)
+- `booksService` - Book upload, retrieval
+- `notesService` - Note details (SSE streaming)
+- `urlService` - URL management and chunk retrieval
+- `randomService` - Random content (SSE streaming)
+- `searchService` - Search across books and URLs
 - Services encapsulate API calls and data transformation
 
 **Error Handling**:
@@ -76,12 +96,21 @@ All routes defined in `src/App.tsx` with Suspense + Error Boundary
 - `ErrorFallback` component with retry button
 - Mutations accept `onError` callback
 
+## Environment Variables
+
+**Required**:
+- `VITE_API_URL` - Backend API base URL (default: `http://localhost:8000`)
+
+**E2E Testing**:
+- `E2E_API_URL` - API URL for E2E tests (overrides default in `playwright.config.ts`)
+
 ## TypeScript
 
 **Naming Conventions**:
 - Props: Interface suffix `Props` (e.g., `FileDropZoneProps`)
-- Domain models: `KindleBook`, `KindleNote`, `KindleDetailedNote`
-- API responses: `KindleNoteApiResponse` (snake_case fields)
+- Domain models: `KindleBook`, `KindleNote`, `KindleUrl`, `KindleChunk`, `RandomContent`, `SearchResult`
+- Detailed models: `KindleDetailedNote`, `KindleDetailedChunk` (with streaming context)
+- API responses: `*ApiResponse` (snake_case fields, e.g., `KindleNoteApiResponse`)
 - Generics: `useApiQuery<T>`, `useApiMutation<T, P>`
 
 ## Testing
@@ -125,7 +154,10 @@ vi.mock("react-router", async () => {
 - Dark theme by default (zinc-900, zinc-800 backgrounds)
 - Mobile-first responsive design
 
-**Components**: Custom components in `src/components/` built with Tailwind (no component library)
+**Components**:
+- Custom components in `src/components/` built with Tailwind (no component library)
+- Toast notifications: `react-hot-toast` (positioned bottom-right)
+- Markdown rendering: `react-markdown` for note/chunk content display
 
 ## Patterns
 
@@ -170,3 +202,4 @@ vi.mock("react-router", async () => {
 2. Verify JSON parsing in createEventSourceWithHandlers
 3. Check Network tab in DevTools for EventSource connection
 4. Verify handler callbacks fire in correct order
+5. Ensure cleanup function closes EventSource on unmount
