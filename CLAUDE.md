@@ -40,38 +40,13 @@ export const booksService = new BooksService();
 ```
 All services: class-based with static instance exports
 
-### SSE Streaming (Real-time Note Context)
+### SSE Streaming (Real-time Context)
 **Client**: `src/api/sseClient.ts` - Generic EventSource wrapper with type-safe handlers
 
-**Pattern**:
-```typescript
-createEventSourceWithHandlers<TEvents>({
-  url,
-  handlers: {
-    eventName: (data: EventType) => { ... },
-    error: (error: Error) => { ... }
-  }
-});
-```
-
-**Usage**: Streaming hooks in pages (`useStreamedDetailedNote`, `useStreamedDetailedChunk`, `useStreamedRandomContent`)
-- Streaming states: loading → streaming → success | error
+**Streaming Hooks**: `useStreamedDetailedNote`, `useStreamedDetailedChunk`, `useStreamedRandomContent`
+- All follow same pattern: loading → streaming → success | error
 - Auto-closes connection on completion/error
-
-**All Streaming Hooks Follow Same Pattern**:
-```typescript
-type StreamState =
-  | { status: "loading" }
-  | { status: "streaming"; data: T }
-  | { status: "success"; data: T }
-  | { status: "error"; error: Error };
-```
-
-**Event Handlers**:
-- `onMetadata` - Receives initial data, sets status to "streaming"
-- `onContextChunk` - Receives streamed content chunks, appends to data
-- `onComplete` - Marks streaming complete, sets status to "success"
-- `onError` / `onInStreamError` - Error handling
+- See existing hooks in `src/pages/*/useStreamed*.ts` for implementation examples
 
 ## E2E Testing
 
@@ -256,18 +231,6 @@ vi.mock("react-router", async () => {
 2. Use TestWrapper with QueryClientProvider + MemoryRouter
 3. Mock services with `vi.mock()` + `vi.mocked()`
 4. Test user behavior with `userEvent` and `screen` queries
-
-### Add SSE Streaming Hook
-1. Create hook in `src/pages/[Feature]/useStreamed*.ts`
-2. Define `StreamState` union type (loading | streaming | success | error)
-3. Implement handlers object:
-   - `onMetadata` - Receives initial data, sets status to "streaming"
-   - `onContextChunk` - Receives chunks, appends to data.additionalContext
-   - `onComplete` - Sets status to "success"
-   - `onError` / `onInStreamError` - Error handling
-4. Call service method with handlers, return EventSource
-5. Clean up EventSource in useEffect cleanup function
-6. Return state object
 
 ### Debug SSE Streaming
 1. Check event names match backend in sseClient handlers
