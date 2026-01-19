@@ -104,7 +104,7 @@ describe("SearchPage", () => {
   it("shows placeholder with Enter hint", () => {
     renderWithQueryClient(<SearchPage />);
 
-    const input = screen.getByPlaceholderText("Search for notes...");
+    const input = screen.getByPlaceholderText("Search...");
     expect(input).toBeInTheDocument();
   });
 });
