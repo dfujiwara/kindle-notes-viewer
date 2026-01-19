@@ -47,6 +47,7 @@ export class SSEClient {
           handler(parsed, eventSource);
         } catch (error) {
           logger.error(`Error processing SSE event ${eventName}:`, error);
+          onError?.(new ErrorEvent("error", { error }));
           throw error;
         }
       });
