@@ -82,17 +82,12 @@ const mapUrlChunkBundle = (
   chunks: bundle.chunks.map(mapUrlChunk),
 });
 
-const mapSearchResult = (apiResult: SearchResultApiResponse): SearchResult => {
-  const books = apiResult.books.map(mapNoteBundle);
-  return {
-    q: apiResult.query,
-    count: apiResult.count,
-    books,
-    urls: apiResult.urls.map(mapUrlChunkBundle),
-    // @deprecated - backwards compatibility, remove in phase6-ui
-    results: books,
-  };
-};
+const mapSearchResult = (apiResult: SearchResultApiResponse): SearchResult => ({
+  q: apiResult.query,
+  count: apiResult.count,
+  books: apiResult.books.map(mapNoteBundle),
+  urls: apiResult.urls.map(mapUrlChunkBundle),
+});
 
 const ENDPOINTS = {
   SEARCH: (query: string) => `/search?q=${query}`,

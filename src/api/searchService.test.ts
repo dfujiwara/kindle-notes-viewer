@@ -64,25 +64,24 @@ describe("SearchService", () => {
       const result = await searchService.search("test query");
 
       expect(httpClient.request).toHaveBeenCalledWith("/search?q=test query");
-      const expectedBooks = [
-        {
-          book: {
-            id: "book-1",
-            title: "Test Book",
-            author: "Test Author",
-          },
-          notes: [
-            {
-              id: "note-1",
-              content: "Note content",
-              createdAt: "2026-01-05T00:00:00Z",
-            },
-          ],
-        },
-      ];
       expect(result.data).toEqual({
         q: "test query",
-        books: expectedBooks,
+        books: [
+          {
+            book: {
+              id: "book-1",
+              title: "Test Book",
+              author: "Test Author",
+            },
+            notes: [
+              {
+                id: "note-1",
+                content: "Note content",
+                createdAt: "2026-01-05T00:00:00Z",
+              },
+            ],
+          },
+        ],
         urls: [
           {
             url: {
@@ -103,7 +102,6 @@ describe("SearchService", () => {
           },
         ],
         count: 2,
-        results: expectedBooks, // @deprecated backwards compat
       });
     });
 
@@ -170,7 +168,6 @@ describe("SearchService", () => {
         books: [],
         urls: [],
         count: 0,
-        results: [], // @deprecated backwards compat
       });
     });
   });
