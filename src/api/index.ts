@@ -1,4 +1,9 @@
 export { booksService } from "./booksService";
+export {
+  mapBookSourceToKindleBook,
+  mapNoteContentToKindleNote,
+  mapRelatedItemsToNotes,
+} from "./noteMappers";
 export { notesService } from "./notesService";
 export { useApiMutation, useApiQuery, useApiSuspenseQuery } from "./queries";
 export { randomService } from "./randomService";

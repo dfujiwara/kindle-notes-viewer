@@ -1,18 +1,14 @@
 import { useNavigate } from "react-router";
 import {
+  mapBookSourceToKindleBook,
+  mapNoteContentToKindleNote,
+  mapRelatedItemsToNotes,
   mapRelatedItemsToUrlChunks,
   mapUrlChunkContentToUrlChunk,
   mapUrlSourceToUrl,
 } from "src/api";
 import { LoadingIndicator } from "src/components/LoadingIndicator";
-import type {
-  BookSource,
-  Content,
-  KindleBook,
-  KindleNote,
-  NoteContent,
-  UrlChunkContent,
-} from "src/models";
+import type { NoteContent, UrlChunkContent } from "src/models";
 import { ChunkDescription } from "../Chunk/ChunkDescription";
 import { NoteDescription } from "../Note/NoteDescription";
 import { useStreamedRandomContent } from "./useStreamedRandomContent";
@@ -63,28 +59,4 @@ export function RandomPage() {
       );
     }
   }
-}
-
-// Mapping functions to convert unified API response to existing model types
-
-function mapBookSourceToKindleBook(source: BookSource): KindleBook {
-  return {
-    id: source.id,
-    title: source.title,
-    author: source.author,
-  };
-}
-
-function mapNoteContentToKindleNote(content: NoteContent): KindleNote {
-  return {
-    id: content.id,
-    content: content.content,
-    createdAt: content.createdAt,
-  };
-}
-
-function mapRelatedItemsToNotes(relatedItems: Content[]): KindleNote[] {
-  return relatedItems
-    .filter((item): item is NoteContent => item.contentType === "note")
-    .map(mapNoteContentToKindleNote);
 }
