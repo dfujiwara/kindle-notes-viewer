@@ -46,10 +46,8 @@ export class SSEClient {
           const parsed = JSON.parse(event.data);
           handler(parsed, eventSource);
         } catch (error) {
-          logger.error(
-            `Failed to parse SSE data for event ${eventName}:`,
-            error,
-          );
+          logger.error(`Error processing SSE event ${eventName}:`, error);
+          throw error;
         }
       });
     }

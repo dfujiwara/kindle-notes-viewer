@@ -121,21 +121,19 @@ describe("SSEClient", () => {
       expect(eventSource.onerror).toBeNull();
     });
 
-    it("should continue processing other events after parse error", () => {
+    it("should throw error when receiving invalid JSON", () => {
       const handler = vi.fn();
-      const validData = { id: "123" };
 
       const eventSource = client.createEventSourceWithHandlers("/stream/test", {
         testEvent: handler,
       }) as unknown as MockEventSource;
 
-      // Send invalid JSON
-      eventSource.simulateEvent("testEvent", "invalid json");
-      // Send valid JSON
-      eventSource.simulateEvent("testEvent", JSON.stringify(validData));
+      // Send invalid JSON - should throw
+      expect(() => {
+        eventSource.simulateEvent("testEvent", "invalid json");
+      }).toThrow(SyntaxError);
 
-      expect(handler).toHaveBeenCalledTimes(1);
-      expect(handler).toHaveBeenCalledWith(validData, eventSource);
+      expect(handler).not.toHaveBeenCalled();
     });
   });
 });
