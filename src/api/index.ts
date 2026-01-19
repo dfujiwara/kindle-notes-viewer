@@ -7,4 +7,9 @@ export type {
   ApiError,
   ApiResponse,
 } from "./types";
+export {
+  mapRelatedItemsToUrlChunks,
+  mapUrlChunkContentToUrlChunk,
+  mapUrlSourceToUrl,
+} from "./urlMappers";
 export { urlService } from "./urlService";
