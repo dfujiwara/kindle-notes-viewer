@@ -121,19 +121,25 @@ describe("SSEClient", () => {
       expect(eventSource.onerror).toBeNull();
     });
 
-    it("should throw error when receiving invalid JSON", () => {
+    it("should throw error and call onError when receiving invalid JSON", () => {
       const handler = vi.fn();
+      const onError = vi.fn();
 
-      const eventSource = client.createEventSourceWithHandlers("/stream/test", {
-        testEvent: handler,
-      }) as unknown as MockEventSource;
+      const eventSource = client.createEventSourceWithHandlers(
+        "/stream/test",
+        {
+          testEvent: handler,
+        },
+        onError,
+      ) as unknown as MockEventSource;
 
-      // Send invalid JSON - should throw
+      // Send invalid JSON - should throw and call onError
       expect(() => {
         eventSource.simulateEvent("testEvent", "invalid json");
       }).toThrow(SyntaxError);
 
       expect(handler).not.toHaveBeenCalled();
+      expect(onError).toHaveBeenCalledWith(expect.any(ErrorEvent));
     });
   });
 });
