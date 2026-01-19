@@ -1,10 +1,6 @@
-import type {
-  BookSource,
-  Content,
-  KindleBook,
-  KindleNote,
-  NoteContent,
-} from "../models";
+import type { KindleBook } from "./book";
+import type { KindleNote } from "./note";
+import type { BookSource, Content, NoteContent } from "./random";
 
 /**
  * Maps a BookSource (from RandomContent) to a KindleBook domain model

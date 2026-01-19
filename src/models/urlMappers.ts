@@ -1,10 +1,5 @@
-import type {
-  Content,
-  Url,
-  UrlChunk,
-  UrlChunkContent,
-  UrlSource,
-} from "../models";
+import type { Content, UrlChunkContent, UrlSource } from "./random";
+import type { Url, UrlChunk } from "./url";
 
 /**
  * Maps a UrlSource (from RandomContent) to a Url domain model

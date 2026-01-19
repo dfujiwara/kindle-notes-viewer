@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { LoadingIndicator } from "src/components/LoadingIndicator";
 import {
   mapBookSourceToKindleBook,
   mapNoteContentToKindleNote,
@@ -6,9 +7,9 @@ import {
   mapRelatedItemsToUrlChunks,
   mapUrlChunkContentToUrlChunk,
   mapUrlSourceToUrl,
-} from "src/api";
-import { LoadingIndicator } from "src/components/LoadingIndicator";
-import type { NoteContent, UrlChunkContent } from "src/models";
+  type NoteContent,
+  type UrlChunkContent,
+} from "src/models";
 import { ChunkDescription } from "../Chunk/ChunkDescription";
 import { NoteDescription } from "../Note/NoteDescription";
 import { useStreamedRandomContent } from "./useStreamedRandomContent";
