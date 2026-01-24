@@ -203,26 +203,30 @@ describe("UrlService", () => {
 
       urlService.getStreamedChunk("url-1", "chunk-1", handlers);
 
-      // Simulate metadata event
+      // Simulate metadata event (matching randomService format)
       const mockMetadata = {
-        url: {
-          id: "url-1",
-          url: "https://example.com",
+        source: {
+          id: 1,
           title: "Example Site",
-          chunk_count: 3,
+          type: "url" as const,
+          url: "https://example.com",
           created_at: "2026-01-05T00:00:00Z",
         },
-        chunk: {
-          id: "chunk-1",
+        content: {
+          id: 1,
+          content_type: "url_chunk" as const,
           content: "Chunk content",
           is_summary: false,
+          chunk_order: 0,
           created_at: "2026-01-05T00:00:00Z",
         },
-        related_chunks: [
+        related_items: [
           {
-            id: "chunk-2",
+            id: 2,
+            content_type: "url_chunk" as const,
             content: "Related content",
             is_summary: false,
+            chunk_order: 1,
             created_at: "2026-01-05T00:00:00Z",
           },
         ],
@@ -232,14 +236,14 @@ describe("UrlService", () => {
 
       expect(handlers.onMetadata).toHaveBeenCalledWith({
         url: {
-          id: "url-1",
+          id: "1",
           url: "https://example.com",
           title: "Example Site",
-          chunkCount: 3,
+          chunkCount: 0, // Not provided by streaming API
           createdAt: "2026-01-05T00:00:00Z",
         },
         chunk: {
-          id: "chunk-1",
+          id: "1",
           content: "Chunk content",
           isSummary: false,
           createdAt: "2026-01-05T00:00:00Z",
@@ -247,7 +251,7 @@ describe("UrlService", () => {
         additionalContext: "",
         relatedChunks: [
           {
-            id: "chunk-2",
+            id: "2",
             content: "Related content",
             isSummary: false,
             createdAt: "2026-01-05T00:00:00Z",

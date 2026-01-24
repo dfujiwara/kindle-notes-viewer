@@ -4,7 +4,7 @@ import type {
   UrlChunk,
   UrlChunkBundle,
   UrlDetailedChunk,
-} from "../models/url";
+} from "../models";
 import { httpClient } from "./httpClient";
 import { sseClient } from "./sseClient";
 import type { ApiResponse } from "./types";
@@ -30,10 +30,28 @@ interface UrlChunkBundleApiResponse {
   chunks: UrlChunkApiResponse[];
 }
 
-interface UrlInitialChunkApiResponse {
-  url: UrlApiResponse;
-  chunk: UrlChunkApiResponse;
-  related_chunks: UrlChunkApiResponse[];
+// Streaming metadata API response interfaces (matching randomService format)
+interface UrlSourceApiResponse {
+  id: number;
+  title: string;
+  type: "url";
+  url: string;
+  created_at: string;
+}
+
+interface UrlChunkContentApiResponse {
+  id: number;
+  content_type: "url_chunk";
+  content: string;
+  is_summary: boolean;
+  chunk_order: number;
+  created_at: string;
+}
+
+interface UrlStreamMetadataApiResponse {
+  source: UrlSourceApiResponse;
+  content: UrlChunkContentApiResponse;
+  related_items: UrlChunkContentApiResponse[];
 }
 
 // Mapping functions
@@ -59,13 +77,31 @@ const mapChunkBundle = (
   chunks: apiBundle.chunks.map(mapChunk),
 });
 
-const mapInitialDetailedChunk = (
-  apiChunk: UrlInitialChunkApiResponse,
+// Mapping functions for streaming metadata (new format)
+const mapUrlSource = (apiSource: UrlSourceApiResponse): Url => ({
+  id: String(apiSource.id),
+  url: apiSource.url,
+  title: apiSource.title,
+  chunkCount: 0, // Not provided by streaming API
+  createdAt: apiSource.created_at,
+});
+
+const mapUrlChunkContent = (
+  apiContent: UrlChunkContentApiResponse,
+): UrlChunk => ({
+  id: String(apiContent.id),
+  content: apiContent.content,
+  isSummary: apiContent.is_summary,
+  createdAt: apiContent.created_at,
+});
+
+const mapStreamMetadata = (
+  apiResponse: UrlStreamMetadataApiResponse,
 ): UrlDetailedChunk => ({
-  url: mapUrl(apiChunk.url),
-  chunk: mapChunk(apiChunk.chunk),
+  url: mapUrlSource(apiResponse.source),
+  chunk: mapUrlChunkContent(apiResponse.content),
   additionalContext: "",
-  relatedChunks: apiChunk.related_chunks.map(mapChunk),
+  relatedChunks: apiResponse.related_items.map(mapUrlChunkContent),
 });
 
 const ENDPOINTS = {
@@ -78,7 +114,7 @@ const ENDPOINTS = {
 } as const;
 
 type ChunkStreamEvents = {
-  metadata: UrlInitialChunkApiResponse;
+  metadata: UrlStreamMetadataApiResponse;
   context_chunk: { content: string };
   context_complete: Record<string, never>;
   error: { detail: string };
@@ -144,7 +180,7 @@ export class UrlService {
       ENDPOINTS.STREAM_CHUNK(urlId, chunkId),
       {
         metadata: (data, _es) => {
-          const mappedData = mapInitialDetailedChunk(data);
+          const mappedData = mapStreamMetadata(data);
           handlers.onMetadata(mappedData);
         },
         context_chunk: (data, _es) => {
@@ -174,7 +210,7 @@ export class UrlService {
       ENDPOINTS.STREAM_RANDOM,
       {
         metadata: (data, _es) => {
-          const mappedData = mapInitialDetailedChunk(data);
+          const mappedData = mapStreamMetadata(data);
           handlers.onMetadata(mappedData);
         },
         context_chunk: (data, _es) => {

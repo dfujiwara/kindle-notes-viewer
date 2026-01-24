@@ -1,15 +1,14 @@
 import { useNavigate } from "react-router";
 import { LoadingIndicator } from "src/components/LoadingIndicator";
-import type {
-  BookSource,
-  Content,
-  KindleBook,
-  KindleNote,
-  NoteContent,
-  Url,
-  UrlChunk,
-  UrlChunkContent,
-  UrlSource,
+import {
+  mapBookSourceToKindleBook,
+  mapNoteContentToKindleNote,
+  mapRelatedItemsToNotes,
+  mapRelatedItemsToUrlChunks,
+  mapUrlChunkContentToUrlChunk,
+  mapUrlSourceToUrl,
+  type NoteContent,
+  type UrlChunkContent,
 } from "src/models";
 import { ChunkDescription } from "../Chunk/ChunkDescription";
 import { NoteDescription } from "../Note/NoteDescription";
@@ -47,8 +46,8 @@ export function RandomPage() {
         <div>
           <ChunkDescription
             url={mapUrlSourceToUrl(source)}
-            chunk={mapChunkContentToUrlChunk(content as UrlChunkContent)}
-            relatedChunks={mapRelatedItemsToChunks(relatedItems)}
+            chunk={mapUrlChunkContentToUrlChunk(content as UrlChunkContent)}
+            relatedChunks={mapRelatedItemsToUrlChunks(relatedItems)}
             additionalContext={additionalContext}
             onUrlClick={() => {
               navigate(`/urls/${source.id}/`);
@@ -61,53 +60,4 @@ export function RandomPage() {
       );
     }
   }
-}
-
-// Mapping functions to convert unified API response to existing model types
-
-function mapBookSourceToKindleBook(source: BookSource): KindleBook {
-  return {
-    id: source.id,
-    title: source.title,
-    author: source.author,
-  };
-}
-
-function mapNoteContentToKindleNote(content: NoteContent): KindleNote {
-  return {
-    id: content.id,
-    content: content.content,
-    createdAt: content.createdAt,
-  };
-}
-
-function mapRelatedItemsToNotes(relatedItems: Content[]): KindleNote[] {
-  return relatedItems
-    .filter((item): item is NoteContent => item.contentType === "note")
-    .map(mapNoteContentToKindleNote);
-}
-
-function mapUrlSourceToUrl(source: UrlSource): Url {
-  return {
-    id: source.id,
-    url: source.url,
-    title: source.title,
-    chunkCount: 0, // Not provided by the API, using default
-    createdAt: source.createdAt,
-  };
-}
-
-function mapChunkContentToUrlChunk(content: UrlChunkContent): UrlChunk {
-  return {
-    id: content.id,
-    content: content.content,
-    isSummary: content.isSummary,
-    createdAt: content.createdAt,
-  };
-}
-
-function mapRelatedItemsToChunks(relatedItems: Content[]): UrlChunk[] {
-  return relatedItems
-    .filter((item): item is UrlChunkContent => item.contentType === "url_chunk")
-    .map(mapChunkContentToUrlChunk);
 }

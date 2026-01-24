@@ -3,8 +3,5 @@ export { notesService } from "./notesService";
 export { useApiMutation, useApiQuery, useApiSuspenseQuery } from "./queries";
 export { randomService } from "./randomService";
 export { searchService } from "./searchService";
-export type {
-  ApiError,
-  ApiResponse,
-} from "./types";
+export type { ApiError, ApiResponse } from "./types";
 export { urlService } from "./urlService";
