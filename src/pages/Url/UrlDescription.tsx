@@ -1,3 +1,4 @@
+import { ClickableUrl } from "src/components/ClickableUrl";
 import type { Url } from "src/models";
 import { formatDate } from "src/utils/date";
 
@@ -13,9 +14,10 @@ export function UrlDescription({ url }: UrlDescriptionProps) {
       <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2 break-words">
         {url.title}
       </h1>
-      <p className="text-sm sm:text-base text-zinc-400 line-clamp-1 mb-2">
-        {url.url}
-      </p>
+      <ClickableUrl
+        url={url.url}
+        className="text-sm sm:text-base text-zinc-400 line-clamp-1 mb-2 block"
+      />
       <p className="text-zinc-500 text-xs">
         {url.chunkCount} {url.chunkCount === 1 ? "chunk" : "chunks"} •{" "}
         {formattedDate}

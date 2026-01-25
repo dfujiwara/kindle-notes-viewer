@@ -1,4 +1,5 @@
 import Markdown from "react-markdown";
+import { ClickableUrl } from "src/components/ClickableUrl";
 import type { Url, UrlChunk } from "src/models";
 import { formatDate } from "src/utils/date";
 
@@ -29,7 +30,10 @@ export function ChunkDescription({
         <h2 className="text-lg md:text-xl font-semibold text-white mb-1 hover:text-blue-400 transition-colors">
           {url.title}
         </h2>
-        <p className="text-zinc-400 text-sm line-clamp-1">{url.url}</p>
+        <ClickableUrl
+          url={url.url}
+          className="text-zinc-400 text-sm line-clamp-1 block"
+        />
         <p className="text-zinc-500 text-xs mt-1">
           {url.chunkCount} {url.chunkCount === 1 ? "chunk" : "chunks"} •{" "}
           {formatDate(url.createdAt)}
