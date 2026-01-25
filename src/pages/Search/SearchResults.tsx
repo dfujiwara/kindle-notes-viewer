@@ -1,5 +1,5 @@
 import { NavLink } from "react-router";
-import { ClickableUrl } from "src/components/ClickableUrl";
+import { ClickableUrl } from "src/components";
 import type { KindleNoteBundle, UrlChunkBundle } from "src/models";
 import { formatDate } from "src/utils/date";
 

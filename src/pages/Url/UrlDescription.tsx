@@ -1,4 +1,4 @@
-import { ClickableUrl } from "src/components/ClickableUrl";
+import { ClickableUrl } from "src/components";
 import type { Url } from "src/models";
 import { formatDate } from "src/utils/date";
 
