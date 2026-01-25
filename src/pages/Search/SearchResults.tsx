@@ -1,4 +1,5 @@
 import { NavLink } from "react-router";
+import { ClickableUrl } from "src/components";
 import type { KindleNoteBundle, UrlChunkBundle } from "src/models";
 import { formatDate } from "src/utils/date";
 
@@ -57,7 +58,10 @@ function UrlsSection({ urls }: { urls: UrlChunkBundle[] }) {
               <h3 className="text-xl font-semibold text-white">
                 {bundle.url.title}
               </h3>
-              <p className="text-sm text-zinc-400 truncate">{bundle.url.url}</p>
+              <ClickableUrl
+                url={bundle.url.url}
+                className="text-sm text-zinc-400 truncate block"
+              />
             </div>
             <div className="space-y-2 pl-4">
               {bundle.chunks.map((chunk) => (
