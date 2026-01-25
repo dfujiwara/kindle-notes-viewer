@@ -2,9 +2,12 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Toaster } from "react-hot-toast";
 import { Route, Routes } from "react-router";
-import { Footer, Header } from "src/components";
-import { ErrorFallback } from "src/components/ErrorFallback";
-import { LoadingIndicator } from "src/components/LoadingIndicator.tsx";
+import {
+  ErrorFallback,
+  Footer,
+  Header,
+  LoadingIndicator,
+} from "src/components";
 import {
   BookPage,
   ChunkPage,

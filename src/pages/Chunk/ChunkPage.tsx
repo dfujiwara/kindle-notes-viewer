@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router";
-import { LoadingIndicator } from "src/components/LoadingIndicator";
+import { LoadingIndicator } from "src/components";
 import { ChunkDescription } from "./ChunkDescription";
 import { useStreamedDetailedChunk } from "./useStreamedDetailedChunk";
 
