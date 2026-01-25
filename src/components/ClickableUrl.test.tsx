@@ -22,6 +22,13 @@ describe("ClickableUrl", () => {
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
 
+  it("shows full URL in title attribute for tooltip", () => {
+    render(<ClickableUrl url={testUrl} />);
+
+    const link = screen.getByRole("link");
+    expect(link).toHaveAttribute("title", testUrl);
+  });
+
   it("applies custom className", () => {
     render(
       <ClickableUrl url={testUrl} className="custom-class text-red-500" />,
