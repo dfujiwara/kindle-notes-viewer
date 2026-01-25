@@ -1,4 +1,5 @@
 import Markdown from "react-markdown";
+import { ClickableUrl } from "src/components";
 import type { Url, UrlChunk } from "src/models";
 import { formatDate } from "src/utils/date";
 
@@ -21,20 +22,25 @@ export function ChunkDescription({
 }: ChunkDescriptionProps) {
   return (
     <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 md:p-6 mb-4 md:mb-6">
-      <button
-        type="button"
-        className="block mb-3 md:mb-4 hover:bg-zinc-750 rounded p-2 -m-2 transition-colors w-full text-left cursor-pointer"
-        onClick={onUrlClick}
-      >
-        <h2 className="text-lg md:text-xl font-semibold text-white mb-1 hover:text-blue-400 transition-colors">
-          {url.title}
-        </h2>
-        <p className="text-zinc-400 text-sm line-clamp-1">{url.url}</p>
-        <p className="text-zinc-500 text-xs mt-1">
-          {url.chunkCount} {url.chunkCount === 1 ? "chunk" : "chunks"} •{" "}
-          {formatDate(url.createdAt)}
-        </p>
-      </button>
+      <div className="mb-3 md:mb-4">
+        <button
+          type="button"
+          className="block hover:bg-zinc-750 rounded p-2 -m-2 transition-colors w-full text-left cursor-pointer"
+          onClick={onUrlClick}
+        >
+          <h2 className="text-lg md:text-xl font-semibold text-white mb-1 hover:text-blue-400 transition-colors">
+            {url.title}
+          </h2>
+          <p className="text-zinc-500 text-xs">
+            {url.chunkCount} {url.chunkCount === 1 ? "chunk" : "chunks"} •{" "}
+            {formatDate(url.createdAt)}
+          </p>
+        </button>
+        <ClickableUrl
+          url={url.url}
+          className="text-zinc-400 text-sm line-clamp-1 block mt-2"
+        />
+      </div>
 
       <div className="mb-3 md:mb-4">
         {chunk.isSummary && (
