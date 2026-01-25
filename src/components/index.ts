@@ -1,3 +1,8 @@
 export { ClickableUrl } from "./ClickableUrl";
+export { ErrorFallback } from "./ErrorFallback";
+export { FileDropZone } from "./FileDropZone";
 export { Footer } from "./Footer";
 export { Header } from "./Header";
+export { LoadingIndicator } from "./LoadingIndicator";
+export { UploadControl } from "./UploadControl";
+export { UrlInputZone } from "./UrlInputZone";

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { LoadingIndicator } from "src/components/LoadingIndicator";
+import { LoadingIndicator } from "src/components";
 import {
   mapBookSourceToKindleBook,
   mapNoteContentToKindleNote,

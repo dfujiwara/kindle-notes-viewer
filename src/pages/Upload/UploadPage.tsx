@@ -7,9 +7,7 @@ import {
   urlService,
   useApiMutation,
 } from "src/api";
-import { FileDropZone } from "src/components/FileDropZone";
-import { UploadControl } from "src/components/UploadControl";
-import { UrlInputZone } from "src/components/UrlInputZone";
+import { FileDropZone, UploadControl, UrlInputZone } from "src/components";
 import { validateUrl } from "src/utils/validation";
 
 type UploadMode = "file" | "url";

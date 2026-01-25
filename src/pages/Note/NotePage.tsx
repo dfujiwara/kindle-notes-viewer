@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router";
-import { LoadingIndicator } from "src/components/LoadingIndicator";
+import { LoadingIndicator } from "src/components";
 import { NoteDescription } from "./NoteDescription";
 import { useStreamedDetailedNote } from "./useStreamedDetailedNote";
 
