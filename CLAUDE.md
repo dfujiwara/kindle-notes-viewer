@@ -173,8 +173,13 @@ vi.mock("react-router", async () => {
 - Form validation in components (FileDropZone, SearchPage)
 
 **Accessibility**:
-- Semantic HTML (header, main, nav)
-- `role` and `aria-label` on interactive elements
+- Semantic HTML structure:
+  - `<ul>/<li>` for lists (BookList, NoteList, etc.)
+  - `<article>` for content items (descriptions, search results)
+  - `<section>` with `aria-labelledby` for labeled content blocks
+  - `<form>/<fieldset>` for form groupings
+- `useId()` for unique IDs in `aria-labelledby` attributes
+- `role` and `aria-*` attributes on interactive elements
 - Alt text on icons
 
 ## Quick Reference
