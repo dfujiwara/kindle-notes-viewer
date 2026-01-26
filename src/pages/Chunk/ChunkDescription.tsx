@@ -1,3 +1,4 @@
+import { useId } from "react";
 import Markdown from "react-markdown";
 import { ClickableUrl } from "src/components";
 import type { Url, UrlChunk } from "src/models";
@@ -20,8 +21,11 @@ export function ChunkDescription({
   onRelatedChunkClick,
   onUrlClick,
 }: ChunkDescriptionProps) {
+  const additionalContextId = useId();
+  const relatedChunksId = useId();
+
   return (
-    <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 md:p-6 mb-4 md:mb-6">
+    <article className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 md:p-6 mb-4 md:mb-6">
       <div className="mb-3 md:mb-4">
         <button
           type="button"
@@ -56,43 +60,54 @@ export function ChunkDescription({
         </p>
       </div>
 
-      <div className="mb-3 md:mb-4">
-        <h3 className="text-base md:text-lg font-semibold text-white mb-2">
+      <section className="mb-3 md:mb-4" aria-labelledby={additionalContextId}>
+        <h3
+          id={additionalContextId}
+          className="text-base md:text-lg font-semibold text-white mb-2"
+        >
           Additional Context
         </h3>
         <div className="text-zinc-300 text-sm md:text-base [&_p]:mb-3 md:[&_p]:mb-4">
           <Markdown>{additionalContext}</Markdown>
         </div>
-      </div>
+      </section>
 
-      <div className="mb-3 md:mb-4">
-        <h3 className="text-base md:text-lg font-semibold text-white mb-2">
+      <section className="mb-3 md:mb-4" aria-labelledby={relatedChunksId}>
+        <h3
+          id={relatedChunksId}
+          className="text-base md:text-lg font-semibold text-white mb-2"
+        >
           Related Chunks
         </h3>
-        <div className="space-y-2">
+        <ul className="space-y-2 list-none">
           {relatedChunks.length > 0 ? (
             relatedChunks.map((relatedChunk) => (
-              <button
-                key={relatedChunk.id}
-                type="button"
-                className="bg-zinc-700 rounded p-2 md:p-3 border border-zinc-600 cursor-pointer hover:border-zinc-500 transition-colors w-full text-left"
-                onClick={() => onRelatedChunkClick(relatedChunk.id)}
-              >
-                {relatedChunk.isSummary && (
-                  <span className="inline-block bg-blue-600 text-white text-xs px-2 py-0.5 rounded mb-1">
-                    Summary
-                  </span>
-                )}
-                <p className="text-zinc-300 text-sm">{relatedChunk.content}</p>
-              </button>
+              <li key={relatedChunk.id}>
+                <button
+                  type="button"
+                  className="bg-zinc-700 rounded p-2 md:p-3 border border-zinc-600 cursor-pointer hover:border-zinc-500 transition-colors w-full text-left"
+                  onClick={() => onRelatedChunkClick(relatedChunk.id)}
+                >
+                  {relatedChunk.isSummary && (
+                    <span className="inline-block bg-blue-600 text-white text-xs px-2 py-0.5 rounded mb-1">
+                      Summary
+                    </span>
+                  )}
+                  <p className="text-zinc-300 text-sm">
+                    {relatedChunk.content}
+                  </p>
+                </button>
+              </li>
             ))
           ) : (
-            <p className="text-zinc-500 text-sm italic">
-              No related chunks found
-            </p>
+            <li>
+              <p className="text-zinc-500 text-sm italic">
+                No related chunks found
+              </p>
+            </li>
           )}
-        </div>
-      </div>
-    </div>
+        </ul>
+      </section>
+    </article>
   );
 }
