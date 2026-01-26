@@ -18,16 +18,17 @@ export function NoteList({ bookId, notes }: NoteListProps) {
   }
 
   return (
-    <div className="space-y-3 sm:space-y-4">
+    <ul className="space-y-3 sm:space-y-4 list-none">
       {notes.map((note) => (
-        <NoteItem
-          key={note.id}
-          note={note}
-          onClick={() => {
-            navigate(`/books/${bookId}/notes/${note.id}`);
-          }}
-        />
+        <li key={note.id}>
+          <NoteItem
+            note={note}
+            onClick={() => {
+              navigate(`/books/${bookId}/notes/${note.id}`);
+            }}
+          />
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

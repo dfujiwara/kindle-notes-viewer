@@ -18,10 +18,12 @@ export function UrlList({ urls, onUrlClick }: UrlListProps) {
 
   // Responsive grid layout
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 list-none">
       {urls.map((url) => (
-        <UrlItem key={url.id} url={url} onClick={onUrlClick} />
+        <li key={url.id}>
+          <UrlItem url={url} onClick={onUrlClick} />
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
