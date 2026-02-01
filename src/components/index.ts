@@ -1,4 +1,5 @@
 export { ClickableUrl } from "./ClickableUrl";
+export { DeleteButton } from "./DeleteButton";
 export { ErrorFallback } from "./ErrorFallback";
 export { FileDropZone } from "./FileDropZone";
 export { Footer } from "./Footer";

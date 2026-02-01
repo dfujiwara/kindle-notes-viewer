@@ -33,7 +33,6 @@ export class HttpClient {
 
     try {
       const response = await fetch(url, requestConfig);
-      const data = await response.json();
 
       if (!response.ok) {
         throw new ApiError(
@@ -41,6 +40,15 @@ export class HttpClient {
           response.status,
         );
       }
+
+      if (response.status === 204) {
+        return {
+          data: null as T,
+          status: response.status,
+        };
+      }
+
+      const data = await response.json();
 
       return {
         data,
