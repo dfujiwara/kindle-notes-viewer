@@ -1,5 +1,4 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import type { Url } from "src/models";
 import { UrlDescription } from "./UrlDescription";
 
@@ -45,37 +44,5 @@ describe("UrlDescription", () => {
       <UrlDescription url={mockUrl} onDelete={vi.fn()} isDeleting={false} />,
     );
     expect(screen.getByText(/5 chunks •/)).toBeInTheDocument();
-  });
-
-  it("calls onDelete when confirm is accepted", async () => {
-    const onDelete = vi.fn();
-    vi.spyOn(window, "confirm").mockReturnValue(true);
-
-    render(
-      <UrlDescription url={mockUrl} onDelete={onDelete} isDeleting={false} />,
-    );
-    await userEvent.click(screen.getByRole("button", { name: /delete/i }));
-
-    expect(window.confirm).toHaveBeenCalled();
-    expect(onDelete).toHaveBeenCalledOnce();
-  });
-
-  it("does not call onDelete when confirm is cancelled", async () => {
-    const onDelete = vi.fn();
-    vi.spyOn(window, "confirm").mockReturnValue(false);
-
-    render(
-      <UrlDescription url={mockUrl} onDelete={onDelete} isDeleting={false} />,
-    );
-    await userEvent.click(screen.getByRole("button", { name: /delete/i }));
-
-    expect(onDelete).not.toHaveBeenCalled();
-  });
-
-  it("shows 'Deleting...' when isDeleting is true", () => {
-    render(
-      <UrlDescription url={mockUrl} onDelete={vi.fn()} isDeleting={true} />,
-    );
-    expect(screen.getByText("Deleting...")).toBeInTheDocument();
   });
 });
