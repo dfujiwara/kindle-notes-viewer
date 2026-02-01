@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import toast from "react-hot-toast";
 import { MemoryRouter } from "react-router";
 import { booksService, notesService } from "src/api";
+import { ApiError } from "src/api/types";
 import type { KindleNoteBundle } from "src/models";
 import { BookPage } from "./BookPage";
 
@@ -99,8 +100,7 @@ describe("BookPage", () => {
   });
 
   it("shows error toast on delete failure", async () => {
-    const apiError = new Error("Not found");
-    Object.assign(apiError, { status: 404, message: "Not found" });
+    const apiError = new ApiError("Not found", 404);
     vi.mocked(booksService.deleteBook).mockRejectedValue(apiError);
     vi.spyOn(window, "confirm").mockReturnValue(true);
 

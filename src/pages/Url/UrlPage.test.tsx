@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import toast from "react-hot-toast";
 import { MemoryRouter } from "react-router";
 import { urlService } from "src/api";
+import { ApiError } from "src/api/types";
 import type { UrlChunkBundle } from "src/models";
 import { UrlPage } from "./UrlPage";
 
@@ -110,8 +111,7 @@ describe("UrlPage", () => {
   });
 
   it("shows error toast on delete failure", async () => {
-    const apiError = new Error("Not found");
-    Object.assign(apiError, { status: 404, message: "Not found" });
+    const apiError = new ApiError("Not found", 404);
     vi.mocked(urlService.deleteUrl).mockRejectedValue(apiError);
     vi.spyOn(window, "confirm").mockReturnValue(true);
 
