@@ -5,6 +5,7 @@ import type { ApiResponse } from "./types";
 const ENDPOINTS = {
   LIST: "/books",
   UPLOAD: "/books",
+  DELETE: (bookId: string) => `/books/${bookId}`,
 } as const;
 
 export class BooksService {
@@ -23,6 +24,12 @@ export class BooksService {
       method: "POST",
       headers: {},
       body: formData,
+    });
+  }
+  async deleteBook(bookId: string): Promise<ApiResponse<null>> {
+    return httpClient.request<null>(ENDPOINTS.DELETE(bookId), {
+      method: "DELETE",
+      headers: {},
     });
   }
 }

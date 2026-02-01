@@ -107,6 +107,7 @@ const mapStreamMetadata = (
 const ENDPOINTS = {
   LIST: "/urls",
   UPLOAD: "/urls",
+  DELETE: (urlId: string) => `/urls/${urlId}`,
   CHUNKS: (urlId: string) => `/urls/${urlId}`,
   STREAM_CHUNK: (urlId: string, chunkId: string) =>
     `/urls/${urlId}/chunks/${chunkId}`,
@@ -148,6 +149,16 @@ export class UrlService {
       method: "POST",
       headers: {},
       body: { url },
+    });
+  }
+
+  /**
+   * Delete a URL and all its chunks
+   */
+  async deleteUrl(urlId: string): Promise<ApiResponse<null>> {
+    return httpClient.request<null>(ENDPOINTS.DELETE(urlId), {
+      method: "DELETE",
+      headers: {},
     });
   }
 
