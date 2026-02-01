@@ -28,18 +28,12 @@ vi.mock("react-router", async () => {
   };
 });
 
-vi.mock("react-hot-toast", async () => {
-  const actual =
-    await vi.importActual<typeof import("react-hot-toast")>("react-hot-toast");
-  return {
-    ...actual,
-    default: {
-      ...actual.default,
-      success: vi.fn(),
-      error: vi.fn(),
-    },
-  };
-});
+vi.mock("react-hot-toast", () => ({
+  default: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
 
 const mockChunkBundle: UrlChunkBundle = {
   url: {
