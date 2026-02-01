@@ -29,7 +29,8 @@ vi.mock("react-router", async () => {
 });
 
 vi.mock("react-hot-toast", async () => {
-  const actual = await vi.importActual("react-hot-toast");
+  const actual =
+    await vi.importActual<typeof import("react-hot-toast")>("react-hot-toast");
   return {
     ...actual,
     default: {
