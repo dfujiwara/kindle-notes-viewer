@@ -15,7 +15,7 @@ import { useStreamedDetailedNote } from "./useStreamedDetailedNote";
 // Mock notesService
 vi.mock("src/api", () => ({
   notesService: {
-    getStreamedRandomNote: vi.fn(),
+    getStreamedNote: vi.fn(),
   },
 }));
 
@@ -55,8 +55,8 @@ describe("useStreamedDetailedNote", () => {
 
   beforeEach(() => {
     mockEventSource = new MockEventSource();
-    vi.mocked(notesService.getStreamedRandomNote).mockImplementation(
-      (handlers) => {
+    vi.mocked(notesService.getStreamedNote).mockImplementation(
+      (_bookId, _noteId, handlers) => {
         onMetadataCallback = handlers.onMetadata;
         onContextChunkCallback = handlers.onContextChunk;
         onCompleteCallback = handlers.onComplete;
@@ -72,12 +72,16 @@ describe("useStreamedDetailedNote", () => {
   });
 
   it("should start in loading state", () => {
-    const { result } = renderHook(() => useStreamedDetailedNote());
+    const { result } = renderHook(() =>
+      useStreamedDetailedNote("book-1", "note-1"),
+    );
     expect(result.current).toEqual({ status: "loading" });
   });
 
   it("should transition to streaming state when metadata is received", async () => {
-    const { result } = renderHook(() => useStreamedDetailedNote());
+    const { result } = renderHook(() =>
+      useStreamedDetailedNote("book-1", "note-1"),
+    );
 
     act(() => {
       onMetadataCallback(mockNote);
@@ -90,7 +94,9 @@ describe("useStreamedDetailedNote", () => {
   });
 
   it("should append context chunks to additionalContext", async () => {
-    const { result } = renderHook(() => useStreamedDetailedNote());
+    const { result } = renderHook(() =>
+      useStreamedDetailedNote("book-1", "note-1"),
+    );
 
     act(() => {
       onMetadataCallback(mockNote);
@@ -105,7 +111,9 @@ describe("useStreamedDetailedNote", () => {
   });
 
   it("should preserve note data while appending context chunks", async () => {
-    const { result } = renderHook(() => useStreamedDetailedNote());
+    const { result } = renderHook(() =>
+      useStreamedDetailedNote("book-1", "note-1"),
+    );
 
     act(() => {
       onMetadataCallback(mockNote);
@@ -120,7 +128,9 @@ describe("useStreamedDetailedNote", () => {
   });
 
   it("should transition to success state when streaming completes", async () => {
-    const { result } = renderHook(() => useStreamedDetailedNote());
+    const { result } = renderHook(() =>
+      useStreamedDetailedNote("book-1", "note-1"),
+    );
 
     act(() => {
       onMetadataCallback(mockNote);
@@ -138,7 +148,9 @@ describe("useStreamedDetailedNote", () => {
   });
 
   it("should handle in-stream error and transition to error state", async () => {
-    const { result } = renderHook(() => useStreamedDetailedNote());
+    const { result } = renderHook(() =>
+      useStreamedDetailedNote("book-1", "note-1"),
+    );
     act(() => {
       onInStreamErrorCallback();
     });
@@ -147,7 +159,9 @@ describe("useStreamedDetailedNote", () => {
   });
 
   it("should handle stream error and transition to error state", async () => {
-    const { result } = renderHook(() => useStreamedDetailedNote());
+    const { result } = renderHook(() =>
+      useStreamedDetailedNote("book-1", "note-1"),
+    );
     act(() => {
       onErrorCallback?.(new Event("error"));
     });
@@ -156,13 +170,17 @@ describe("useStreamedDetailedNote", () => {
   });
 
   it("should close EventSource on unmount", () => {
-    const { unmount } = renderHook(() => useStreamedDetailedNote());
+    const { unmount } = renderHook(() =>
+      useStreamedDetailedNote("book-1", "note-1"),
+    );
     unmount();
     expect(mockEventSource.close).toHaveBeenCalled();
   });
 
   it("should handle full streaming lifecycle", async () => {
-    const { result } = renderHook(() => useStreamedDetailedNote());
+    const { result } = renderHook(() =>
+      useStreamedDetailedNote("book-1", "note-1"),
+    );
 
     // Initial state
     expect(result.current.status).toBe("loading");
@@ -193,7 +211,9 @@ describe("useStreamedDetailedNote", () => {
   });
 
   it("should maintain empty additionalContext if no chunks received", async () => {
-    const { result } = renderHook(() => useStreamedDetailedNote());
+    const { result } = renderHook(() =>
+      useStreamedDetailedNote("book-1", "note-1"),
+    );
     act(() => {
       onMetadataCallback(mockNote);
       onCompleteCallback();
