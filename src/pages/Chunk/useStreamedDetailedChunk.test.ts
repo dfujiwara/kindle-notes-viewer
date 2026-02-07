@@ -6,7 +6,7 @@ import { useStreamedDetailedChunk } from "./useStreamedDetailedChunk";
 // Mock urlService
 vi.mock("src/api", () => ({
   urlService: {
-    getStreamedRandomChunk: vi.fn(),
+    getStreamedChunk: vi.fn(),
   },
 }));
 
@@ -50,8 +50,8 @@ describe("useStreamedDetailedChunk", () => {
 
   beforeEach(() => {
     mockEventSource = new MockEventSource();
-    vi.mocked(urlService.getStreamedRandomChunk).mockImplementation(
-      (handlers) => {
+    vi.mocked(urlService.getStreamedChunk).mockImplementation(
+      (_urlId, _chunkId, handlers) => {
         onMetadataCallback = handlers.onMetadata;
         onContextChunkCallback = handlers.onContextChunk;
         onCompleteCallback = handlers.onComplete;
@@ -67,12 +67,16 @@ describe("useStreamedDetailedChunk", () => {
   });
 
   it("should start in loading state", () => {
-    const { result } = renderHook(() => useStreamedDetailedChunk());
+    const { result } = renderHook(() =>
+      useStreamedDetailedChunk("url-1", "chunk-1"),
+    );
     expect(result.current).toEqual({ status: "loading" });
   });
 
   it("should transition to streaming state when metadata is received", async () => {
-    const { result } = renderHook(() => useStreamedDetailedChunk());
+    const { result } = renderHook(() =>
+      useStreamedDetailedChunk("url-1", "chunk-1"),
+    );
 
     act(() => {
       onMetadataCallback(mockChunk);
@@ -85,7 +89,9 @@ describe("useStreamedDetailedChunk", () => {
   });
 
   it("should append context chunks to additionalContext", async () => {
-    const { result } = renderHook(() => useStreamedDetailedChunk());
+    const { result } = renderHook(() =>
+      useStreamedDetailedChunk("url-1", "chunk-1"),
+    );
 
     act(() => {
       onMetadataCallback(mockChunk);
@@ -100,7 +106,9 @@ describe("useStreamedDetailedChunk", () => {
   });
 
   it("should preserve chunk data while appending context chunks", async () => {
-    const { result } = renderHook(() => useStreamedDetailedChunk());
+    const { result } = renderHook(() =>
+      useStreamedDetailedChunk("url-1", "chunk-1"),
+    );
 
     act(() => {
       onMetadataCallback(mockChunk);
@@ -115,7 +123,9 @@ describe("useStreamedDetailedChunk", () => {
   });
 
   it("should transition to success state when streaming completes", async () => {
-    const { result } = renderHook(() => useStreamedDetailedChunk());
+    const { result } = renderHook(() =>
+      useStreamedDetailedChunk("url-1", "chunk-1"),
+    );
 
     act(() => {
       onMetadataCallback(mockChunk);
@@ -133,7 +143,9 @@ describe("useStreamedDetailedChunk", () => {
   });
 
   it("should handle in-stream error and transition to error state", async () => {
-    const { result } = renderHook(() => useStreamedDetailedChunk());
+    const { result } = renderHook(() =>
+      useStreamedDetailedChunk("url-1", "chunk-1"),
+    );
     act(() => {
       onInStreamErrorCallback();
     });
@@ -142,7 +154,9 @@ describe("useStreamedDetailedChunk", () => {
   });
 
   it("should handle stream error and transition to error state", async () => {
-    const { result } = renderHook(() => useStreamedDetailedChunk());
+    const { result } = renderHook(() =>
+      useStreamedDetailedChunk("url-1", "chunk-1"),
+    );
     act(() => {
       onErrorCallback?.(new Event("error"));
     });
@@ -151,13 +165,17 @@ describe("useStreamedDetailedChunk", () => {
   });
 
   it("should close EventSource on unmount", () => {
-    const { unmount } = renderHook(() => useStreamedDetailedChunk());
+    const { unmount } = renderHook(() =>
+      useStreamedDetailedChunk("url-1", "chunk-1"),
+    );
     unmount();
     expect(mockEventSource.close).toHaveBeenCalled();
   });
 
   it("should maintain empty additionalContext if no chunks received", async () => {
-    const { result } = renderHook(() => useStreamedDetailedChunk());
+    const { result } = renderHook(() =>
+      useStreamedDetailedChunk("url-1", "chunk-1"),
+    );
     act(() => {
       onMetadataCallback(mockChunk);
       onCompleteCallback();
