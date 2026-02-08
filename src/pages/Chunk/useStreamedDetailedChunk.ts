@@ -8,17 +8,9 @@ type StreamState =
   | { status: "success"; data: UrlDetailedChunk }
   | { status: "error"; error: Error };
 
-// Overload signatures
-export function useStreamedDetailedChunk(): StreamState;
 export function useStreamedDetailedChunk(
   urlId: string,
   chunkId: string,
-): StreamState;
-
-// Implementation
-export function useStreamedDetailedChunk(
-  urlId?: string,
-  chunkId?: string,
 ): StreamState {
   const [state, setState] = useState<StreamState>({
     status: "loading",
@@ -79,10 +71,7 @@ export function useStreamedDetailedChunk(
       },
     };
 
-    const eventSource =
-      urlId && chunkId
-        ? urlService.getStreamedChunk(urlId, chunkId, handlers)
-        : urlService.getStreamedRandomChunk(handlers);
+    const eventSource = urlService.getStreamedChunk(urlId, chunkId, handlers);
 
     return () => {
       eventSource.close();

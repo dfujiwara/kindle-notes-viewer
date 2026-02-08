@@ -52,7 +52,6 @@ const mapInitialDetailedNote = (
 
 const ENDPOINTS = {
   LIST: (bookId: string) => `/books/${bookId}/notes`,
-  STREAM_RANDOM: "/random",
   STREAM_NOTE: (bookId: string, noteId: string) =>
     `/books/${bookId}/notes/${noteId}`,
 } as const;
@@ -99,36 +98,6 @@ export class NotesService {
   ): EventSource {
     return sseClient.createEventSourceWithHandlers<NoteStreamEvents>(
       ENDPOINTS.STREAM_NOTE(bookId, noteId),
-      {
-        metadata: (data, _es) => {
-          const mappedData = mapInitialDetailedNote(data);
-          handlers.onMetadata(mappedData);
-        },
-        context_chunk: (data, _es) => {
-          handlers.onContextChunk(data.content);
-        },
-        context_complete: (_data, es) => {
-          handlers.onComplete();
-          es.close();
-        },
-        error: (data, es) => {
-          logger.error(data.detail);
-          handlers.onInStreamError();
-          es.close();
-        },
-      },
-      handlers.onError,
-    );
-  }
-
-  /**
-   * Creates a streaming connection for random notes
-   * @param handlers - Object containing all stream event handlers
-   * @returns EventSource instance (caller must close it)
-   */
-  getStreamedRandomNote(handlers: StreamHandlers): EventSource {
-    return sseClient.createEventSourceWithHandlers<NoteStreamEvents>(
-      ENDPOINTS.STREAM_RANDOM,
       {
         metadata: (data, _es) => {
           const mappedData = mapInitialDetailedNote(data);
