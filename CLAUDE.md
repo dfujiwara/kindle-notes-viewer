@@ -11,200 +11,51 @@ npm run test              # Tests (watch mode)
 npm run test:run          # Tests (CI)
 npm run test:coverage     # Tests with coverage
 npm run test:e2e          # E2E tests (Playwright)
-npm run test:e2e:ui       # E2E tests with Playwright UI
-npm run test:e2e:headed   # E2E tests in headed mode (visible browser)
-npm run test:e2e:report   # View E2E test HTML report
 npm run check             # Biome lint/format check
 npm run check:fix         # Auto-fix
 ```
 
-**After code changes, run:** `npm run check && npm run test:run`
+**After code changes, run:** `npm run check && npm run test:run && npm run build`
 
 ## Architecture
 
-### API Layer Pattern
+### API Layer
 **Flow**: httpClient → services (transform data) → query hooks → components
 
-**Data Transformation**:
 - Backend returns **snake_case**, services transform to **camelCase**
 - API response interfaces: `*ApiResponse` (e.g., `KindleNoteApiResponse`)
-- Domain models: `Kindle*` (e.g., `KindleNote`)
-- Mapping functions in each service handle transformation
-
-**Service Pattern**:
-```typescript
-class BooksService {
-  async getBooks(): Promise<KindleBook[]> { ... }
-}
-export const booksService = new BooksService();
-```
-All services: class-based with static instance exports
-
-### SSE Streaming (Real-time Context)
-**Client**: `src/api/sseClient.ts` - Generic EventSource wrapper with type-safe handlers
-
-**Streaming Hooks**: `useStreamedDetailedNote`, `useStreamedDetailedChunk`, `useStreamedRandomContent`
-- All follow same pattern: loading → streaming → success | error
-- Auto-closes connection on completion/error
-- See existing hooks in `src/pages/*/useStreamed*.ts` for implementation examples
-
-## E2E Testing
-
-**Framework**: Playwright - Config: `playwright.config.ts`, Tests: `e2e/tests/*.spec.ts`
-
-See **[e2e/README.md](e2e/README.md)** for full documentation on test structure, setup, and best practices.
-
-## MCP Server Integration
-
-**Playwright MCP Server** enables browser automation via Claude Code for manual UI testing and debugging.
-
-See **[MCP_SETUP.md](MCP_SETUP.md)** for setup, configuration, and usage documentation.
-
-## Routes
-
-All routes defined in `src/App.tsx` with Suspense + Error Boundary:
-
-- `/` - Home (book list + URL list)
-- `/books/:bookId` - Book detail with notes list
-- `/books/:bookId/notes/:noteId` - Single note with streaming context
-- `/urls/:urlId` - URL detail with chunks list
-- `/urls/:urlId/chunks/:chunkId` - Single chunk with streaming context
-- `/random` - Random note or chunk with streaming context
-- `/search` - Search across books and URLs
-- `/upload` - Upload Kindle notes file
-
-## API
-
-**Base URL**: `VITE_API_URL` env var
+- Domain models: `Kindle*` (e.g., `KindleNote`) — detailed variants: `KindleDetailedNote`, `KindleDetailedChunk`
+- All services are class-based with singleton exports: `export const booksService = new BooksService()`
+- Services in `src/api/*Service.ts`, import from `src/api`
 
 **Query Hooks**:
 - `useApiSuspenseQuery<T>` - Pages (auto loading/error)
 - `useApiQuery<T>` - SearchPage (with `enabled` option)
 - `useApiMutation<T, P>` - File upload
 
-**Services**:
-- All services in `src/api/*Service.ts` (import from `src/api`)
-- `booksService` - Book upload, retrieval
-- `notesService` - Note details (SSE streaming)
-- `urlService` - URL management and chunk retrieval
-- `randomService` - Random content (SSE streaming)
-- `searchService` - Search across books and URLs
-- Services encapsulate API calls and data transformation
+**Error Handling**: Custom `ApiError` class (message + status code), `ErrorFallback` with retry, mutations accept `onError` callback
 
-**Error Handling**:
-- Custom `ApiError` class (message + status code)
-- `ErrorFallback` component with retry button
-- Mutations accept `onError` callback
+### SSE Streaming
+**Client**: `src/api/sseClient.ts` - Generic EventSource wrapper with type-safe handlers
+
+**Pattern**: loading → streaming → success | error. Auto-closes on completion/error. See `src/pages/*/useStreamed*.ts` for examples.
 
 ## Environment Variables
 
-**Required**:
 - `VITE_API_URL` - Backend API base URL (default: `http://localhost:8000`)
-
-**E2E Testing**:
 - `E2E_API_URL` - API URL for E2E tests (overrides default in `playwright.config.ts`)
-
-## TypeScript
-
-**Naming Conventions**:
-- Props: Interface suffix `Props` (e.g., `FileDropZoneProps`)
-- Domain models: `KindleBook`, `KindleNote`, `KindleUrl`, `KindleChunk`, `RandomContent`, `SearchResult`
-- Detailed models: `KindleDetailedNote`, `KindleDetailedChunk` (with streaming context)
-- API responses: `*ApiResponse` (snake_case fields, e.g., `KindleNoteApiResponse`)
-- Generics: `useApiQuery<T>`, `useApiMutation<T, P>`
 
 ## Testing
 
-**Test Wrapper Pattern**:
-```typescript
-<QueryClientProvider client={queryClient}>
-  <MemoryRouter initialEntries={["/"]}>
-    {children}
-  </MemoryRouter>
-</QueryClientProvider>
-```
+- **Unit/integration**: See existing `*.test.tsx` files for wrapper and mock patterns
+- **E2E**: Playwright — see [e2e/README.md](e2e/README.md)
+- **Browser automation**: Playwright MCP Server — see [MCP_SETUP.md](MCP_SETUP.md)
+- Test behavior and logic, NOT styles or implementation details
 
-**Mocking Patterns**:
-```typescript
-// Services
-vi.mock("src/api/booksService");
-vi.mocked(booksService.getBooks).mockResolvedValue([...]);
+## Debug SSE Streaming
 
-// Partial module mocks
-vi.mock("src/api", async () => {
-  const actual = await vi.importActual("src/api");
-  return { ...actual, booksService: { uploadBook: vi.fn() } };
-});
-
-// Hooks
-vi.mock("react-router", async () => {
-  const actual = await vi.importActual("react-router");
-  return { ...actual, useNavigate: () => mockNavigate };
-});
-```
-
-**Testing Hooks**: Use `renderHook()` with QueryClientProvider wrapper
-
-**Focus**: Test behavior and logic, NOT styles or implementation details
-
-## UI & Styling
-
-**CSS Framework**: Tailwind CSS v4 (via `@tailwindcss/vite`)
-- Utility-first approach
-- Dark theme by default (zinc-900, zinc-800 backgrounds)
-- Mobile-first responsive design
-
-**Components**:
-- Custom components in `src/components/` built with Tailwind (no component library)
-- Toast notifications: `react-hot-toast` (positioned bottom-right)
-- Markdown rendering: `react-markdown` for note/chunk content display
-
-## Patterns
-
-**State Management**:
-- Server state: React Query
-- Local state: React hooks (useState, useEffect)
-- No Redux/Context
-
-**Error Handling**:
-- `ApiError` class for all API errors
-- Error boundaries at app level
-- Toast notifications for user-facing errors
-- Form validation in components (FileDropZone, SearchPage)
-
-**Accessibility**:
-- Semantic HTML structure:
-  - `<ul>/<li>` for lists (BookList, NoteList, etc.)
-  - `<article>` for content items (descriptions, search results)
-  - `<section>` with `aria-labelledby` for labeled content blocks
-  - `<form>/<fieldset>` for form groupings
-- `useId()` for unique IDs in `aria-labelledby` attributes
-- `role` and `aria-*` attributes on interactive elements
-- Alt text on icons
-
-## Quick Reference
-
-### Add New API Endpoint
-1. Create service method in `src/api/*Service.ts`
-2. Define `*ApiResponse` interface + mapping function
-3. Export from `src/api/index.ts`
-4. Use `useApiSuspenseQuery<T>` or `useApiQuery<T>` in components
-
-### Add New Page
-1. Create component in `src/pages/[Feature]/`
-2. Wrap content with Suspense + LoadingIndicator
-3. Add route in App.tsx
-4. Export from `src/pages/index.ts`
-
-### Write Tests
-1. Create `.test.tsx` in same directory as component
-2. Use TestWrapper with QueryClientProvider + MemoryRouter
-3. Mock services with `vi.mock()` + `vi.mocked()`
-4. Test user behavior with `userEvent` and `screen` queries
-
-### Debug SSE Streaming
 1. Check event names match backend in sseClient handlers
-2. Verify JSON parsing in createEventSourceWithHandlers
-3. Check Network tab in DevTools for EventSource connection
+2. Verify JSON parsing in `createEventSourceWithHandlers`
+3. Check Network tab for EventSource connection
 4. Verify handler callbacks fire in correct order
-5. Ensure cleanup function closes EventSource on unmount
+5. Ensure cleanup closes EventSource on unmount
