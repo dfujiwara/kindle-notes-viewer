@@ -7,6 +7,8 @@ import type {
   UrlChunkBundle,
 } from "../models";
 import { httpClient } from "./httpClient";
+import type { TweetThreadBundleApiResponse } from "./tweetApiTypes";
+import { mapTweetThreadBundle } from "./tweetApiTypes";
 import type { ApiResponse } from "./types";
 
 // API response interfaces with snake_case fields
@@ -45,6 +47,7 @@ interface SearchResultApiResponse {
   query: string;
   books: KindleNoteBundleApiResponse[];
   urls: UrlChunkBundleApiResponse[];
+  tweet_threads: TweetThreadBundleApiResponse[];
   count: number;
 }
 
@@ -87,6 +90,7 @@ const mapSearchResult = (apiResult: SearchResultApiResponse): SearchResult => ({
   count: apiResult.count,
   books: apiResult.books.map(mapNoteBundle),
   urls: apiResult.urls.map(mapUrlChunkBundle),
+  tweetThreads: apiResult.tweet_threads.map(mapTweetThreadBundle),
 });
 
 const ENDPOINTS = {

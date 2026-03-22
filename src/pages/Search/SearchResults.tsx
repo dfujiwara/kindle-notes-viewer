@@ -1,14 +1,23 @@
 import { useId } from "react";
 import { NavLink } from "react-router";
 import { ClickableUrl } from "src/components";
-import type { KindleNoteBundle, UrlChunkBundle } from "src/models";
+import type {
+  KindleNoteBundle,
+  TweetThreadBundle,
+  UrlChunkBundle,
+} from "src/models";
 import { formatDate } from "src/utils/date";
 
 export type SearchResultsProps =
   | { status: "idle" }
   | { status: "loading" }
   | { status: "error"; errorMessage: string }
-  | { status: "success"; books: KindleNoteBundle[]; urls: UrlChunkBundle[] };
+  | {
+      status: "success";
+      books: KindleNoteBundle[];
+      urls: UrlChunkBundle[];
+      tweetThreads: TweetThreadBundle[];
+    };
 
 function BooksSection({ books }: { books: KindleNoteBundle[] }) {
   const headingId = useId();
@@ -104,6 +113,60 @@ function UrlsSection({ urls }: { urls: UrlChunkBundle[] }) {
   );
 }
 
+function TweetsSection({
+  tweetThreads,
+}: {
+  tweetThreads: TweetThreadBundle[];
+}) {
+  const headingId = useId();
+
+  if (tweetThreads.length === 0) return null;
+
+  return (
+    <section aria-labelledby={headingId}>
+      <h2 id={headingId} className="text-lg font-semibold text-zinc-400 mb-4">
+        From Tweets
+      </h2>
+      <ul className="space-y-6 list-none">
+        {tweetThreads.map((bundle) => (
+          <li key={bundle.thread.id}>
+            <article className="space-y-3">
+              <header className="border-b border-zinc-700 pb-2">
+                <h3 className="text-xl font-semibold text-white">
+                  <NavLink
+                    to={`/tweets/${bundle.thread.id}`}
+                    className="hover:text-zinc-300 transition-colors"
+                  >
+                    {bundle.thread.title}
+                  </NavLink>
+                </h3>
+                <p className="text-sm text-zinc-400">
+                  @{bundle.thread.authorUsername}
+                </p>
+              </header>
+              <ul className="space-y-2 pl-4 list-none">
+                {bundle.tweets.map((tweet) => (
+                  <li key={tweet.id}>
+                    <NavLink
+                      to={`/tweets/${bundle.thread.id}/tweets/${tweet.id}`}
+                      className="block p-3 rounded-lg border border-zinc-700 bg-zinc-800 hover:border-zinc-600 transition-colors"
+                    >
+                      <p className="text-zinc-200">{tweet.content}</p>
+                      <p className="text-xs text-zinc-500 mt-2">
+                        {formatDate(tweet.tweetedAt)}
+                      </p>
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function SearchResults(props: SearchResultsProps) {
   if (props.status === "idle") {
     return (
@@ -128,8 +191,9 @@ export function SearchResults(props: SearchResultsProps) {
   // props.status === "success"
   const hasBooks = props.books.length > 0;
   const hasUrls = props.urls.length > 0;
+  const hasTweets = props.tweetThreads.length > 0;
 
-  if (!hasBooks && !hasUrls) {
+  if (!hasBooks && !hasUrls && !hasTweets) {
     return (
       <div className="text-center text-zinc-400 py-12">No results found</div>
     );
@@ -139,6 +203,7 @@ export function SearchResults(props: SearchResultsProps) {
     <div className="space-y-8">
       <BooksSection books={props.books} />
       <UrlsSection urls={props.urls} />
+      <TweetsSection tweetThreads={props.tweetThreads} />
     </div>
   );
 }

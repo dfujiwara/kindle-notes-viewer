@@ -54,6 +54,7 @@ describe("SearchService", () => {
               ],
             },
           ],
+          tweet_threads: [],
           count: 2,
         },
         status: 200,
@@ -101,6 +102,7 @@ describe("SearchService", () => {
             ],
           },
         ],
+        tweetThreads: [],
         count: 2,
       });
     });
@@ -135,6 +137,7 @@ describe("SearchService", () => {
               ],
             },
           ],
+          tweet_threads: [],
           count: 2,
         },
         status: 200,
@@ -148,12 +151,86 @@ describe("SearchService", () => {
       expect(result.data.urls[0].chunks[1].isSummary).toBe(false);
     });
 
+    it("should map tweet_threads from snake_case to camelCase", async () => {
+      const mockApiResponse = {
+        data: {
+          query: "typescript",
+          books: [],
+          urls: [],
+          tweet_threads: [
+            {
+              thread: {
+                id: "thread-1",
+                root_tweet_id: "tw-root",
+                author_username: "testuser",
+                author_display_name: "Test User",
+                title: "TypeScript Tips",
+                tweet_count: 1,
+                fetched_at: "2026-01-05T00:00:00Z",
+                created_at: "2026-01-05T00:00:00Z",
+              },
+              tweets: [
+                {
+                  id: "tweet-1",
+                  tweet_id: "tw-1",
+                  author_username: "testuser",
+                  author_display_name: "Test User",
+                  content: "Generics are great",
+                  media_urls: [],
+                  thread_id: "thread-1",
+                  position_in_thread: 0,
+                  tweeted_at: "2026-01-05T00:00:00Z",
+                  created_at: "2026-01-05T00:00:00Z",
+                },
+              ],
+            },
+          ],
+          count: 1,
+        },
+        status: 200,
+      };
+
+      vi.mocked(httpClient.request).mockResolvedValue(mockApiResponse);
+
+      const result = await searchService.search("typescript");
+
+      expect(result.data.tweetThreads).toEqual([
+        {
+          thread: {
+            id: "thread-1",
+            rootTweetId: "tw-root",
+            authorUsername: "testuser",
+            authorDisplayName: "Test User",
+            title: "TypeScript Tips",
+            tweetCount: 1,
+            fetchedAt: "2026-01-05T00:00:00Z",
+            createdAt: "2026-01-05T00:00:00Z",
+          },
+          tweets: [
+            {
+              id: "tweet-1",
+              tweetId: "tw-1",
+              authorUsername: "testuser",
+              authorDisplayName: "Test User",
+              content: "Generics are great",
+              mediaUrls: [],
+              threadId: "thread-1",
+              positionInThread: 0,
+              tweetedAt: "2026-01-05T00:00:00Z",
+              createdAt: "2026-01-05T00:00:00Z",
+            },
+          ],
+        },
+      ]);
+    });
+
     it("should handle empty books and URLs arrays", async () => {
       const mockApiResponse = {
         data: {
           query: "no results",
           books: [],
           urls: [],
+          tweet_threads: [],
           count: 0,
         },
         status: 200,
@@ -167,6 +244,7 @@ describe("SearchService", () => {
         q: "no results",
         books: [],
         urls: [],
+        tweetThreads: [],
         count: 0,
       });
     });
