@@ -4,11 +4,18 @@ import { validateUrl } from "src/utils/validation";
 interface UrlInputZoneProps {
   url: string;
   onUrlChange: (url: string) => void;
+  placeholder?: string;
+  validate?: (url: string) => boolean;
 }
 
-export function UrlInputZone({ url, onUrlChange }: UrlInputZoneProps) {
+export function UrlInputZone({
+  url,
+  onUrlChange,
+  placeholder = "Enter URL to extract and upload",
+  validate = validateUrl,
+}: UrlInputZoneProps) {
   const inputId = useId();
-  const isValid = validateUrl(url);
+  const isValid = validate(url);
 
   return (
     <div className="w-full">
@@ -21,7 +28,7 @@ export function UrlInputZone({ url, onUrlChange }: UrlInputZoneProps) {
           id={inputId}
           value={url}
           onChange={(e) => onUrlChange(e.target.value)}
-          placeholder="Enter URL to extract and upload"
+          placeholder={placeholder}
           className={`w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base text-gray-900 bg-white border-2 rounded-md focus:outline-none focus:ring-2 placeholder:text-gray-400 transition-colors ${
             isValid
               ? "border-green-500 focus:ring-green-500 focus:border-green-500"

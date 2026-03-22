@@ -61,4 +61,44 @@ describe("UrlInputZone", () => {
     );
     expect(input).toHaveValue(longUrl);
   });
+
+  it("renders custom placeholder when provided", () => {
+    const mockOnUrlChange = vi.fn();
+    render(
+      <UrlInputZone
+        url=""
+        onUrlChange={mockOnUrlChange}
+        placeholder="Enter twitter.com or x.com URL"
+      />,
+    );
+
+    expect(
+      screen.getByPlaceholderText("Enter twitter.com or x.com URL"),
+    ).toBeInTheDocument();
+  });
+
+  it("uses custom validate function to determine border color", () => {
+    const mockOnUrlChange = vi.fn();
+    const onlyExampleValid = (url: string) => url === "https://example.com";
+
+    const { rerender } = render(
+      <UrlInputZone
+        url="https://other.com"
+        onUrlChange={mockOnUrlChange}
+        validate={onlyExampleValid}
+      />,
+    );
+
+    const input = screen.getByRole("textbox");
+    expect(input).toHaveClass("border-gray-300");
+
+    rerender(
+      <UrlInputZone
+        url="https://example.com"
+        onUrlChange={mockOnUrlChange}
+        validate={onlyExampleValid}
+      />,
+    );
+    expect(input).toHaveClass("border-green-500");
+  });
 });

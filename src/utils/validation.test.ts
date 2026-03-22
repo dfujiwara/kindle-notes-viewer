@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validateUrl } from "./validation";
+import { validateTweetUrl, validateUrl } from "./validation";
 
 describe("validateUrl", () => {
   it("returns false for empty/whitespace strings", () => {
@@ -18,5 +18,21 @@ describe("validateUrl", () => {
 
   it("returns false for invalid URL format", () => {
     expect(validateUrl("not-a-url")).toBe(false);
+  });
+});
+
+describe("validateTweetUrl", () => {
+  it("returns true for twitter.com and x.com URLs", () => {
+    expect(validateTweetUrl("https://twitter.com/user/status/123")).toBe(true);
+    expect(validateTweetUrl("https://x.com/user/status/123")).toBe(true);
+  });
+
+  it("returns false for non-tweet domains", () => {
+    expect(validateTweetUrl("https://example.com")).toBe(false);
+  });
+
+  it("returns false for empty/invalid URLs", () => {
+    expect(validateTweetUrl("")).toBe(false);
+    expect(validateTweetUrl("not-a-url")).toBe(false);
   });
 });

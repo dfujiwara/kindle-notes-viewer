@@ -3,7 +3,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import toast from "react-hot-toast";
 import { MemoryRouter } from "react-router";
-import { booksService, urlService } from "src/api";
+import { booksService, tweetService, urlService } from "src/api";
+import type { TweetThread } from "src/models";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { UploadPage } from "./UploadPage";
 
@@ -17,6 +18,9 @@ vi.mock("src/api", async () => {
     },
     urlService: {
       uploadUrl: vi.fn(),
+    },
+    tweetService: {
+      ingestTweet: vi.fn(),
     },
   };
 });
@@ -71,6 +75,11 @@ async function switchToUrlMode(user: ReturnType<typeof userEvent.setup>) {
 async function switchToFileMode(user: ReturnType<typeof userEvent.setup>) {
   const fileButton = screen.getByRole("button", { name: /file upload/i });
   await user.click(fileButton);
+}
+
+async function switchToTweetMode(user: ReturnType<typeof userEvent.setup>) {
+  const tweetButton = screen.getByRole("button", { name: /^tweet$/i });
+  await user.click(tweetButton);
 }
 
 describe("UploadPage", () => {
@@ -206,12 +215,15 @@ describe("UploadPage", () => {
   });
 
   describe("Mode toggle", () => {
-    it("renders both file and url mode buttons", () => {
+    it("renders file, url, and tweet mode buttons", () => {
       expect(
         screen.getByRole("button", { name: /file upload/i }),
       ).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: /url upload/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /^tweet$/i }),
       ).toBeInTheDocument();
     });
 
@@ -452,6 +464,148 @@ describe("UploadPage", () => {
       // URL should be cleared - input should be visible again
       expect(
         screen.getByPlaceholderText("Enter URL to extract and upload"),
+      ).toHaveValue("");
+    });
+  });
+
+  describe("Tweet Upload", () => {
+    it("shows tweet URL input with correct placeholder", async () => {
+      await switchToTweetMode(user);
+
+      expect(
+        screen.getByPlaceholderText("Enter twitter.com or x.com URL"),
+      ).toBeInTheDocument();
+    });
+
+    it("does not show upload button for non-tweet URLs", async () => {
+      await switchToTweetMode(user);
+
+      const tweetInput = screen.getByPlaceholderText(
+        "Enter twitter.com or x.com URL",
+      );
+      await user.click(tweetInput);
+      await user.paste("https://example.com");
+
+      expect(
+        screen.queryByRole("button", { name: /^Upload$/ }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows upload button when valid tweet URL is entered", async () => {
+      await switchToTweetMode(user);
+
+      const tweetInput = screen.getByPlaceholderText(
+        "Enter twitter.com or x.com URL",
+      );
+      await user.click(tweetInput);
+      await user.paste("https://twitter.com/user/status/123");
+
+      expect(
+        screen.getByRole("button", { name: /^Upload$/ }),
+      ).toBeInTheDocument();
+    });
+
+    it("calls ingestTweet with the tweet URL", async () => {
+      vi.mocked(tweetService.ingestTweet).mockResolvedValue({
+        data: { thread: {} as TweetThread, tweets: [] },
+        status: 200,
+      });
+
+      await switchToTweetMode(user);
+
+      const tweetInput = screen.getByPlaceholderText(
+        "Enter twitter.com or x.com URL",
+      );
+      await user.click(tweetInput);
+      await user.paste("https://twitter.com/user/status/123");
+
+      await user.click(screen.getByRole("button", { name: /^Upload$/ }));
+
+      await waitFor(() => {
+        expect(tweetService.ingestTweet).toHaveBeenCalledWith(
+          "https://twitter.com/user/status/123",
+        );
+      });
+    });
+
+    it("shows success toast and navigates on successful tweet ingestion", async () => {
+      vi.mocked(tweetService.ingestTweet).mockResolvedValue({
+        data: { thread: {} as TweetThread, tweets: [] },
+        status: 200,
+      });
+
+      await switchToTweetMode(user);
+
+      const tweetInput = screen.getByPlaceholderText(
+        "Enter twitter.com or x.com URL",
+      );
+      await user.click(tweetInput);
+      await user.paste("https://twitter.com/user/status/123");
+
+      await user.click(screen.getByRole("button", { name: /^Upload$/ }));
+
+      await waitFor(() => {
+        expect(toast.success).toHaveBeenCalledWith("Tweet ingested!");
+        expect(mockNavigate).toHaveBeenCalledWith("/");
+      });
+    });
+
+    it("shows error toast on failed tweet ingestion", async () => {
+      const error = new Error("Tweet not found");
+      vi.mocked(tweetService.ingestTweet).mockRejectedValue(error);
+
+      await switchToTweetMode(user);
+
+      const tweetInput = screen.getByPlaceholderText(
+        "Enter twitter.com or x.com URL",
+      );
+      await user.click(tweetInput);
+      await user.paste("https://twitter.com/user/status/123");
+
+      await user.click(screen.getByRole("button", { name: /^Upload$/ }));
+
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalledWith(
+          "Ingestion failed: Tweet not found",
+        );
+      });
+    });
+
+    it("shows loading state during tweet ingestion", async () => {
+      vi.mocked(tweetService.ingestTweet).mockImplementation(
+        () => new Promise(() => {}),
+      );
+
+      await switchToTweetMode(user);
+
+      const tweetInput = screen.getByPlaceholderText(
+        "Enter twitter.com or x.com URL",
+      );
+      await user.click(tweetInput);
+      await user.paste("https://twitter.com/user/status/123");
+
+      await user.click(screen.getByRole("button", { name: /^Upload$/ }));
+
+      expect(
+        screen.getByRole("button", { name: /^Uploading...$/ }),
+      ).toBeDisabled();
+    });
+
+    it("clears tweet input when clear button is clicked", async () => {
+      await switchToTweetMode(user);
+
+      const tweetInput = screen.getByPlaceholderText(
+        "Enter twitter.com or x.com URL",
+      );
+      await user.click(tweetInput);
+      await user.paste("https://twitter.com/user/status/123");
+
+      await user.click(
+        screen.getByRole("button", { name: /^Clear Selection$/ }),
+      );
+
+      expect(
+        screen.getByPlaceholderText("Enter twitter.com or x.com URL"),
       ).toHaveValue("");
     });
   });

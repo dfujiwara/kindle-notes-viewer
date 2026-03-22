@@ -4,19 +4,21 @@ import { useNavigate } from "react-router";
 import {
   type ApiError,
   booksService,
+  tweetService,
   urlService,
   useApiMutation,
 } from "src/api";
 import { FileDropZone, UploadControl, UrlInputZone } from "src/components";
-import { validateUrl } from "src/utils/validation";
+import { validateTweetUrl, validateUrl } from "src/utils/validation";
 
-type UploadMode = "file" | "url";
+type UploadMode = "file" | "url" | "tweet";
 
 export function UploadPage() {
   const navigate = useNavigate();
   const [uploadMode, setUploadMode] = useState<UploadMode>("file");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [urlInput, setUrlInput] = useState<string>("");
+  const [tweetInput, setTweetInput] = useState<string>("");
 
   const fileMutation = useApiMutation(
     (file: File) => booksService.uploadBook(file),
@@ -42,6 +44,18 @@ export function UploadPage() {
     ["urls"],
   );
 
+  const tweetMutation = useApiMutation(
+    (url: string) => tweetService.ingestTweet(url),
+    () => {
+      toast.success("Tweet ingested!");
+      navigate("/");
+    },
+    (error: ApiError) => {
+      toast.error(`Ingestion failed: ${error.message}`);
+    },
+    ["tweets"],
+  );
+
   const handleFilesSelected = (files: File[]) => {
     setSelectedFile(files[0]);
   };
@@ -49,6 +63,7 @@ export function UploadPage() {
   const handleClear = () => {
     setSelectedFile(null);
     setUrlInput("");
+    setTweetInput("");
   };
 
   const handleUpload = () => {
@@ -57,8 +72,10 @@ export function UploadPage() {
         return;
       }
       fileMutation.mutate(selectedFile);
-    } else {
+    } else if (uploadMode === "url") {
       urlMutation.mutate(urlInput);
+    } else {
+      tweetMutation.mutate(tweetInput);
     }
   };
 
@@ -68,10 +85,16 @@ export function UploadPage() {
     handleClear();
   };
 
-  const hasContent =
-    uploadMode === "file" ? selectedFile !== null : validateUrl(urlInput);
-  const isUploading =
-    uploadMode === "file" ? fileMutation.isPending : urlMutation.isPending;
+  const hasContent: Record<UploadMode, boolean> = {
+    file: selectedFile !== null,
+    url: validateUrl(urlInput),
+    tweet: validateTweetUrl(tweetInput),
+  };
+  const isUploading: Record<UploadMode, boolean> = {
+    file: fileMutation.isPending,
+    url: urlMutation.isPending,
+    tweet: tweetMutation.isPending,
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,6 +136,18 @@ export function UploadPage() {
             >
               URL Upload
             </button>
+            <button
+              type="button"
+              onClick={() => handleModeChange("tweet")}
+              aria-pressed={uploadMode === "tweet"}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                uploadMode === "tweet"
+                  ? "bg-blue-600 text-white shadow-sm ring-2 ring-blue-600 ring-offset-1"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              Tweet
+            </button>
           </div>
         </fieldset>
 
@@ -125,16 +160,23 @@ export function UploadPage() {
             maxFiles={1}
             maxSizeMB={10}
           />
-        ) : (
+        ) : uploadMode === "url" ? (
           <UrlInputZone url={urlInput} onUrlChange={setUrlInput} />
+        ) : (
+          <UrlInputZone
+            url={tweetInput}
+            onUrlChange={setTweetInput}
+            placeholder="Enter twitter.com or x.com URL"
+            validate={validateTweetUrl}
+          />
         )}
 
         {/* Upload Control */}
         <UploadControl
-          hasContent={hasContent}
+          hasContent={hasContent[uploadMode]}
           onClear={handleClear}
           onUpload={handleUpload}
-          isUploading={isUploading}
+          isUploading={isUploading[uploadMode]}
         />
       </form>
     </div>
