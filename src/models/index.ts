@@ -3,4 +3,5 @@ export * from "./mappers";
 export * from "./note";
 export * from "./random";
 export * from "./searchResult";
+export * from "./tweet";
 export * from "./url";
