@@ -20,7 +20,21 @@ interface UrlSourceApiResponse {
   created_at: string;
 }
 
-type SourceApiResponse = BookSourceApiResponse | UrlSourceApiResponse;
+interface TweetThreadSourceApiResponse {
+  id: string;
+  title: string;
+  type: "tweet_thread";
+  author_username: string;
+  author_display_name: string;
+  root_tweet_id: string;
+  tweet_count: number;
+  created_at: string;
+}
+
+type SourceApiResponse =
+  | BookSourceApiResponse
+  | UrlSourceApiResponse
+  | TweetThreadSourceApiResponse;
 
 interface NoteContentApiResponse {
   id: number;
@@ -38,7 +52,21 @@ interface UrlChunkContentApiResponse {
   created_at: string;
 }
 
-type ContentApiResponse = NoteContentApiResponse | UrlChunkContentApiResponse;
+interface TweetContentApiResponse {
+  id: string;
+  content_type: "tweet";
+  content: string;
+  author_username: string;
+  position_in_thread: number;
+  media_urls: string[];
+  tweeted_at: string;
+  created_at: string;
+}
+
+type ContentApiResponse =
+  | NoteContentApiResponse
+  | UrlChunkContentApiResponse
+  | TweetContentApiResponse;
 
 interface RandomContentApiResponse {
   source: SourceApiResponse;
@@ -57,6 +85,18 @@ const mapSource = (apiSource: SourceApiResponse): Source => {
       createdAt: apiSource.created_at,
     };
   }
+  if (apiSource.type === "tweet_thread") {
+    return {
+      id: apiSource.id,
+      title: apiSource.title,
+      type: "tweet_thread",
+      authorUsername: apiSource.author_username,
+      authorDisplayName: apiSource.author_display_name,
+      rootTweetId: apiSource.root_tweet_id,
+      tweetCount: apiSource.tweet_count,
+      createdAt: apiSource.created_at,
+    };
+  }
   return {
     id: String(apiSource.id),
     title: apiSource.title,
@@ -72,6 +112,18 @@ const mapContent = (apiContent: ContentApiResponse): Content => {
       id: String(apiContent.id),
       contentType: "note",
       content: apiContent.content,
+      createdAt: apiContent.created_at,
+    };
+  }
+  if (apiContent.content_type === "tweet") {
+    return {
+      id: String(apiContent.id),
+      contentType: "tweet",
+      content: apiContent.content,
+      authorUsername: apiContent.author_username,
+      positionInThread: apiContent.position_in_thread,
+      mediaUrls: apiContent.media_urls,
+      tweetedAt: apiContent.tweeted_at,
       createdAt: apiContent.created_at,
     };
   }
