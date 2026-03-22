@@ -73,6 +73,22 @@ describe("useStreamedDetailedChunk", () => {
     expect(result.current).toEqual({ status: "loading" });
   });
 
+  it("should reset to loading state when params change", () => {
+    const { result, rerender } = renderHook(
+      ({ urlId, chunkId }) => useStreamedDetailedChunk(urlId, chunkId),
+      { initialProps: { urlId: "url-1", chunkId: "chunk-1" } },
+    );
+
+    act(() => {
+      onMetadataCallback(mockChunk);
+      onCompleteCallback();
+    });
+    expect(result.current.status).toBe("success");
+
+    rerender({ urlId: "url-1", chunkId: "chunk-2" });
+    expect(result.current).toEqual({ status: "loading" });
+  });
+
   it("should transition to streaming state when metadata is received", async () => {
     const { result } = renderHook(() =>
       useStreamedDetailedChunk("url-1", "chunk-1"),
