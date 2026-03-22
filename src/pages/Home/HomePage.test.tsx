@@ -2,8 +2,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { booksService, urlService } from "src/api";
-import type { KindleBook, Url } from "src/models";
+import { booksService, tweetService, urlService } from "src/api";
+import type { KindleBook, TweetThread, Url } from "src/models";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HomePage } from "./HomePage";
 
@@ -17,6 +17,9 @@ vi.mock("src/api", async () => {
     },
     urlService: {
       getUrls: vi.fn(),
+    },
+    tweetService: {
+      getTweets: vi.fn(),
     },
   };
 });
@@ -67,6 +70,19 @@ const mockBooks: KindleBook[] = [
   },
 ];
 
+const mockTweetThreads: TweetThread[] = [
+  {
+    id: "thread-1",
+    rootTweetId: "tweet-1",
+    authorUsername: "user1",
+    authorDisplayName: "User One",
+    title: "Thoughts on TypeScript",
+    tweetCount: 5,
+    fetchedAt: "2026-01-05T10:00:00Z",
+    createdAt: "2026-01-05T10:00:00Z",
+  },
+];
+
 const mockUrls: Url[] = [
   {
     id: "url-1",
@@ -98,6 +114,10 @@ describe("HomePage", () => {
     });
     vi.mocked(urlService.getUrls).mockResolvedValue({
       data: mockUrls,
+      status: 200,
+    });
+    vi.mocked(tweetService.getTweets).mockResolvedValue({
+      data: mockTweetThreads,
       status: 200,
     });
   });
@@ -278,6 +298,73 @@ describe("HomePage", () => {
       await user.click(urlButton);
 
       expect(mockNavigate).toHaveBeenCalledWith("/urls/url-1");
+    });
+
+    it("navigates to tweet detail when thread is clicked", async () => {
+      await renderWithProviders(<HomePage />);
+
+      const tweetsTab = screen.getByRole("tab", { name: /^Tweets$/i });
+      await user.click(tweetsTab);
+
+      expect(screen.getByText("Thoughts on TypeScript")).toBeInTheDocument();
+
+      const threadButton = screen.getByRole("button", {
+        name: /Thoughts on TypeScript/i,
+      });
+      await user.click(threadButton);
+
+      expect(mockNavigate).toHaveBeenCalledWith("/tweets/thread-1");
+    });
+  });
+
+  describe("Tweets Tab", () => {
+    it("renders Tweets tab", async () => {
+      await renderWithProviders(<HomePage />);
+
+      expect(
+        screen.getByRole("tab", { name: /^Tweets$/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("shows tweet threads when Tweets tab is active", async () => {
+      await renderWithProviders(<HomePage />);
+
+      const tweetsTab = screen.getByRole("tab", { name: /^Tweets$/i });
+      await user.click(tweetsTab);
+
+      expect(screen.getByText("Thoughts on TypeScript")).toBeInTheDocument();
+      expect(screen.getByText("@user1")).toBeInTheDocument();
+
+      expect(screen.queryByText("The Great Gatsby")).not.toBeInTheDocument();
+      expect(screen.queryByText("Example Article 1")).not.toBeInTheDocument();
+    });
+
+    it("switches to Tweets tab via ArrowRight from URLs tab", async () => {
+      await renderWithProviders(<HomePage />);
+
+      const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
+      await user.click(urlsTab);
+
+      urlsTab.focus();
+      await user.keyboard("{ArrowRight}");
+
+      const tweetsTab = screen.getByRole("tab", { name: /^Tweets$/i });
+      expect(tweetsTab).toHaveAttribute("aria-selected", "true");
+      expect(screen.getByText("Thoughts on TypeScript")).toBeInTheDocument();
+    });
+
+    it("wraps from Tweets back to Books via ArrowRight", async () => {
+      await renderWithProviders(<HomePage />);
+
+      const tweetsTab = screen.getByRole("tab", { name: /^Tweets$/i });
+      await user.click(tweetsTab);
+
+      tweetsTab.focus();
+      await user.keyboard("{ArrowRight}");
+
+      const booksTab = screen.getByRole("tab", { name: /^Books$/i });
+      expect(booksTab).toHaveAttribute("aria-selected", "true");
+      expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
     });
   });
 });
