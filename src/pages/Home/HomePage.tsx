@@ -1,37 +1,53 @@
 import { useId, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { booksService, urlService, useApiSuspenseQuery } from "src/api";
-import type { KindleBook, Url } from "src/models";
+import {
+  booksService,
+  tweetService,
+  urlService,
+  useApiSuspenseQuery,
+} from "src/api";
 import { BookList } from "./BookList";
+import { TweetList } from "./TweetList";
 import { UrlList } from "./UrlList";
 
-type Tab = "books" | "urls";
+type Tab = "books" | "urls" | "tweets";
 
 export function HomePage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("books");
   const booksTabId = useId();
   const urlsTabId = useId();
+  const tweetsTabId = useId();
   const booksPanelId = useId();
   const urlsPanelId = useId();
+  const tweetsPanelId = useId();
   const booksTabRef = useRef<HTMLButtonElement>(null);
   const urlsTabRef = useRef<HTMLButtonElement>(null);
+  const tweetsTabRef = useRef<HTMLButtonElement>(null);
 
   const booksResult = useApiSuspenseQuery(["books"], () =>
     booksService.getBooks(),
   );
   const urlsResult = useApiSuspenseQuery(["urls"], () => urlService.getUrls());
+  const tweetsResult = useApiSuspenseQuery(["tweets"], () =>
+    tweetService.getTweets(),
+  );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
       e.preventDefault();
-      const newTab: Tab = activeTab === "books" ? "urls" : "books";
+      const tabs: Tab[] = ["books", "urls", "tweets"];
+      const currentIndex = tabs.indexOf(activeTab);
+      const direction = e.key === "ArrowRight" ? 1 : -1;
+      const newTab =
+        tabs[(currentIndex + direction + tabs.length) % tabs.length];
       setActiveTab(newTab);
-      // Move focus to the newly activated tab
       if (newTab === "books") {
         booksTabRef.current?.focus();
-      } else {
+      } else if (newTab === "urls") {
         urlsTabRef.current?.focus();
+      } else {
+        tweetsTabRef.current?.focus();
       }
     }
   };
@@ -79,6 +95,20 @@ export function HomePage() {
         >
           URLs
         </button>
+        <button
+          ref={tweetsTabRef}
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "tweets"}
+          aria-controls={tweetsPanelId}
+          id={tweetsTabId}
+          tabIndex={activeTab === "tweets" ? 0 : -1}
+          onClick={() => setActiveTab("tweets")}
+          onKeyDown={handleKeyDown}
+          className={getTabClassName(activeTab === "tweets")}
+        >
+          Tweets
+        </button>
       </div>
 
       {/* Tab Panels */}
@@ -86,7 +116,7 @@ export function HomePage() {
         <section role="tabpanel" id={booksPanelId} aria-labelledby={booksTabId}>
           <BookList
             books={booksResult.data}
-            onBookClick={(book: KindleBook) => navigate(`/books/${book.id}`)}
+            onBookClick={(book) => navigate(`/books/${book.id}`)}
           />
         </section>
       )}
@@ -95,7 +125,20 @@ export function HomePage() {
         <section role="tabpanel" id={urlsPanelId} aria-labelledby={urlsTabId}>
           <UrlList
             urls={urlsResult.data}
-            onUrlClick={(url: Url) => navigate(`/urls/${url.id}`)}
+            onUrlClick={(url) => navigate(`/urls/${url.id}`)}
+          />
+        </section>
+      )}
+
+      {activeTab === "tweets" && (
+        <section
+          role="tabpanel"
+          id={tweetsPanelId}
+          aria-labelledby={tweetsTabId}
+        >
+          <TweetList
+            threads={tweetsResult.data}
+            onThreadClick={(thread) => navigate(`/tweets/${thread.id}`)}
           />
         </section>
       )}
