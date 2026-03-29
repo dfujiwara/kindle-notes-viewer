@@ -174,7 +174,7 @@ describe("TweetService", () => {
       expect(httpClient.request).toHaveBeenCalledWith("/tweets", {
         method: "POST",
         headers: {},
-        body: { url: "https://twitter.com/user1/status/ext-1" },
+        body: { tweet_input: "https://twitter.com/user1/status/ext-1" },
       });
       expect(result.data).toEqual({
         thread: expectedThread,

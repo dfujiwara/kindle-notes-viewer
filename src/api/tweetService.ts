@@ -170,7 +170,7 @@ export class TweetService {
       {
         method: "POST",
         headers: {},
-        body: { url: tweetUrl },
+        body: { tweet_input: tweetUrl },
       },
     );
     return { ...response, data: mapTweetThreadBundle(response.data) };
