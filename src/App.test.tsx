@@ -3,11 +3,12 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { vi } from "vitest";
 import App from "./App";
-import { booksService, notesService, urlService } from "./api";
+import { booksService, notesService, tweetService, urlService } from "./api";
 
 vi.mock("./api/booksService");
 vi.mock("./api/notesService");
 vi.mock("./api/urlService");
+vi.mock("./api/tweetService");
 
 const TestWrapper = ({
   children,
@@ -36,6 +37,10 @@ describe("App", () => {
       status: 200,
     });
     vi.mocked(urlService.getUrls).mockResolvedValue({
+      data: [],
+      status: 200,
+    });
+    vi.mocked(tweetService.getTweets).mockResolvedValue({
       data: [],
       status: 200,
     });
