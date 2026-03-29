@@ -17,6 +17,7 @@ export function useStreamedDetailedChunk(
   });
 
   useEffect(() => {
+    setState({ status: "loading" });
     const handlers = {
       onMetadata: (chunk: UrlDetailedChunk) => {
         setState({
