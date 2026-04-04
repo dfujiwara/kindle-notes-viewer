@@ -25,7 +25,7 @@ const mapSearchResult = (apiResult: SearchResultApiResponse): SearchResult => ({
 });
 
 const ENDPOINTS = {
-  SEARCH: (query: string) => `/search?q=${query}`,
+  SEARCH: (query: string) => `/search?q=${encodeURIComponent(query)}`,
 } as const;
 
 export class SearchService {

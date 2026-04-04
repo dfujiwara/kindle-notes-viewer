@@ -64,7 +64,7 @@ describe("SearchService", () => {
 
       const result = await searchService.search("test query");
 
-      expect(httpClient.request).toHaveBeenCalledWith("/search?q=test query");
+      expect(httpClient.request).toHaveBeenCalledWith("/search?q=test%20query");
       expect(result.data).toEqual({
         q: "test query",
         books: [
