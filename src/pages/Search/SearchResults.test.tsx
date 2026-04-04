@@ -1,6 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import type { KindleNoteBundle, UrlChunkBundle } from "src/models";
+import type {
+  KindleNoteBundle,
+  TweetThreadBundle,
+  UrlChunkBundle,
+} from "src/models";
 import { formatDate } from "src/utils/date";
 import { SearchResults } from "./SearchResults";
 
@@ -66,6 +70,47 @@ const mockUrlBundles: UrlChunkBundle[] = [
   },
 ];
 
+const mockTweetThreadBundles: TweetThreadBundle[] = [
+  {
+    thread: {
+      id: "thread-1",
+      rootTweetId: "tweet-root-1",
+      authorUsername: "testuser",
+      authorDisplayName: "Test User",
+      title: "Interesting Thread About TypeScript",
+      tweetCount: 2,
+      fetchedAt: "2024-01-20T10:00:00Z",
+      createdAt: "2024-01-20T10:00:00Z",
+    },
+    tweets: [
+      {
+        id: "tweet-1",
+        tweetId: "tw-1",
+        authorUsername: "testuser",
+        authorDisplayName: "Test User",
+        content: "TypeScript generics are powerful tools",
+        mediaUrls: [],
+        threadId: "thread-1",
+        positionInThread: 0,
+        tweetedAt: "2024-01-20T09:00:00Z",
+        createdAt: "2024-01-20T10:00:00Z",
+      },
+      {
+        id: "tweet-2",
+        tweetId: "tw-2",
+        authorUsername: "testuser",
+        authorDisplayName: "Test User",
+        content: "Here is an example with conditional types",
+        mediaUrls: [],
+        threadId: "thread-1",
+        positionInThread: 1,
+        tweetedAt: "2024-01-20T09:01:00Z",
+        createdAt: "2024-01-20T10:00:00Z",
+      },
+    ],
+  },
+];
+
 describe("SearchResults", () => {
   it("displays initial message when status is idle", () => {
     render(
@@ -104,7 +149,12 @@ describe("SearchResults", () => {
   it("displays no results message when status is success with empty books and urls", () => {
     render(
       <MemoryRouter>
-        <SearchResults status="success" books={[]} urls={[]} />
+        <SearchResults
+          status="success"
+          books={[]}
+          urls={[]}
+          tweetThreads={[]}
+        />
       </MemoryRouter>,
     );
 
@@ -115,7 +165,12 @@ describe("SearchResults", () => {
     it("renders all note bundles with book titles and authors", () => {
       render(
         <MemoryRouter>
-          <SearchResults status="success" books={mockNoteBundles} urls={[]} />
+          <SearchResults
+            status="success"
+            books={mockNoteBundles}
+            urls={[]}
+            tweetThreads={[]}
+          />
         </MemoryRouter>,
       );
 
@@ -129,7 +184,12 @@ describe("SearchResults", () => {
     it("renders all notes within each bundle", () => {
       render(
         <MemoryRouter>
-          <SearchResults status="success" books={mockNoteBundles} urls={[]} />
+          <SearchResults
+            status="success"
+            books={mockNoteBundles}
+            urls={[]}
+            tweetThreads={[]}
+          />
         </MemoryRouter>,
       );
 
@@ -149,7 +209,12 @@ describe("SearchResults", () => {
     it("formats and displays note creation dates", () => {
       render(
         <MemoryRouter>
-          <SearchResults status="success" books={mockNoteBundles} urls={[]} />
+          <SearchResults
+            status="success"
+            books={mockNoteBundles}
+            urls={[]}
+            tweetThreads={[]}
+          />
         </MemoryRouter>,
       );
 
@@ -160,7 +225,12 @@ describe("SearchResults", () => {
     it("renders notes as clickable links with correct URLs", () => {
       render(
         <MemoryRouter>
-          <SearchResults status="success" books={mockNoteBundles} urls={[]} />
+          <SearchResults
+            status="success"
+            books={mockNoteBundles}
+            urls={[]}
+            tweetThreads={[]}
+          />
         </MemoryRouter>,
       );
 
@@ -183,7 +253,12 @@ describe("SearchResults", () => {
     it("does not show From URLs section when urls is empty", () => {
       render(
         <MemoryRouter>
-          <SearchResults status="success" books={mockNoteBundles} urls={[]} />
+          <SearchResults
+            status="success"
+            books={mockNoteBundles}
+            urls={[]}
+            tweetThreads={[]}
+          />
         </MemoryRouter>,
       );
 
@@ -195,7 +270,12 @@ describe("SearchResults", () => {
     it("renders URL bundles with titles", () => {
       render(
         <MemoryRouter>
-          <SearchResults status="success" books={[]} urls={mockUrlBundles} />
+          <SearchResults
+            status="success"
+            books={[]}
+            urls={mockUrlBundles}
+            tweetThreads={[]}
+          />
         </MemoryRouter>,
       );
 
@@ -206,7 +286,12 @@ describe("SearchResults", () => {
     it("displays URL as subtitle", () => {
       render(
         <MemoryRouter>
-          <SearchResults status="success" books={[]} urls={mockUrlBundles} />
+          <SearchResults
+            status="success"
+            books={[]}
+            urls={mockUrlBundles}
+            tweetThreads={[]}
+          />
         </MemoryRouter>,
       );
 
@@ -218,7 +303,12 @@ describe("SearchResults", () => {
     it("renders chunks as clickable links with correct paths", () => {
       render(
         <MemoryRouter>
-          <SearchResults status="success" books={[]} urls={mockUrlBundles} />
+          <SearchResults
+            status="success"
+            books={[]}
+            urls={mockUrlBundles}
+            tweetThreads={[]}
+          />
         </MemoryRouter>,
       );
 
@@ -236,7 +326,12 @@ describe("SearchResults", () => {
     it("displays Summary badge for summary chunks", () => {
       render(
         <MemoryRouter>
-          <SearchResults status="success" books={[]} urls={mockUrlBundles} />
+          <SearchResults
+            status="success"
+            books={[]}
+            urls={mockUrlBundles}
+            tweetThreads={[]}
+          />
         </MemoryRouter>,
       );
 
@@ -246,7 +341,12 @@ describe("SearchResults", () => {
     it("does not show From Books section when books is empty", () => {
       render(
         <MemoryRouter>
-          <SearchResults status="success" books={[]} urls={mockUrlBundles} />
+          <SearchResults
+            status="success"
+            books={[]}
+            urls={mockUrlBundles}
+            tweetThreads={[]}
+          />
         </MemoryRouter>,
       );
 
@@ -262,6 +362,7 @@ describe("SearchResults", () => {
             status="success"
             books={mockNoteBundles}
             urls={mockUrlBundles}
+            tweetThreads={[]}
           />
         </MemoryRouter>,
       );
@@ -277,6 +378,7 @@ describe("SearchResults", () => {
             status="success"
             books={mockNoteBundles}
             urls={mockUrlBundles}
+            tweetThreads={[]}
           />
         </MemoryRouter>,
       );
@@ -292,6 +394,120 @@ describe("SearchResults", () => {
       expect(
         screen.getByText("This is a summary of the article"),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("tweet threads results", () => {
+    it("does not show From Tweets section when tweetThreads is empty", () => {
+      render(
+        <MemoryRouter>
+          <SearchResults
+            status="success"
+            books={[]}
+            urls={[]}
+            tweetThreads={[]}
+          />
+        </MemoryRouter>,
+      );
+
+      expect(screen.queryByText("From Tweets")).not.toBeInTheDocument();
+    });
+
+    it("renders tweet thread section heading", () => {
+      render(
+        <MemoryRouter>
+          <SearchResults
+            status="success"
+            books={[]}
+            urls={[]}
+            tweetThreads={mockTweetThreadBundles}
+          />
+        </MemoryRouter>,
+      );
+
+      expect(screen.getByText("From Tweets")).toBeInTheDocument();
+    });
+
+    it("renders thread title as a link to the thread page", () => {
+      render(
+        <MemoryRouter>
+          <SearchResults
+            status="success"
+            books={[]}
+            urls={[]}
+            tweetThreads={mockTweetThreadBundles}
+          />
+        </MemoryRouter>,
+      );
+
+      const titleLink = screen.getByRole("link", {
+        name: "Interesting Thread About TypeScript",
+      });
+      expect(titleLink).toBeInTheDocument();
+      expect(titleLink.getAttribute("href")).toBe("/tweets/thread-1");
+    });
+
+    it("renders thread author username", () => {
+      render(
+        <MemoryRouter>
+          <SearchResults
+            status="success"
+            books={[]}
+            urls={[]}
+            tweetThreads={mockTweetThreadBundles}
+          />
+        </MemoryRouter>,
+      );
+
+      expect(screen.getByText("@testuser")).toBeInTheDocument();
+    });
+
+    it("renders tweets as clickable links with correct paths", () => {
+      render(
+        <MemoryRouter>
+          <SearchResults
+            status="success"
+            books={[]}
+            urls={[]}
+            tweetThreads={mockTweetThreadBundles}
+          />
+        </MemoryRouter>,
+      );
+
+      expect(
+        screen.getByText("TypeScript generics are powerful tools"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Here is an example with conditional types"),
+      ).toBeInTheDocument();
+
+      const links = screen.getAllByRole("link");
+      const tweetLinks = links.filter((l) =>
+        l.getAttribute("href")?.startsWith("/tweets/thread-1/tweets/"),
+      );
+      expect(tweetLinks).toHaveLength(2);
+      expect(tweetLinks[0].getAttribute("href")).toBe(
+        "/tweets/thread-1/tweets/tweet-1",
+      );
+      expect(tweetLinks[1].getAttribute("href")).toBe(
+        "/tweets/thread-1/tweets/tweet-2",
+      );
+    });
+
+    it("displays tweet dates", () => {
+      render(
+        <MemoryRouter>
+          <SearchResults
+            status="success"
+            books={[]}
+            urls={[]}
+            tweetThreads={mockTweetThreadBundles}
+          />
+        </MemoryRouter>,
+      );
+
+      const dateCells = screen.getAllByText(formatDate("2024-01-20T09:00:00Z"));
+      expect(dateCells.length).toBeGreaterThan(0);
     });
   });
 });

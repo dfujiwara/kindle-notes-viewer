@@ -15,6 +15,8 @@ import {
   NotePage,
   RandomPage,
   SearchPage,
+  TweetDetailPage,
+  TweetPage,
   UploadPage,
   UrlPage,
 } from "src/pages";
@@ -64,6 +66,22 @@ function App() {
               element={
                 <Suspense fallback={<LoadingIndicator />}>
                   <ChunkPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/tweets/:threadId"
+              element={
+                <Suspense fallback={<LoadingIndicator />}>
+                  <TweetPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/tweets/:threadId/tweets/:tweetId"
+              element={
+                <Suspense fallback={<LoadingIndicator />}>
+                  <TweetDetailPage />
                 </Suspense>
               }
             />

@@ -39,6 +39,7 @@ export function SearchPage() {
       status: "success",
       books: result.data?.books ?? [],
       urls: result.data?.urls ?? [],
+      tweetThreads: result.data?.tweetThreads ?? [],
     };
   };
 
