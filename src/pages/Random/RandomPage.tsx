@@ -10,9 +10,6 @@ import {
   mapTweetThreadSourceToThread,
   mapUrlChunkContentToUrlChunk,
   mapUrlSourceToUrl,
-  type NoteContent,
-  type TweetContent,
-  type UrlChunkContent,
 } from "src/models";
 import { ChunkDescription } from "../Chunk/ChunkDescription";
 import { NoteDescription } from "../Note/NoteDescription";
@@ -33,11 +30,16 @@ export function RandomPage() {
       const { source, content, additionalContext, relatedItems } = state.data;
 
       if (source.type === "book") {
+        if (content.contentType !== "note") {
+          throw new Error(
+            `Expected note content for book source, got ${content.contentType}`,
+          );
+        }
         return (
           <div>
             <NoteDescription
               book={mapBookSourceToKindleBook(source)}
-              note={mapNoteContentToKindleNote(content as NoteContent)}
+              note={mapNoteContentToKindleNote(content)}
               relatedNotes={mapRelatedItemsToNotes(relatedItems)}
               additionalContext={additionalContext}
               onBookClick={() => {
@@ -52,8 +54,13 @@ export function RandomPage() {
       }
 
       if (source.type === "tweet_thread") {
+        if (content.contentType !== "tweet") {
+          throw new Error(
+            `Expected tweet content for tweet_thread source, got ${content.contentType}`,
+          );
+        }
         const thread = mapTweetThreadSourceToThread(source);
-        const tweet = mapTweetContentToTweet(content as TweetContent);
+        const tweet = mapTweetContentToTweet(content);
         return (
           <div>
             <TweetDescription
@@ -70,11 +77,16 @@ export function RandomPage() {
         );
       }
 
+      if (content.contentType !== "url_chunk") {
+        throw new Error(
+          `Expected url_chunk content for url source, got ${content.contentType}`,
+        );
+      }
       return (
         <div>
           <ChunkDescription
             url={mapUrlSourceToUrl(source)}
-            chunk={mapUrlChunkContentToUrlChunk(content as UrlChunkContent)}
+            chunk={mapUrlChunkContentToUrlChunk(content)}
             relatedChunks={mapRelatedItemsToUrlChunks(relatedItems)}
             additionalContext={additionalContext}
             onUrlClick={() => {
