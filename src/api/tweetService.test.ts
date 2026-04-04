@@ -77,7 +77,7 @@ const expectedTweet1 = {
   authorDisplayName: "User One",
   content: "First tweet",
   mediaUrls: [],
-  threadId: "thread-1",
+
   positionInThread: 0,
   tweetedAt: "2026-01-04T00:00:00Z",
   createdAt: "2026-01-05T00:00:00Z",
@@ -90,7 +90,7 @@ const expectedTweet2 = {
   authorDisplayName: "User One",
   content: "Second tweet",
   mediaUrls: ["https://example.com/img.jpg"],
-  threadId: "thread-1",
+
   positionInThread: 1,
   tweetedAt: "2026-01-04T01:00:00Z",
   createdAt: "2026-01-05T00:00:00Z",
@@ -299,7 +299,6 @@ describe("TweetService", () => {
           authorDisplayName: "User One",
           content: "First tweet",
           mediaUrls: [],
-          threadId: "",
           positionInThread: 0,
           tweetedAt: "2026-01-04T00:00:00Z",
           createdAt: "2026-01-05T00:00:00Z",
@@ -313,7 +312,6 @@ describe("TweetService", () => {
             authorDisplayName: "User One",
             content: "Second tweet",
             mediaUrls: ["https://example.com/img.jpg"],
-            threadId: "",
             positionInThread: 1,
             tweetedAt: "2026-01-04T01:00:00Z",
             createdAt: "2026-01-05T00:00:00Z",

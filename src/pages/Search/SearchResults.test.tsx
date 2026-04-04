@@ -90,7 +90,7 @@ const mockTweetThreadBundles: TweetThreadBundle[] = [
         authorDisplayName: "Test User",
         content: "TypeScript generics are powerful tools",
         mediaUrls: [],
-        threadId: "thread-1",
+
         positionInThread: 0,
         tweetedAt: "2024-01-20T09:00:00Z",
         createdAt: "2024-01-20T10:00:00Z",
@@ -102,7 +102,7 @@ const mockTweetThreadBundles: TweetThreadBundle[] = [
         authorDisplayName: "Test User",
         content: "Here is an example with conditional types",
         mediaUrls: [],
-        threadId: "thread-1",
+
         positionInThread: 1,
         tweetedAt: "2024-01-20T09:01:00Z",
         createdAt: "2024-01-20T10:00:00Z",

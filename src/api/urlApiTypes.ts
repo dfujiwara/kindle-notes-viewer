@@ -26,7 +26,7 @@ export interface UrlChunkBundleApiResponse {
 }
 
 // Streaming metadata API response interfaces
-interface UrlSourceApiResponse {
+export interface UrlSourceApiResponse {
   id: number;
   title: string;
   type: "url";

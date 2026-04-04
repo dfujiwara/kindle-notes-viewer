@@ -53,16 +53,13 @@ export function RandomPage() {
 
       if (source.type === "tweet_thread") {
         const thread = mapTweetThreadSourceToThread(source);
-        const tweet = mapTweetContentToTweet(
-          content as TweetContent,
-          source.id,
-        );
+        const tweet = mapTweetContentToTweet(content as TweetContent);
         return (
           <div>
             <TweetDescription
               thread={thread}
               tweet={tweet}
-              relatedTweets={mapRelatedItemsToTweets(relatedItems, source.id)}
+              relatedTweets={mapRelatedItemsToTweets(relatedItems)}
               additionalContext={additionalContext}
               onThreadClick={() => navigate(`/tweets/${source.id}/`)}
               onRelatedTweetClick={(relatedTweetId) =>

@@ -16,7 +16,6 @@ export interface Tweet {
   authorDisplayName: string;
   content: string;
   mediaUrls: string[];
-  threadId: string;
   positionInThread: number;
   tweetedAt: string;
   createdAt: string;

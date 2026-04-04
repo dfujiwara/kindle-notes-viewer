@@ -52,7 +52,7 @@ describe("mapTweetThreadSourceToThread", () => {
 
 describe("mapTweetContentToTweet", () => {
   it("maps all fields correctly", () => {
-    const result = mapTweetContentToTweet(mockTweetContent, "thread-1");
+    const result = mapTweetContentToTweet(mockTweetContent);
 
     expect(result).toEqual({
       id: "tweet-1",
@@ -62,7 +62,6 @@ describe("mapTweetContentToTweet", () => {
       authorDisplayName: "testuser",
       content: "Hello world",
       mediaUrls: ["https://example.com/img.jpg"],
-      threadId: "thread-1",
       positionInThread: 2,
       tweetedAt: "2026-01-01T12:00:00Z",
       createdAt: "2026-01-01T00:00:00Z",
@@ -72,11 +71,6 @@ describe("mapTweetContentToTweet", () => {
   it("uses id for both id and tweetId", () => {
     const result = mapTweetContentToTweet(mockTweetContent);
     expect(result.id).toBe(result.tweetId);
-  });
-
-  it("defaults threadId to empty string when not provided", () => {
-    const result = mapTweetContentToTweet(mockTweetContent);
-    expect(result.threadId).toBe("");
   });
 
   it("maps empty mediaUrls", () => {
@@ -110,13 +104,11 @@ describe("mapRelatedItemsToTweets", () => {
       },
     ];
 
-    const result = mapRelatedItemsToTweets(relatedItems, "thread-1");
+    const result = mapRelatedItemsToTweets(relatedItems);
 
     expect(result).toHaveLength(2);
     expect(result[0].id).toBe("tweet-1");
-    expect(result[0].threadId).toBe("thread-1");
     expect(result[1].id).toBe("tweet-2");
-    expect(result[1].threadId).toBe("thread-1");
   });
 
   it("returns empty array when no tweet items", () => {
