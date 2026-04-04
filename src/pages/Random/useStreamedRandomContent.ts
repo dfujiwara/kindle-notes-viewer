@@ -24,9 +24,12 @@ export function useStreamedRandomContent(): StreamState {
       onContextChunk: (content: string) => {
         setState((prev) => {
           if (prev.status !== "streaming") {
-            throw new Error(
-              `Cannot process context chunk in ${prev.status} state`,
-            );
+            return {
+              status: "error",
+              error: new Error(
+                `Cannot process context chunk in ${prev.status} state`,
+              ),
+            };
           }
           return {
             ...prev,
@@ -40,9 +43,12 @@ export function useStreamedRandomContent(): StreamState {
       onComplete: () => {
         setState((prev) => {
           if (prev.status !== "streaming") {
-            throw new Error(
-              `Cannot complete streaming in ${prev.status} state`,
-            );
+            return {
+              status: "error",
+              error: new Error(
+                `Cannot complete streaming in ${prev.status} state`,
+              ),
+            };
           }
           return {
             status: "success",
