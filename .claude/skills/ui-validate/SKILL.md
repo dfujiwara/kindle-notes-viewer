@@ -3,7 +3,7 @@ name: ui-validate
 description: Validates UI features using Playwright browser automation
 args:
   feature:
-    description: Feature to validate (navigation, search, upload, home, all)
+    description: Feature to validate (navigation, home, search, upload, tweets, random, all)
     required: false
     default: all
 ---
@@ -20,15 +20,18 @@ Validates UI features of the Kindle Notes Viewer application using Playwright br
 
 **Available features:**
 - `navigation` - Validates header navigation links work correctly
-- `search` - Validates search page UI and functionality
-- `upload` - Validates upload page UI elements
-- `home` - Validates home page loads and displays content
+- `home` - Validates home page tabs (Books, URLs, Tweets) load and display content
+- `search` - Validates search page finds results across books, URLs, and tweets
+- `upload` - Validates all three upload modes (File, URL, Tweet)
+- `tweets` - Validates tweet thread page and tweet detail page
+- `random` - Validates random page loads content (note, chunk, or tweet)
 - `all` - Runs all validations (default if no feature specified)
 
 ## Example
 
 ```
 /ui-validate navigation
+/ui-validate tweets
 /ui-validate all
 ```
 
@@ -75,25 +78,54 @@ This gives you the accessibility tree showing all interactive elements.
 - Click "Upload" link → verify URL changes to /upload
 - Click "Kindle Notes" title → verify returns to /
 
+**For `home` validation:**
+- Navigate to /
+- Take snapshot
+- Verify three tabs exist: "Books", "URLs", "Tweets"
+- Verify "Books" tab is active by default
+- Verify book list or "No books" message appears in Books tab
+- Click "URLs" tab → verify URL list or "No URLs" message appears
+- Click "Tweets" tab → verify tweet thread list or "No tweets" message appears
+- Verify keyboard navigation works (Arrow Left/Right keys switch tabs)
+- Verify navigation links are present in header
+
 **For `search` validation:**
 - Navigate to /search
 - Take snapshot
-- Verify search input textbox exists
-- Verify "Search Notes" or submit button exists
-- Optionally: type test query and verify results load
+- Verify search input textbox exists with placeholder "Search..."
+- Type a short query (< 3 chars) → verify validation message appears (requires 3+ chars)
+- Type a valid query (3+ chars) → wait for results
+- Verify results are organized into sections: Books, URLs, Tweets
+- Verify each result section shows matching items or is absent if no results
+- Verify clicking a result navigates to the correct detail page
 
 **For `upload` validation:**
 - Navigate to /upload
 - Take snapshot
-- Verify file upload area or drag-drop zone exists
-- Verify upload instructions are visible
+- Verify three mode buttons exist: "File Upload", "URL Upload", "Tweet"
+- **File mode** (default): Verify file drop zone is visible; verify accepts .txt/.html
+- Click "URL Upload" → verify URL input field appears; verify file drop zone is gone
+- Click "Tweet" → verify URL input field appears with tweet URL placeholder
+- Verify Upload and Clear buttons are present in all modes
+- Verify switching modes clears previous input state
 
-**For `home` validation:**
-- Navigate to /
+**For `tweets` validation:**
+- Navigate to / → click Tweets tab → click a tweet thread (if any exist)
+- If no tweets exist, skip thread/detail checks and note it
+- On TweetPage: verify thread title, author handle (@username), tweet count, and tweet list are visible
+- Click a tweet in the list → verify navigation to /tweets/:threadId/tweets/:tweetId
+- On TweetDetailPage: verify tweet content is visible, verify related tweets section exists
+- Verify streaming content loads (loading indicator → content appears)
+- Verify back/breadcrumb navigation link to parent thread
+
+**For `random` validation:**
+- Navigate to /random
 - Take snapshot
-- Verify page title contains "Kindle Notes"
-- Verify either book list or "No books" message appears
-- Verify navigation links are present
+- Verify page loads some content (note, URL chunk, or tweet)
+- Verify content is one of the three types based on what is shown
+- Verify streaming content finishes loading
+- Verify navigation link back to the source item exists
+- Reload page and verify different (or same) random content loads without error
 
 **For `all` validation:**
 - Run all of the above validations in sequence
@@ -154,7 +186,7 @@ mcp__playwright__browser_snapshot({})
 
 // 2. Click an element (using ref from snapshot)
 mcp__playwright__browser_click({
-  element: "Search link",
+  element: "Tweets tab",
   ref: "abc123"
 })
 
@@ -175,6 +207,7 @@ mcp__playwright__browser_snapshot({})
 - Check console for errors after each page load
 - Use snapshots to understand page structure before interactions
 - Take screenshots on failures for debugging
+- If a list is empty (no books/URLs/tweets), note it but don't fail — validate what you can
 
 ### Reporting Results
 
@@ -184,15 +217,14 @@ Provide clear, formatted output:
 🧪 UI Validation Results
 ========================
 
-✓ Navigation: All links working correctly
-✓ Search Page: Input and button present
-✓ Upload Page: File drop zone visible
-✗ Home Page: Failed to load book list (API error)
+✓ Navigation: All header links working correctly
+✓ Home Page: Books/URLs/Tweets tabs all render; keyboard nav works
+✓ Search Page: Input validation works; results show Books, URLs, Tweets sections
+✓ Upload Page: All three modes (File, URL, Tweet) switch correctly
+✓ Tweets Page: Thread metadata and tweet list render; detail page streams content
+✓ Random Page: Loads random content without errors
 
-Results: 3/4 passed
-
-⚠️  Issues Found:
-- Home page: API returned 500 error
+Results: 6/6 passed
 ```
 
 ### Error Handling
@@ -208,6 +240,7 @@ If validations fail:
 
 - Start with a fresh browser state each validation
 - Use snapshots liberally to understand page structure
-- Don't just check if elements exist - verify they work
-- Keep validations fast (< 30 seconds total)
+- Don't just check if elements exist - verify they work (click tabs, type in inputs)
+- Keep validations fast (< 60 seconds total for `all`)
+- If data-dependent pages (tweets, books) are empty, note it and move on
 - Focus on critical user paths, not edge cases
