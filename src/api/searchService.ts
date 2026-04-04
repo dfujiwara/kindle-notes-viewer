@@ -1,47 +1,12 @@
-import type {
-  KindleBook,
-  KindleNoteBundle,
-  SearchResult,
-  Url,
-  UrlChunk,
-  UrlChunkBundle,
-} from "../models";
+import type { SearchResult } from "../models";
 import { httpClient } from "./httpClient";
+import type { KindleNoteBundleApiResponse } from "./kindleApiTypes";
+import { mapNoteBundle } from "./kindleApiTypes";
 import type { TweetThreadBundleApiResponse } from "./tweetApiTypes";
 import { mapTweetThreadBundle } from "./tweetApiTypes";
 import type { ApiResponse } from "./types";
-
-// API response interfaces with snake_case fields
-interface KindleNoteApiResponse {
-  id: string;
-  content: string;
-  created_at: string;
-}
-
-interface KindleNoteBundleApiResponse {
-  book: KindleBook;
-  notes: KindleNoteApiResponse[];
-}
-
-interface UrlApiResponse {
-  id: string;
-  url: string;
-  title: string;
-  chunk_count: number;
-  created_at: string;
-}
-
-interface UrlChunkApiResponse {
-  id: string;
-  content: string;
-  is_summary: boolean;
-  created_at: string;
-}
-
-interface UrlChunkBundleApiResponse {
-  url: UrlApiResponse;
-  chunks: UrlChunkApiResponse[];
-}
+import type { UrlChunkBundleApiResponse } from "./urlApiTypes";
+import { mapUrlChunkBundle } from "./urlApiTypes";
 
 interface SearchResultApiResponse {
   query: string;
@@ -50,40 +15,6 @@ interface SearchResultApiResponse {
   tweet_threads: TweetThreadBundleApiResponse[];
   count: number;
 }
-
-// Mapping functions
-const mapNoteBundle = (
-  bundle: KindleNoteBundleApiResponse,
-): KindleNoteBundle => ({
-  book: bundle.book,
-  notes: bundle.notes.map((note) => ({
-    id: note.id,
-    content: note.content,
-    createdAt: note.created_at,
-  })),
-});
-
-const mapUrl = (apiUrl: UrlApiResponse): Url => ({
-  id: apiUrl.id,
-  url: apiUrl.url,
-  title: apiUrl.title,
-  chunkCount: apiUrl.chunk_count,
-  createdAt: apiUrl.created_at,
-});
-
-const mapUrlChunk = (apiChunk: UrlChunkApiResponse): UrlChunk => ({
-  id: apiChunk.id,
-  content: apiChunk.content,
-  isSummary: apiChunk.is_summary,
-  createdAt: apiChunk.created_at,
-});
-
-const mapUrlChunkBundle = (
-  bundle: UrlChunkBundleApiResponse,
-): UrlChunkBundle => ({
-  url: mapUrl(bundle.url),
-  chunks: bundle.chunks.map(mapUrlChunk),
-});
 
 const mapSearchResult = (apiResult: SearchResultApiResponse): SearchResult => ({
   q: apiResult.query,

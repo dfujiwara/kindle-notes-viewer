@@ -1,54 +1,13 @@
 import { logger } from "src/utils/logger";
-import type {
-  KindleBook,
-  KindleDetailedNote,
-  KindleNote,
-  KindleNoteBundle,
-} from "../models";
+import type { KindleDetailedNote, KindleNoteBundle } from "../models";
 import { httpClient } from "./httpClient";
+import type {
+  KindleInitialNoteApiResponse,
+  KindleNoteBundleApiResponse,
+} from "./kindleApiTypes";
+import { mapInitialDetailedNote, mapNoteBundle } from "./kindleApiTypes";
 import { sseClient } from "./sseClient";
 import type { ApiResponse } from "./types";
-
-// API response interfaces with snake_case fields
-interface KindleNoteApiResponse {
-  id: string;
-  content: string;
-  created_at: string;
-}
-
-interface KindleInitialNoteApiResponse {
-  book: KindleBook;
-  note: KindleNoteApiResponse;
-  related_notes: KindleNoteApiResponse[];
-}
-
-interface KindleNoteBundleApiResponse {
-  book: KindleBook;
-  notes: KindleNoteApiResponse[];
-}
-
-// Mapping functions
-const mapNote = (apiNote: KindleNoteApiResponse): KindleNote => ({
-  id: apiNote.id,
-  content: apiNote.content,
-  createdAt: apiNote.created_at,
-});
-
-const mapNoteBundle = (
-  apiBundle: KindleNoteBundleApiResponse,
-): KindleNoteBundle => ({
-  book: apiBundle.book,
-  notes: apiBundle.notes.map(mapNote),
-});
-
-const mapInitialDetailedNote = (
-  apiNote: KindleInitialNoteApiResponse,
-): KindleDetailedNote => ({
-  book: apiNote.book,
-  note: mapNote(apiNote.note),
-  additionalContext: "",
-  relatedNotes: apiNote.related_notes.map(mapNote),
-});
 
 const ENDPOINTS = {
   LIST: (bookId: string) => `/books/${bookId}/notes`,
