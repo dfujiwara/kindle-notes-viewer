@@ -21,7 +21,7 @@ const mockTweet: Tweet = {
   authorDisplayName: "User One",
   content: "This is the main tweet content.",
   mediaUrls: [],
-  threadId: "thread-1",
+
   positionInThread: 0,
   tweetedAt: "2026-01-01T00:00:00Z",
   createdAt: "2026-01-01T00:00:00Z",
@@ -35,7 +35,7 @@ const mockRelatedTweets: Tweet[] = [
     authorDisplayName: "User One",
     content: "First related tweet",
     mediaUrls: [],
-    threadId: "thread-1",
+
     positionInThread: 1,
     tweetedAt: "2026-01-01T00:00:00Z",
     createdAt: "2026-01-01T00:00:00Z",
@@ -47,7 +47,7 @@ const mockRelatedTweets: Tweet[] = [
     authorDisplayName: "User One",
     content: "Second related tweet",
     mediaUrls: [],
-    threadId: "thread-1",
+
     positionInThread: 2,
     tweetedAt: "2026-01-01T00:00:00Z",
     createdAt: "2026-01-01T00:00:00Z",

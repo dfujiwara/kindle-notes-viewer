@@ -45,7 +45,7 @@ const mockBundle: TweetThreadBundle = {
       authorDisplayName: "User One",
       content: "First tweet content",
       mediaUrls: [],
-      threadId: "thread-1",
+
       positionInThread: 0,
       tweetedAt: "2026-01-01T00:00:00Z",
       createdAt: "2026-01-01T00:00:00Z",
@@ -57,7 +57,7 @@ const mockBundle: TweetThreadBundle = {
       authorDisplayName: "User One",
       content: "Second tweet content",
       mediaUrls: [],
-      threadId: "thread-1",
+
       positionInThread: 1,
       tweetedAt: "2026-01-01T00:00:00Z",
       createdAt: "2026-01-01T00:00:00Z",

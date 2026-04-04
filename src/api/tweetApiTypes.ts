@@ -1,5 +1,17 @@
 import type { Tweet, TweetThread, TweetThreadBundle } from "../models";
 
+export interface TweetThreadSourceApiResponse {
+  id: string;
+  title: string;
+  type: "tweet_thread";
+  author_username: string;
+  author_display_name: string;
+  root_tweet_id: string;
+  tweet_count: number;
+  fetched_at?: string;
+  created_at: string;
+}
+
 export interface TweetThreadApiResponse {
   id: string;
   root_tweet_id: string;
@@ -20,6 +32,18 @@ export interface TweetApiResponse {
   media_urls: string[];
   thread_id: string;
   position_in_thread: number;
+  tweeted_at: string;
+  created_at: string;
+}
+
+export interface TweetContentApiResponse {
+  id: string;
+  content_type: "tweet";
+  content: string;
+  author_username: string;
+  author_display_name?: string;
+  position_in_thread: number;
+  media_urls: string[];
   tweeted_at: string;
   created_at: string;
 }
@@ -47,7 +71,6 @@ export const mapTweet = (api: TweetApiResponse): Tweet => ({
   authorDisplayName: api.author_display_name,
   content: api.content,
   mediaUrls: api.media_urls,
-  threadId: api.thread_id,
   positionInThread: api.position_in_thread,
   tweetedAt: api.tweeted_at,
   createdAt: api.created_at,

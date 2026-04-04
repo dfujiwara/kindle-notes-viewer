@@ -99,10 +99,7 @@ export const mapTweetThreadSourceToThread = (
 /**
  * Maps a TweetContent (from RandomContent) to a Tweet domain model
  */
-export const mapTweetContentToTweet = (
-  content: TweetContent,
-  threadId = "",
-): Tweet => ({
+export const mapTweetContentToTweet = (content: TweetContent): Tweet => ({
   id: content.id,
   tweetId: content.id,
   authorUsername: content.authorUsername,
@@ -110,7 +107,6 @@ export const mapTweetContentToTweet = (
   authorDisplayName: content.authorUsername,
   content: content.content,
   mediaUrls: content.mediaUrls,
-  threadId,
   positionInThread: content.positionInThread,
   tweetedAt: content.tweetedAt,
   createdAt: content.createdAt,
@@ -119,10 +115,7 @@ export const mapTweetContentToTweet = (
 /**
  * Filters and maps Content[] to Tweet[], extracting only tweet items
  */
-export const mapRelatedItemsToTweets = (
-  relatedItems: Content[],
-  threadId = "",
-): Tweet[] =>
+export const mapRelatedItemsToTweets = (relatedItems: Content[]): Tweet[] =>
   relatedItems
     .filter((item): item is TweetContent => item.contentType === "tweet")
-    .map((item) => mapTweetContentToTweet(item, threadId));
+    .map((item) => mapTweetContentToTweet(item));

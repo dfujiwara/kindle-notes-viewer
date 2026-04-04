@@ -8,35 +8,13 @@ import type {
 import { httpClient } from "./httpClient";
 import { sseClient } from "./sseClient";
 import type {
+  TweetContentApiResponse,
   TweetThreadApiResponse,
   TweetThreadBundleApiResponse,
+  TweetThreadSourceApiResponse,
 } from "./tweetApiTypes";
 import { mapTweetThread, mapTweetThreadBundle } from "./tweetApiTypes";
 import type { ApiResponse } from "./types";
-
-interface TweetThreadSourceApiResponse {
-  id: string;
-  title: string;
-  type: "tweet_thread";
-  author_username: string;
-  author_display_name: string;
-  root_tweet_id: string;
-  tweet_count: number;
-  fetched_at: string;
-  created_at: string;
-}
-
-interface TweetContentApiResponse {
-  id: string;
-  content_type: "tweet";
-  content: string;
-  author_username: string;
-  author_display_name: string;
-  position_in_thread: number;
-  media_urls: string[];
-  tweeted_at: string;
-  created_at: string;
-}
 
 interface TweetStreamMetadataApiResponse {
   source: TweetThreadSourceApiResponse;
@@ -48,10 +26,9 @@ const mapTweetContentApi = (api: TweetContentApiResponse): Tweet => ({
   id: api.id,
   tweetId: api.id,
   authorUsername: api.author_username,
-  authorDisplayName: api.author_display_name,
+  authorDisplayName: api.author_display_name ?? api.author_username,
   content: api.content,
   mediaUrls: api.media_urls,
-  threadId: "",
   positionInThread: api.position_in_thread,
   tweetedAt: api.tweeted_at,
   createdAt: api.created_at,
@@ -67,7 +44,7 @@ const mapStreamMetadata = (
     authorDisplayName: api.source.author_display_name,
     title: api.source.title,
     tweetCount: api.source.tweet_count,
-    fetchedAt: api.source.fetched_at,
+    fetchedAt: api.source.fetched_at ?? "",
     createdAt: api.source.created_at,
   },
   tweet: mapTweetContentApi(api.content),

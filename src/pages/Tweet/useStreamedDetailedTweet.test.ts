@@ -39,7 +39,7 @@ describe("useStreamedDetailedTweet", () => {
     authorDisplayName: "User One",
     content: "Test tweet content",
     mediaUrls: [],
-    threadId: "thread-1",
+
     positionInThread: 0,
     tweetedAt: "2026-01-01T00:00:00Z",
     createdAt: "2026-01-01T00:00:00Z",
@@ -57,7 +57,7 @@ describe("useStreamedDetailedTweet", () => {
         authorDisplayName: "User One",
         content: "Related tweet",
         mediaUrls: [],
-        threadId: "thread-1",
+
         positionInThread: 1,
         tweetedAt: "2026-01-01T00:00:00Z",
         createdAt: "2026-01-01T00:00:00Z",

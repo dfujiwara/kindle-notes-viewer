@@ -214,7 +214,7 @@ describe("SearchService", () => {
               authorDisplayName: "Test User",
               content: "Generics are great",
               mediaUrls: [],
-              threadId: "thread-1",
+
               positionInThread: 0,
               tweetedAt: "2026-01-05T00:00:00Z",
               createdAt: "2026-01-05T00:00:00Z",
