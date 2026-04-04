@@ -47,6 +47,42 @@ const mockNoteContent: RandomContent = {
   ],
 };
 
+const mockTweetContent: RandomContent = {
+  source: {
+    id: "thread-1",
+    title: "Test Tweet Thread",
+    type: "tweet_thread",
+    authorUsername: "testuser",
+    authorDisplayName: "Test User",
+    rootTweetId: "tweet-root",
+    tweetCount: 5,
+    createdAt: "2026-01-01T00:00:00Z",
+  },
+  content: {
+    id: "tweet-1",
+    contentType: "tweet",
+    content: "Test tweet content",
+    authorUsername: "testuser",
+    positionInThread: 0,
+    mediaUrls: [],
+    tweetedAt: "2026-01-01T00:00:00Z",
+    createdAt: "2026-01-01T00:00:00Z",
+  },
+  additionalContext: "Additional context for tweet",
+  relatedItems: [
+    {
+      id: "tweet-2",
+      contentType: "tweet",
+      content: "Related tweet content",
+      authorUsername: "testuser",
+      positionInThread: 1,
+      mediaUrls: [],
+      tweetedAt: "2026-01-02T00:00:00Z",
+      createdAt: "2026-01-02T00:00:00Z",
+    },
+  ],
+};
+
 const mockChunkContent: RandomContent = {
   source: {
     id: "url-1",
@@ -151,6 +187,66 @@ describe("RandomPage", () => {
 
       expect(mockNavigate).toHaveBeenCalledWith(
         "/books/book-1/notes/related-note-1",
+      );
+    });
+  });
+
+  describe("when showing tweet content", () => {
+    it("renders TweetDescription on success", () => {
+      mockUseStreamedRandomContent.mockReturnValue({
+        status: "success",
+        data: mockTweetContent,
+      });
+
+      renderWithRouter(<RandomPage />);
+
+      expect(screen.getByText("Test Tweet Thread")).toBeInTheDocument();
+      expect(screen.getByText("Test tweet content")).toBeInTheDocument();
+    });
+
+    it("renders TweetDescription during streaming", () => {
+      mockUseStreamedRandomContent.mockReturnValue({
+        status: "streaming",
+        data: mockTweetContent,
+      });
+
+      renderWithRouter(<RandomPage />);
+
+      expect(screen.getByText("Test Tweet Thread")).toBeInTheDocument();
+      expect(screen.getByText("Test tweet content")).toBeInTheDocument();
+    });
+
+    it("navigates to tweet thread page when thread is clicked", async () => {
+      const user = userEvent.setup();
+      mockUseStreamedRandomContent.mockReturnValue({
+        status: "success",
+        data: mockTweetContent,
+      });
+
+      renderWithRouter(<RandomPage />);
+
+      const threadButton = screen.getByRole("button", {
+        name: /Test Tweet Thread/i,
+      });
+      await user.click(threadButton);
+
+      expect(mockNavigate).toHaveBeenCalledWith("/tweets/thread-1/");
+    });
+
+    it("navigates to related tweet when clicked", async () => {
+      const user = userEvent.setup();
+      mockUseStreamedRandomContent.mockReturnValue({
+        status: "success",
+        data: mockTweetContent,
+      });
+
+      renderWithRouter(<RandomPage />);
+
+      const relatedTweetButton = screen.getByText("Related tweet content");
+      await user.click(relatedTweetButton);
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        "/tweets/thread-1/tweets/tweet-2",
       );
     });
   });

@@ -16,7 +16,18 @@ export interface UrlSource {
   createdAt: string;
 }
 
-export type Source = BookSource | UrlSource;
+export interface TweetThreadSource {
+  id: string;
+  title: string;
+  type: "tweet_thread";
+  authorUsername: string;
+  authorDisplayName: string;
+  rootTweetId: string;
+  tweetCount: number;
+  createdAt: string;
+}
+
+export type Source = BookSource | UrlSource | TweetThreadSource;
 
 export interface NoteContent {
   id: string;
@@ -34,7 +45,18 @@ export interface UrlChunkContent {
   createdAt: string;
 }
 
-export type Content = NoteContent | UrlChunkContent;
+export interface TweetContent {
+  id: string;
+  contentType: "tweet";
+  content: string;
+  authorUsername: string;
+  positionInThread: number;
+  mediaUrls: string[];
+  tweetedAt: string;
+  createdAt: string;
+}
+
+export type Content = NoteContent | UrlChunkContent | TweetContent;
 
 export interface RandomContent {
   source: Source;

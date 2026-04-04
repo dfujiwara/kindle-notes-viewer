@@ -4,9 +4,12 @@ import type {
   BookSource,
   Content,
   NoteContent,
+  TweetContent,
+  TweetThreadSource,
   UrlChunkContent,
   UrlSource,
 } from "./random";
+import type { Tweet, TweetThread } from "./tweet";
 import type { Url, UrlChunk } from "./url";
 
 // Book/Note mappers
@@ -73,3 +76,53 @@ export const mapRelatedItemsToUrlChunks = (
   relatedItems
     .filter((item): item is UrlChunkContent => item.contentType === "url_chunk")
     .map(mapUrlChunkContentToUrlChunk);
+
+// Tweet mappers
+
+/**
+ * Maps a TweetThreadSource (from RandomContent) to a TweetThread domain model
+ */
+export const mapTweetThreadSourceToThread = (
+  source: TweetThreadSource,
+): TweetThread => ({
+  id: source.id,
+  rootTweetId: source.rootTweetId,
+  authorUsername: source.authorUsername,
+  authorDisplayName: source.authorDisplayName,
+  title: source.title,
+  tweetCount: source.tweetCount,
+  // The random API does not provide fetched_at separately; use createdAt for both
+  fetchedAt: source.createdAt,
+  createdAt: source.createdAt,
+});
+
+/**
+ * Maps a TweetContent (from RandomContent) to a Tweet domain model
+ */
+export const mapTweetContentToTweet = (
+  content: TweetContent,
+  threadId = "",
+): Tweet => ({
+  id: content.id,
+  tweetId: content.id,
+  authorUsername: content.authorUsername,
+  // The random API does not include author_display_name on tweet content; fall back to username
+  authorDisplayName: content.authorUsername,
+  content: content.content,
+  mediaUrls: content.mediaUrls,
+  threadId,
+  positionInThread: content.positionInThread,
+  tweetedAt: content.tweetedAt,
+  createdAt: content.createdAt,
+});
+
+/**
+ * Filters and maps Content[] to Tweet[], extracting only tweet items
+ */
+export const mapRelatedItemsToTweets = (
+  relatedItems: Content[],
+  threadId = "",
+): Tweet[] =>
+  relatedItems
+    .filter((item): item is TweetContent => item.contentType === "tweet")
+    .map((item) => mapTweetContentToTweet(item, threadId));
