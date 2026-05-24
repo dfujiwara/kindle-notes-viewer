@@ -22,6 +22,30 @@ import {
 } from "src/pages";
 import "./App.css";
 
+const toastOptions = {
+  style: {
+    border: "1px solid #3f3f46",
+    borderRadius: "0.5rem",
+    background: "#18181b",
+    color: "#f4f4f5",
+    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.35)",
+    margin: "8px 0",
+    fontSize: "0.875rem",
+  },
+  success: {
+    iconTheme: {
+      primary: "#22c55e",
+      secondary: "#18181b",
+    },
+  },
+  error: {
+    iconTheme: {
+      primary: "#ef4444",
+      secondary: "#18181b",
+    },
+  },
+};
+
 function App() {
   return (
     <div className="min-h-screen flex flex-col">
@@ -106,7 +130,7 @@ function App() {
         </main>
       </ErrorBoundary>
       <Footer />
-      <Toaster position="bottom-right" />
+      <Toaster position="bottom-right" toastOptions={toastOptions} />
     </div>
   );
 }
