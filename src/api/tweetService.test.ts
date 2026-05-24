@@ -200,6 +200,23 @@ describe("TweetService", () => {
     });
   });
 
+  describe("deleteTweetThread", () => {
+    it("deletes the thread via DELETE /tweets/:threadId", async () => {
+      vi.mocked(httpClient.request).mockResolvedValue({
+        data: null,
+        status: 204,
+      });
+
+      const result = await tweetService.deleteTweetThread("thread-1");
+
+      expect(httpClient.request).toHaveBeenCalledWith("/tweets/thread-1", {
+        method: "DELETE",
+        headers: {},
+      });
+      expect(result).toEqual({ data: null, status: 204 });
+    });
+  });
+
   describe("getStreamedTweet", () => {
     it("creates an EventSource for the correct endpoint with all required handlers", () => {
       const mockEventSource = {} as EventSource;
