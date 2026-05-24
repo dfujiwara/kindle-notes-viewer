@@ -1,8 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import toast from "react-hot-toast";
 import { MemoryRouter } from "react-router";
 import { tweetService } from "src/api";
+import { ApiError } from "src/api/types";
 import type { TweetThreadBundle } from "src/models";
 import { TweetPage } from "./TweetPage";
 
@@ -12,6 +14,7 @@ vi.mock("src/api", async () => {
     ...actual,
     tweetService: {
       getTweetThread: vi.fn(),
+      deleteTweetThread: vi.fn(),
     },
   };
 });
@@ -25,6 +28,13 @@ vi.mock("react-router", async () => {
     useNavigate: () => mockNavigate,
   };
 });
+
+vi.mock("react-hot-toast", () => ({
+  default: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
 
 const mockBundle: TweetThreadBundle = {
   thread: {
@@ -95,6 +105,67 @@ describe("TweetPage", () => {
       expect(screen.getByText(/User One/)).toBeInTheDocument();
       expect(screen.getByText(/2 tweets/)).toBeInTheDocument();
     });
+  });
+
+  it("renders delete button", async () => {
+    renderTweetPage();
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /delete tweet thread/i }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("deletes thread and navigates home on success", async () => {
+    vi.mocked(tweetService.deleteTweetThread).mockResolvedValue({
+      data: null,
+      status: 204,
+    });
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+
+    renderTweetPage();
+
+    await waitFor(() => {
+      expect(screen.getByText("Test Thread Title")).toBeInTheDocument();
+    });
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /delete tweet thread/i }),
+    );
+
+    await waitFor(() => {
+      expect(tweetService.deleteTweetThread).toHaveBeenCalledWith("thread-1");
+    });
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith(
+        "Tweet thread deleted successfully",
+      );
+    });
+    expect(mockNavigate).toHaveBeenCalledWith("/");
+  });
+
+  it("shows error toast on delete failure", async () => {
+    const apiError = new ApiError("Not found", 404);
+    vi.mocked(tweetService.deleteTweetThread).mockRejectedValue(apiError);
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+
+    renderTweetPage();
+
+    await waitFor(() => {
+      expect(screen.getByText("Test Thread Title")).toBeInTheDocument();
+    });
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /delete tweet thread/i }),
+    );
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        "Failed to delete tweet thread: Not found",
+      );
+    });
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("renders all tweets in the thread", async () => {

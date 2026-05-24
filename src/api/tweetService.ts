@@ -105,6 +105,13 @@ export class TweetService {
     return { ...response, data: mapTweetThreadBundle(response.data) };
   }
 
+  async deleteTweetThread(threadId: string): Promise<ApiResponse<null>> {
+    return httpClient.request<null>(ENDPOINTS.THREAD(threadId), {
+      method: "DELETE",
+      headers: {},
+    });
+  }
+
   getStreamedTweet(
     threadId: string,
     tweetId: string,
