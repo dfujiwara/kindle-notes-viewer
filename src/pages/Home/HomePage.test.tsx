@@ -74,6 +74,7 @@ const mockTweetThreads: TweetThread[] = [
   {
     id: "thread-1",
     rootTweetId: "tweet-1",
+    canonicalURL: "https://x.com/i/web/status/thread-1",
     authorUsername: "user1",
     authorDisplayName: "User One",
     title: "Thoughts on TypeScript",

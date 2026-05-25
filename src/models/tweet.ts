@@ -4,6 +4,7 @@ export interface TweetThread {
   authorUsername: string;
   authorDisplayName: string;
   title: string;
+  canonicalURL: string;
   tweetCount: number;
   fetchedAt: string;
   createdAt: string;

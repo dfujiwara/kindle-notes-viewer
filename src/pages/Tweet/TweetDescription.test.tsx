@@ -9,6 +9,7 @@ const mockThread: TweetThread = {
   authorUsername: "user1",
   authorDisplayName: "User One",
   title: "Test Thread Title",
+  canonicalURL: "https://x.com/i/web/status/thread-1",
   tweetCount: 3,
   fetchedAt: "2026-01-01T00:00:00Z",
   createdAt: "2026-01-01T00:00:00Z",
@@ -83,6 +84,14 @@ describe("TweetDescription", () => {
 
     it("renders thread author and tweet count", () => {
       expect(screen.getByText(/3 tweets/)).toBeInTheDocument();
+    });
+
+    it("renders the canonical URL", () => {
+      expect(
+        screen.getByRole("link", {
+          name: "https://x.com/i/web/status/thread-1",
+        }),
+      ).toHaveAttribute("href", "https://x.com/i/web/status/thread-1");
     });
 
     it("renders main tweet content", () => {

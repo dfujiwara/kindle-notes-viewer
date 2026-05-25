@@ -75,6 +75,7 @@ const mockTweetThreadBundles: TweetThreadBundle[] = [
     thread: {
       id: "thread-1",
       rootTweetId: "tweet-root-1",
+      canonicalURL: "https://x.com/i/web/status/thread-1",
       authorUsername: "testuser",
       authorDisplayName: "Test User",
       title: "Interesting Thread About TypeScript",

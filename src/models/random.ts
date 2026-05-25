@@ -23,6 +23,7 @@ export interface TweetThreadSource {
   authorUsername: string;
   authorDisplayName: string;
   rootTweetId: string;
+  canonicalURL: string;
   tweetCount: number;
   createdAt: string;
 }

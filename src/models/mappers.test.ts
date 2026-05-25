@@ -13,6 +13,7 @@ const mockTweetThreadSource: TweetThreadSource = {
   authorUsername: "testuser",
   authorDisplayName: "Test User",
   rootTweetId: "tweet-root",
+  canonicalURL: "https://x.com/i/web/status/thread-root",
   tweetCount: 3,
   createdAt: "2026-01-01T00:00:00Z",
 };
@@ -38,6 +39,7 @@ describe("mapTweetThreadSourceToThread", () => {
       authorUsername: "testuser",
       authorDisplayName: "Test User",
       title: "Test Thread",
+      canonicalURL: "https://x.com/i/web/status/thread-root",
       tweetCount: 3,
       fetchedAt: "2026-01-01T00:00:00Z",
       createdAt: "2026-01-01T00:00:00Z",

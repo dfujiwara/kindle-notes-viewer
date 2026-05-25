@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import type { ApiError } from "src/api";
 import { tweetService, useApiMutation, useApiSuspenseQuery } from "src/api";
-import { DeleteButton } from "src/components";
+import { ClickableUrl, DeleteButton } from "src/components";
 import { formatDate } from "src/utils/date";
 
 export function TweetPage() {
@@ -37,6 +37,10 @@ export function TweetPage() {
           <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">
             {thread.title}
           </h1>
+          <ClickableUrl
+            url={thread.canonicalURL}
+            className="text-sm sm:text-base text-zinc-400 line-clamp-1 mb-2 block"
+          />
           <p className="text-zinc-400 text-sm">
             @{thread.authorUsername} · {thread.authorDisplayName} ·{" "}
             {thread.tweetCount} {thread.tweetCount === 1 ? "tweet" : "tweets"} ·{" "}
