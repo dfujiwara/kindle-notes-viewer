@@ -1,6 +1,5 @@
 import { logger } from "src/utils/logger";
 import type {
-  Tweet,
   TweetDetailedContent,
   TweetThread,
   TweetThreadBundle,
@@ -8,49 +7,16 @@ import type {
 import { httpClient } from "./httpClient";
 import { sseClient } from "./sseClient";
 import type {
-  TweetContentApiResponse,
+  TweetStreamMetadataApiResponse,
   TweetThreadApiResponse,
   TweetThreadBundleApiResponse,
-  TweetThreadSourceApiResponse,
 } from "./tweetApiTypes";
-import { mapTweetThread, mapTweetThreadBundle } from "./tweetApiTypes";
+import {
+  mapTweetStreamMetadata,
+  mapTweetThread,
+  mapTweetThreadBundle,
+} from "./tweetMappers";
 import type { ApiResponse } from "./types";
-
-interface TweetStreamMetadataApiResponse {
-  source: TweetThreadSourceApiResponse;
-  content: TweetContentApiResponse;
-  related_items: TweetContentApiResponse[];
-}
-
-const mapTweetContentApi = (api: TweetContentApiResponse): Tweet => ({
-  id: api.id,
-  tweetId: api.id,
-  authorUsername: api.author_username,
-  authorDisplayName: api.author_display_name ?? api.author_username,
-  content: api.content,
-  mediaUrls: api.media_urls,
-  positionInThread: api.position_in_thread,
-  tweetedAt: api.tweeted_at,
-  createdAt: api.created_at,
-});
-
-const mapStreamMetadata = (
-  api: TweetStreamMetadataApiResponse,
-): TweetDetailedContent => ({
-  thread: {
-    id: api.source.id,
-    rootTweetId: api.source.root_tweet_id,
-    authorUsername: api.source.author_username,
-    authorDisplayName: api.source.author_display_name,
-    title: api.source.title,
-    tweetCount: api.source.tweet_count,
-    fetchedAt: api.source.fetched_at ?? "",
-    createdAt: api.source.created_at,
-  },
-  tweet: mapTweetContentApi(api.content),
-  additionalContext: "",
-  relatedTweets: api.related_items.map(mapTweetContentApi),
-});
 
 const ENDPOINTS = {
   LIST: "/tweets",
@@ -121,7 +87,7 @@ export class TweetService {
       ENDPOINTS.STREAM_TWEET(threadId, tweetId),
       {
         metadata: (data, _es) => {
-          handlers.onMetadata(mapStreamMetadata(data));
+          handlers.onMetadata(mapTweetStreamMetadata(data));
         },
         context_chunk: (data, _es) => {
           handlers.onContextChunk(data.content);

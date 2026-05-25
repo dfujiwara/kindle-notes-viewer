@@ -1,5 +1,3 @@
-import type { Tweet, TweetThread, TweetThreadBundle } from "../models";
-
 export interface TweetThreadSourceApiResponse {
   id: string;
   title: string;
@@ -53,32 +51,8 @@ export interface TweetThreadBundleApiResponse {
   tweets: TweetApiResponse[];
 }
 
-export const mapTweetThread = (api: TweetThreadApiResponse): TweetThread => ({
-  id: api.id,
-  rootTweetId: api.root_tweet_id,
-  authorUsername: api.author_username,
-  authorDisplayName: api.author_display_name,
-  title: api.title,
-  tweetCount: api.tweet_count,
-  fetchedAt: api.fetched_at,
-  createdAt: api.created_at,
-});
-
-export const mapTweet = (api: TweetApiResponse): Tweet => ({
-  id: api.id,
-  tweetId: api.tweet_id,
-  authorUsername: api.author_username,
-  authorDisplayName: api.author_display_name,
-  content: api.content,
-  mediaUrls: api.media_urls,
-  positionInThread: api.position_in_thread,
-  tweetedAt: api.tweeted_at,
-  createdAt: api.created_at,
-});
-
-export const mapTweetThreadBundle = (
-  api: TweetThreadBundleApiResponse,
-): TweetThreadBundle => ({
-  thread: mapTweetThread(api.thread),
-  tweets: api.tweets.map(mapTweet),
-});
+export interface TweetStreamMetadataApiResponse {
+  source: TweetThreadSourceApiResponse;
+  content: TweetContentApiResponse;
+  related_items: TweetContentApiResponse[];
+}
