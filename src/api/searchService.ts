@@ -3,7 +3,7 @@ import { httpClient } from "./httpClient";
 import type { KindleNoteBundleApiResponse } from "./kindleApiTypes";
 import { mapNoteBundle } from "./kindleApiTypes";
 import type { TweetThreadBundleApiResponse } from "./tweetApiTypes";
-import { mapTweetThreadBundle } from "./tweetApiTypes";
+import { mapTweetThreadBundle } from "./tweetMappers";
 import type { ApiResponse } from "./types";
 import type { UrlChunkBundleApiResponse } from "./urlApiTypes";
 import { mapUrlChunkBundle } from "./urlApiTypes";
