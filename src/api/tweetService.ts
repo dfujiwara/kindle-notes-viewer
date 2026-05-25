@@ -43,6 +43,7 @@ const mapStreamMetadata = (
     authorUsername: api.source.author_username,
     authorDisplayName: api.source.author_display_name,
     title: api.source.title,
+    canonicalURL: api.source.canonical_url,
     tweetCount: api.source.tweet_count,
     fetchedAt: api.source.fetched_at ?? "",
     createdAt: api.source.created_at,

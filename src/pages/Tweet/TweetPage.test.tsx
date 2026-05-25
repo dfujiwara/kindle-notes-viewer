@@ -43,6 +43,7 @@ const mockBundle: TweetThreadBundle = {
     authorUsername: "user1",
     authorDisplayName: "User One",
     title: "Test Thread Title",
+    canonicalURL: "https://x.com/i/web/status/thread-1",
     tweetCount: 2,
     fetchedAt: "2026-01-01T00:00:00Z",
     createdAt: "2026-01-01T00:00:00Z",
@@ -104,6 +105,11 @@ describe("TweetPage", () => {
       expect(screen.getByText("Test Thread Title")).toBeInTheDocument();
       expect(screen.getByText(/User One/)).toBeInTheDocument();
       expect(screen.getByText(/2 tweets/)).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", {
+          name: "https://x.com/i/web/status/thread-1",
+        }),
+      ).toHaveAttribute("href", "https://x.com/i/web/status/thread-1");
     });
   });
 

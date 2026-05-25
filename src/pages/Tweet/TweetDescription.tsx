@@ -1,5 +1,6 @@
 import { useId } from "react";
 import Markdown from "react-markdown";
+import { ClickableUrl } from "src/components";
 import type { Tweet, TweetThread } from "src/models";
 import { formatDate } from "src/utils/date";
 
@@ -40,6 +41,10 @@ export function TweetDescription({
             {formatDate(thread.createdAt)}
           </p>
         </button>
+        <ClickableUrl
+          url={thread.canonicalURL}
+          className="text-sm text-zinc-400 line-clamp-1 mt-2 block"
+        />
       </div>
 
       <div className="mb-3 md:mb-4">

@@ -55,6 +55,7 @@ const mockTweetContent: RandomContent = {
     authorUsername: "testuser",
     authorDisplayName: "Test User",
     rootTweetId: "tweet-root",
+    canonicalURL: "https://x.com/i/web/status/thread-1",
     tweetCount: 5,
     createdAt: "2026-01-01T00:00:00Z",
   },

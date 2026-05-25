@@ -7,6 +7,7 @@ export interface TweetThreadSourceApiResponse {
   author_username: string;
   author_display_name: string;
   root_tweet_id: string;
+  canonical_url: string;
   tweet_count: number;
   fetched_at?: string;
   created_at: string;
@@ -18,6 +19,7 @@ export interface TweetThreadApiResponse {
   author_username: string;
   author_display_name: string;
   title: string;
+  canonical_url: string;
   tweet_count: number;
   fetched_at: string;
   created_at: string;
@@ -59,6 +61,7 @@ export const mapTweetThread = (api: TweetThreadApiResponse): TweetThread => ({
   authorUsername: api.author_username,
   authorDisplayName: api.author_display_name,
   title: api.title,
+  canonicalURL: api.canonical_url,
   tweetCount: api.tweet_count,
   fetchedAt: api.fetched_at,
   createdAt: api.created_at,

@@ -90,6 +90,7 @@ export const mapTweetThreadSourceToThread = (
   authorUsername: source.authorUsername,
   authorDisplayName: source.authorDisplayName,
   title: source.title,
+  canonicalURL: source.canonicalURL,
   tweetCount: source.tweetCount,
   // The random API does not provide fetched_at separately; use createdAt for both
   fetchedAt: source.createdAt,

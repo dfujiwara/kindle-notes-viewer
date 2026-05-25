@@ -59,6 +59,7 @@ const mapSource = (apiSource: SourceApiResponse): Source => {
       authorUsername: apiSource.author_username,
       authorDisplayName: apiSource.author_display_name,
       rootTweetId: apiSource.root_tweet_id,
+      canonicalURL: apiSource.canonical_url,
       tweetCount: apiSource.tweet_count,
       createdAt: apiSource.created_at,
     };
