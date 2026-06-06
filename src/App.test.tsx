@@ -59,6 +59,19 @@ describe("App", () => {
     });
   });
 
+  it("includes a home link in the toolbar", async () => {
+    render(
+      <TestWrapper>
+        <App />
+      </TestWrapper>,
+    );
+
+    expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute(
+      "href",
+      "/",
+    );
+  });
+
   describe("Home Page", async () => {
     it("renders home page content with no books", async () => {
       render(
