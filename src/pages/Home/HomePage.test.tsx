@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, useLocation } from "react-router";
 import { booksService, tweetService, urlService } from "src/api";
 import type { KindleBook, TweetThread, Url } from "src/models";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -34,7 +34,17 @@ vi.mock("react-router", async () => {
   };
 });
 
-async function renderWithProviders(ui: React.ReactElement) {
+function LocationDisplay() {
+  const location = useLocation();
+
+  return <div data-testid="location-display">{location.search}</div>;
+}
+
+async function renderWithProviders(
+  ui: React.ReactElement,
+  initialEntries: string[] = ["/"],
+  waitForText = "The Great Gatsby",
+) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -44,14 +54,17 @@ async function renderWithProviders(ui: React.ReactElement) {
   });
 
   const result = render(
-    <MemoryRouter>
-      <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+    <MemoryRouter initialEntries={initialEntries}>
+      <QueryClientProvider client={queryClient}>
+        <LocationDisplay />
+        {ui}
+      </QueryClientProvider>
     </MemoryRouter>,
   );
 
-  // Wait for initial data to load (Books tab is default)
+  // Wait for initial data to load
   await waitFor(() => {
-    expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
+    expect(screen.getByText(waitForText)).toBeInTheDocument();
   });
 
   return result;
@@ -154,8 +167,10 @@ describe("HomePage", () => {
       expect(screen.queryByText("Example Article 2")).not.toBeInTheDocument();
     });
 
-    it("switches to URLs tab when clicked", async () => {
+    it("switches to URLs tab when clicked and updates the URL", async () => {
       await renderWithProviders(<HomePage />);
+
+      expect(screen.getByTestId("location-display")).toHaveTextContent("");
 
       // Click URLs tab
       const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
@@ -168,6 +183,13 @@ describe("HomePage", () => {
       // Books should not be visible
       expect(screen.queryByText("The Great Gatsby")).not.toBeInTheDocument();
       expect(screen.queryByText("1984")).not.toBeInTheDocument();
+
+      // URL should reflect the selected tab
+      await waitFor(() => {
+        expect(screen.getByTestId("location-display")).toHaveTextContent(
+          "?tab=urls",
+        );
+      });
 
       // Tab should be marked as active
       expect(urlsTab).toHaveAttribute("aria-selected", "true");
@@ -213,6 +235,9 @@ describe("HomePage", () => {
 
       const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
       expect(urlsTab).toHaveAttribute("aria-selected", "true");
+      expect(screen.getByTestId("location-display")).toHaveTextContent(
+        "?tab=urls",
+      );
     });
 
     it("switches tabs with arrow keys from URLs tab", async () => {
@@ -232,10 +257,44 @@ describe("HomePage", () => {
 
       const booksTab = screen.getByRole("tab", { name: /^Books$/i });
       expect(booksTab).toHaveAttribute("aria-selected", "true");
+      expect(screen.getByTestId("location-display")).toHaveTextContent(
+        "?tab=books",
+      );
     });
   });
 
   describe("Accessibility", () => {
+    it("loads URLs tab from the query parameter", async () => {
+      await renderWithProviders(
+        <HomePage />,
+        ["/?tab=urls"],
+        "Example Article 1",
+      );
+
+      expect(screen.getByText("Example Article 1")).toBeInTheDocument();
+      expect(screen.getByText("Example Article 2")).toBeInTheDocument();
+      expect(screen.queryByText("The Great Gatsby")).not.toBeInTheDocument();
+
+      const urlsTab = screen.getByRole("tab", { name: /^URLs$/i });
+      expect(urlsTab).toHaveAttribute("aria-selected", "true");
+      expect(screen.getByTestId("location-display")).toHaveTextContent(
+        "?tab=urls",
+      );
+    });
+
+    it("falls back to Books for invalid query parameters", async () => {
+      await renderWithProviders(<HomePage />, ["/?tab=invalid"]);
+
+      expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
+      expect(screen.getByText("1984")).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("location-display")).toHaveTextContent(
+          "?tab=books",
+        );
+      });
+    });
+
     it("has proper ARIA attributes for tabs", async () => {
       await renderWithProviders(<HomePage />);
 

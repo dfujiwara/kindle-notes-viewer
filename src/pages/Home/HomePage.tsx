@@ -1,5 +1,5 @@
-import { useId, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { useEffect, useId, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router";
 import {
   booksService,
   tweetService,
@@ -12,9 +12,15 @@ import { UrlList } from "./UrlList";
 
 type Tab = "books" | "urls" | "tweets";
 
+function isTab(value: string | null): value is Tab {
+  return value === "books" || value === "urls" || value === "tweets";
+}
+
 export function HomePage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Tab>("books");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const activeTab: Tab = isTab(tabParam) ? tabParam : "books";
   const booksTabId = useId();
   const urlsTabId = useId();
   const tweetsTabId = useId();
@@ -25,6 +31,15 @@ export function HomePage() {
   const urlsTabRef = useRef<HTMLButtonElement>(null);
   const tweetsTabRef = useRef<HTMLButtonElement>(null);
 
+  useEffect(() => {
+    // Only normalize invalid tab values; omit the param entirely when no tab is set.
+    if (tabParam !== null && !isTab(tabParam)) {
+      const nextSearchParams = new URLSearchParams(searchParams);
+      nextSearchParams.set("tab", "books");
+      setSearchParams(nextSearchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams, tabParam]);
+
   const booksResult = useApiSuspenseQuery(["books"], () =>
     booksService.getBooks(),
   );
@@ -32,6 +47,20 @@ export function HomePage() {
   const tweetsResult = useApiSuspenseQuery(["tweets"], () =>
     tweetService.getTweets(),
   );
+
+  const updateTab = (tab: Tab) => {
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.set("tab", tab);
+    setSearchParams(nextSearchParams);
+
+    if (tab === "books") {
+      booksTabRef.current?.focus();
+    } else if (tab === "urls") {
+      urlsTabRef.current?.focus();
+    } else {
+      tweetsTabRef.current?.focus();
+    }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
@@ -41,14 +70,7 @@ export function HomePage() {
       const direction = e.key === "ArrowRight" ? 1 : -1;
       const newTab =
         tabs[(currentIndex + direction + tabs.length) % tabs.length];
-      setActiveTab(newTab);
-      if (newTab === "books") {
-        booksTabRef.current?.focus();
-      } else if (newTab === "urls") {
-        urlsTabRef.current?.focus();
-      } else {
-        tweetsTabRef.current?.focus();
-      }
+      updateTab(newTab);
     }
   };
 
@@ -75,7 +97,7 @@ export function HomePage() {
           aria-controls={booksPanelId}
           id={booksTabId}
           tabIndex={activeTab === "books" ? 0 : -1}
-          onClick={() => setActiveTab("books")}
+          onClick={() => updateTab("books")}
           onKeyDown={handleKeyDown}
           className={getTabClassName(activeTab === "books")}
         >
@@ -89,7 +111,7 @@ export function HomePage() {
           aria-controls={urlsPanelId}
           id={urlsTabId}
           tabIndex={activeTab === "urls" ? 0 : -1}
-          onClick={() => setActiveTab("urls")}
+          onClick={() => updateTab("urls")}
           onKeyDown={handleKeyDown}
           className={getTabClassName(activeTab === "urls")}
         >
@@ -103,7 +125,7 @@ export function HomePage() {
           aria-controls={tweetsPanelId}
           id={tweetsTabId}
           tabIndex={activeTab === "tweets" ? 0 : -1}
-          onClick={() => setActiveTab("tweets")}
+          onClick={() => updateTab("tweets")}
           onKeyDown={handleKeyDown}
           className={getTabClassName(activeTab === "tweets")}
         >
