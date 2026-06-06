@@ -216,12 +216,8 @@ describe("UploadPage", () => {
 
   describe("Mode toggle", () => {
     it("renders file, url, and tweet mode buttons", () => {
-      expect(
-        screen.getByRole("tab", { name: /^file$/i }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("tab", { name: /^url$/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /^file$/i })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /^url$/i })).toBeInTheDocument();
       expect(screen.getByRole("tab", { name: /^tweet$/i })).toBeInTheDocument();
     });
 
