@@ -35,7 +35,8 @@ export function TabBar<T extends string>({
     e.preventDefault();
     const currentIndex = tabs.findIndex((t) => t.id === activeTab);
     const direction = e.key === "ArrowRight" ? 1 : -1;
-    const nextTab = tabs[(currentIndex + direction + tabs.length) % tabs.length];
+    const nextTab =
+      tabs[(currentIndex + direction + tabs.length) % tabs.length];
     onChange(nextTab.id);
     buttonRefs.current.get(nextTab.id)?.focus();
   };

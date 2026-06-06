@@ -8,7 +8,12 @@ import {
   urlService,
   useApiMutation,
 } from "src/api";
-import { FileDropZone, TabBar, UploadControl, UrlInputZone } from "src/components";
+import {
+  FileDropZone,
+  TabBar,
+  UploadControl,
+  UrlInputZone,
+} from "src/components";
 import { validateTweetUrl, validateUrl } from "src/utils/validation";
 
 type UploadMode = "file" | "url" | "tweet";

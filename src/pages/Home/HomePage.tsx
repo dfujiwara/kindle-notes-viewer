@@ -52,9 +52,24 @@ export function HomePage() {
   };
 
   const tabs = [
-    { id: "books" as const, label: "Books", buttonId: booksTabId, panelId: booksPanelId },
-    { id: "urls" as const, label: "URLs", buttonId: urlsTabId, panelId: urlsPanelId },
-    { id: "tweets" as const, label: "Tweets", buttonId: tweetsTabId, panelId: tweetsPanelId },
+    {
+      id: "books" as const,
+      label: "Books",
+      buttonId: booksTabId,
+      panelId: booksPanelId,
+    },
+    {
+      id: "urls" as const,
+      label: "URLs",
+      buttonId: urlsTabId,
+      panelId: urlsPanelId,
+    },
+    {
+      id: "tweets" as const,
+      label: "Tweets",
+      buttonId: tweetsTabId,
+      panelId: tweetsPanelId,
+    },
   ];
 
   return (
