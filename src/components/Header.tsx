@@ -15,6 +15,19 @@ export function Header({ title = "Kindle Notes" }: HeaderProps) {
         </NavLink>
         <nav className="flex flex-wrap gap-2 sm:gap-4 md:gap-6">
           <NavLink
+            to="/"
+            end
+            className={({ isActive }) =>
+              `px-2 sm:px-3 md:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 ${
+                isActive
+                  ? "bg-blue-600 text-white shadow-lg"
+                  : "text-zinc-300 hover:text-blue-400 hover:bg-zinc-800"
+              }`
+            }
+          >
+            Home
+          </NavLink>
+          <NavLink
             to="/search"
             className={({ isActive }) =>
               `px-2 sm:px-3 md:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 ${
