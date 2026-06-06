@@ -68,12 +68,12 @@ function createTestFile(name = "test.txt", content = "test content") {
 }
 
 async function switchToUrlMode(user: ReturnType<typeof userEvent.setup>) {
-  const urlButton = screen.getByRole("tab", { name: /url upload/i });
+  const urlButton = screen.getByRole("tab", { name: /^url$/i });
   await user.click(urlButton);
 }
 
 async function switchToFileMode(user: ReturnType<typeof userEvent.setup>) {
-  const fileButton = screen.getByRole("tab", { name: /file upload/i });
+  const fileButton = screen.getByRole("tab", { name: /^file$/i });
   await user.click(fileButton);
 }
 
@@ -216,12 +216,8 @@ describe("UploadPage", () => {
 
   describe("Mode toggle", () => {
     it("renders file, url, and tweet mode buttons", () => {
-      expect(
-        screen.getByRole("tab", { name: /file upload/i }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("tab", { name: /url upload/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /^file$/i })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /^url$/i })).toBeInTheDocument();
       expect(screen.getByRole("tab", { name: /^tweet$/i })).toBeInTheDocument();
     });
 

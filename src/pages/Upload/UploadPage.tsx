@@ -19,8 +19,8 @@ import { validateTweetUrl, validateUrl } from "src/utils/validation";
 type UploadMode = "file" | "url" | "tweet";
 
 const UPLOAD_TABS = [
-  { id: "file" as const, label: "File Upload" },
-  { id: "url" as const, label: "URL Upload" },
+  { id: "file" as const, label: "File" },
+  { id: "url" as const, label: "URL" },
   { id: "tweet" as const, label: "Tweet" },
 ];
 
