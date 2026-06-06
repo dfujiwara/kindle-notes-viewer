@@ -8,10 +8,16 @@ import {
   urlService,
   useApiMutation,
 } from "src/api";
-import { FileDropZone, UploadControl, UrlInputZone } from "src/components";
+import { FileDropZone, TabBar, UploadControl, UrlInputZone } from "src/components";
 import { validateTweetUrl, validateUrl } from "src/utils/validation";
 
 type UploadMode = "file" | "url" | "tweet";
+
+const UPLOAD_TABS = [
+  { id: "file" as const, label: "File Upload" },
+  { id: "url" as const, label: "URL Upload" },
+  { id: "tweet" as const, label: "Tweet" },
+];
 
 export function UploadPage() {
   const navigate = useNavigate();
@@ -56,33 +62,26 @@ export function UploadPage() {
     ["tweets"],
   );
 
-  const handleFilesSelected = (files: File[]) => {
-    setSelectedFile(files[0]);
-  };
-
   const handleClear = () => {
     setSelectedFile(null);
     setUrlInput("");
     setTweetInput("");
   };
 
+  const handleModeChange = (mode: UploadMode) => {
+    setUploadMode(mode);
+    handleClear();
+  };
+
   const handleUpload = () => {
     if (uploadMode === "file") {
-      if (selectedFile === null) {
-        return;
-      }
+      if (selectedFile === null) return;
       fileMutation.mutate(selectedFile);
     } else if (uploadMode === "url") {
       urlMutation.mutate(urlInput);
     } else {
       tweetMutation.mutate(tweetInput);
     }
-  };
-
-  const handleModeChange = (mode: UploadMode) => {
-    setUploadMode(mode);
-    // Clear state when switching modes
-    handleClear();
   };
 
   const hasContent: Record<UploadMode, boolean> = {
@@ -101,16 +100,6 @@ export function UploadPage() {
     handleUpload();
   };
 
-  const getModeButtonClassName = (isActive: boolean) => {
-    const baseClasses =
-      "px-6 py-3 text-sm font-medium rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900";
-    const activeClasses =
-      "text-white bg-blue-600/20 border border-blue-500 hover:border-blue-400";
-    const inactiveClasses =
-      "text-zinc-400 hover:text-zinc-200 border border-zinc-700 hover:border-zinc-500";
-    return `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`;
-  };
-
   return (
     <div className="max-w-4xl mx-auto">
       <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">
@@ -118,41 +107,15 @@ export function UploadPage() {
       </h1>
 
       <form onSubmit={handleSubmit}>
-        {/* Mode Toggle */}
-        <fieldset className="border-0 p-0">
-          <legend className="sr-only">Upload Mode</legend>
-          <div className="flex gap-4 mb-6">
-            <button
-              type="button"
-              onClick={() => handleModeChange("file")}
-              aria-pressed={uploadMode === "file"}
-              className={getModeButtonClassName(uploadMode === "file")}
-            >
-              File Upload
-            </button>
-            <button
-              type="button"
-              onClick={() => handleModeChange("url")}
-              aria-pressed={uploadMode === "url"}
-              className={getModeButtonClassName(uploadMode === "url")}
-            >
-              URL Upload
-            </button>
-            <button
-              type="button"
-              onClick={() => handleModeChange("tweet")}
-              aria-pressed={uploadMode === "tweet"}
-              className={getModeButtonClassName(uploadMode === "tweet")}
-            >
-              Tweet
-            </button>
-          </div>
-        </fieldset>
+        <TabBar
+          tabs={UPLOAD_TABS}
+          activeTab={uploadMode}
+          onChange={handleModeChange}
+        />
 
-        {/* Upload Area */}
         {uploadMode === "file" ? (
           <FileDropZone
-            onFilesSelected={handleFilesSelected}
+            onFilesSelected={(files) => setSelectedFile(files[0])}
             selectedFiles={selectedFile ? [selectedFile] : []}
             acceptedTypes={["txt", "html"]}
             maxFiles={1}
@@ -169,7 +132,6 @@ export function UploadPage() {
           />
         )}
 
-        {/* Upload Control */}
         <UploadControl
           hasContent={hasContent[uploadMode]}
           onClear={handleClear}
