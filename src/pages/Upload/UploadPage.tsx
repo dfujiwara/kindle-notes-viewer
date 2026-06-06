@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import {
   type ApiError,
   booksService,
@@ -18,6 +18,10 @@ import { validateTweetUrl, validateUrl } from "src/utils/validation";
 
 type UploadMode = "file" | "url" | "tweet";
 
+function isUploadMode(value: string | null): value is UploadMode {
+  return value === "file" || value === "url" || value === "tweet";
+}
+
 const UPLOAD_TABS = [
   { id: "file" as const, label: "File" },
   { id: "url" as const, label: "URL" },
@@ -26,7 +30,9 @@ const UPLOAD_TABS = [
 
 export function UploadPage() {
   const navigate = useNavigate();
-  const [uploadMode, setUploadMode] = useState<UploadMode>("file");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const modeParam = searchParams.get("tab");
+  const uploadMode: UploadMode = isUploadMode(modeParam) ? modeParam : "file";
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [urlInput, setUrlInput] = useState<string>("");
   const [tweetInput, setTweetInput] = useState<string>("");
@@ -67,6 +73,14 @@ export function UploadPage() {
     ["tweets"],
   );
 
+  useEffect(() => {
+    if (modeParam !== null && !isUploadMode(modeParam)) {
+      const nextSearchParams = new URLSearchParams(searchParams);
+      nextSearchParams.set("tab", "file");
+      setSearchParams(nextSearchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams, modeParam]);
+
   const handleClear = () => {
     setSelectedFile(null);
     setUrlInput("");
@@ -74,7 +88,9 @@ export function UploadPage() {
   };
 
   const handleModeChange = (mode: UploadMode) => {
-    setUploadMode(mode);
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.set("tab", mode);
+    setSearchParams(nextSearchParams);
     handleClear();
   };
 
