@@ -222,9 +222,7 @@ describe("UploadPage", () => {
       expect(
         screen.getByRole("tab", { name: /url upload/i }),
       ).toBeInTheDocument();
-      expect(
-        screen.getByRole("tab", { name: /^tweet$/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /^tweet$/i })).toBeInTheDocument();
     });
 
     it("switches from file mode to url mode", async () => {
