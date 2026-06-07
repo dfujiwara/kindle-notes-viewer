@@ -5,6 +5,7 @@ export { FileDropZone } from "./FileDropZone";
 export { Footer } from "./Footer";
 export { Header } from "./Header";
 export { LoadingIndicator } from "./LoadingIndicator";
+export { PageTitle } from "./PageTitle";
 export type { TabItem } from "./TabBar";
 export { TabBar } from "./TabBar";
 export { UploadControl } from "./UploadControl";

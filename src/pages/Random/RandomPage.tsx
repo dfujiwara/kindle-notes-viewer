@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { LoadingIndicator } from "src/components";
+import { LoadingIndicator, PageTitle } from "src/components";
 import {
   mapBookSourceToKindleBook,
   mapNoteContentToKindleNote,
@@ -37,6 +37,7 @@ export function RandomPage() {
         }
         return (
           <div>
+            <PageTitle>Random Note</PageTitle>
             <NoteDescription
               book={mapBookSourceToKindleBook(source)}
               note={mapNoteContentToKindleNote(content)}
@@ -63,6 +64,7 @@ export function RandomPage() {
         const tweet = mapTweetContentToTweet(content);
         return (
           <div>
+            <PageTitle>Random Tweet</PageTitle>
             <TweetDescription
               thread={thread}
               tweet={tweet}
@@ -84,6 +86,7 @@ export function RandomPage() {
       }
       return (
         <div>
+          <PageTitle>Random URL</PageTitle>
           <ChunkDescription
             url={mapUrlSourceToUrl(source)}
             chunk={mapUrlChunkContentToUrlChunk(content)}

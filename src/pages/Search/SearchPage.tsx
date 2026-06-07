@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { searchService, useApiQuery } from "src/api";
+import { PageTitle } from "src/components";
 import type { SearchResultsProps } from "./SearchResults";
 import { SearchResults } from "./SearchResults";
 
@@ -49,7 +50,7 @@ export function SearchPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Search</h1>
+      <PageTitle>Search</PageTitle>
       <div className="mb-8">
         <input
           type="text"
