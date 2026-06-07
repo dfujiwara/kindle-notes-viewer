@@ -10,6 +10,7 @@ import {
 } from "src/api";
 import {
   FileDropZone,
+  PageTitle,
   TabBar,
   UploadControl,
   UrlInputZone,
@@ -123,9 +124,7 @@ export function UploadPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">
-        Upload Notes
-      </h1>
+      <PageTitle>Upload Notes</PageTitle>
 
       <form onSubmit={handleSubmit}>
         <TabBar
