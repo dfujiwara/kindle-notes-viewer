@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import toast from "react-hot-toast";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, useLocation } from "react-router";
 import { booksService, tweetService, urlService } from "src/api";
 import type { TweetThread } from "src/models";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -43,7 +43,16 @@ vi.mock("react-router", async () => {
   };
 });
 
-function renderWithProviders(ui: React.ReactElement) {
+function LocationDisplay() {
+  const location = useLocation();
+
+  return <div data-testid="location-display">{location.search}</div>;
+}
+
+function renderWithProviders(
+  ui: React.ReactElement,
+  initialEntries: string[] = ["/"],
+) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -56,8 +65,11 @@ function renderWithProviders(ui: React.ReactElement) {
   });
 
   return render(
-    <MemoryRouter>
-      <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+    <MemoryRouter initialEntries={initialEntries}>
+      <QueryClientProvider client={queryClient}>
+        <LocationDisplay />
+        {ui}
+      </QueryClientProvider>
     </MemoryRouter>,
   );
 }
@@ -87,6 +99,7 @@ describe("UploadPage", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    cleanup();
     user = userEvent.setup();
     renderWithProviders(<UploadPage />);
   });
@@ -230,13 +243,16 @@ describe("UploadPage", () => {
       // Click URL Upload button
       await switchToUrlMode(user);
 
-      // Should show URL input
+      // Should show URL input and update query parameter
       expect(
         screen.getByPlaceholderText("Enter URL to extract and upload"),
       ).toBeInTheDocument();
       expect(
         screen.queryByText(/drag and drop your file here/i),
       ).not.toBeInTheDocument();
+      expect(screen.getByTestId("location-display")).toHaveTextContent(
+        "?tab=url",
+      );
     });
 
     it("switches from url mode to file mode", async () => {
@@ -249,13 +265,16 @@ describe("UploadPage", () => {
       // Switch back to file mode
       await switchToFileMode(user);
 
-      // Should show file drop zone
+      // Should show file drop zone and update query parameter
       expect(
         screen.getByText(/drag and drop your file here/i),
       ).toBeInTheDocument();
       expect(
         screen.queryByPlaceholderText("Enter URL to extract and upload"),
       ).not.toBeInTheDocument();
+      expect(screen.getByTestId("location-display")).toHaveTextContent(
+        "?tab=file",
+      );
     });
 
     it("clears file when switching to URL mode", async () => {
@@ -305,6 +324,37 @@ describe("UploadPage", () => {
       expect(
         screen.getByPlaceholderText("Enter URL to extract and upload"),
       ).toBeInTheDocument();
+    });
+
+    it("loads URL mode from the tab query parameter", () => {
+      cleanup();
+      renderWithProviders(<UploadPage />, ["/?tab=url"]);
+
+      expect(
+        screen.getByPlaceholderText("Enter URL to extract and upload"),
+      ).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /^url$/i })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+      expect(screen.getByTestId("location-display")).toHaveTextContent(
+        "?tab=url",
+      );
+    });
+
+    it("falls back to file mode for an invalid tab query parameter", async () => {
+      cleanup();
+      renderWithProviders(<UploadPage />, ["/?tab=invalid"]);
+
+      expect(
+        screen.getByText(/drag and drop your file here/i),
+      ).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("location-display")).toHaveTextContent(
+          "?tab=file",
+        );
+      });
     });
 
     it("shows upload button when valid URL is entered", async () => {
@@ -469,6 +519,22 @@ describe("UploadPage", () => {
       expect(
         screen.getByPlaceholderText("Enter twitter.com or x.com URL"),
       ).toBeInTheDocument();
+    });
+
+    it("loads tweet mode from the tab query parameter", () => {
+      cleanup();
+      renderWithProviders(<UploadPage />, ["/?tab=tweet"]);
+
+      expect(
+        screen.getByPlaceholderText("Enter twitter.com or x.com URL"),
+      ).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /^tweet$/i })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+      expect(screen.getByTestId("location-display")).toHaveTextContent(
+        "?tab=tweet",
+      );
     });
 
     it("does not show upload button for non-tweet URLs", async () => {
