@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router";
+import userEvent from "@testing-library/user-event";
 import type { UrlChunk } from "src/models";
 import { ChunkList } from "./ChunkList";
 
@@ -26,11 +26,7 @@ const mockChunks: UrlChunk[] = [
 
 describe("ChunkList", () => {
   it("renders all chunks when chunks array is not empty", () => {
-    render(
-      <MemoryRouter>
-        <ChunkList urlId="test-url-id" chunks={mockChunks} />
-      </MemoryRouter>,
-    );
+    render(<ChunkList chunks={mockChunks} onChunkClick={vi.fn()} />);
 
     expect(screen.getByText("First chunk from the URL.")).toBeInTheDocument();
     expect(
@@ -42,14 +38,21 @@ describe("ChunkList", () => {
   });
 
   it("displays 'No chunks found' message when chunks array is empty", () => {
-    render(
-      <MemoryRouter>
-        <ChunkList urlId="test-url-id" chunks={[]} />
-      </MemoryRouter>,
-    );
+    render(<ChunkList chunks={[]} onChunkClick={vi.fn()} />);
 
     expect(
       screen.getByText("No chunks found for this URL."),
     ).toBeInTheDocument();
+  });
+
+  it("calls onChunkClick with the clicked chunk", async () => {
+    const onChunkClick = vi.fn();
+    render(<ChunkList chunks={mockChunks} onChunkClick={onChunkClick} />);
+
+    await userEvent.click(
+      screen.getByText("Second chunk with different content."),
+    );
+
+    expect(onChunkClick).toHaveBeenCalledWith(mockChunks[1]);
   });
 });

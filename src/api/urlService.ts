@@ -17,7 +17,6 @@ const ENDPOINTS = {
   CHUNKS: (urlId: string) => `/urls/${urlId}`,
   STREAM_CHUNK: (urlId: string, chunkId: string) =>
     `/urls/${urlId}/chunks/${chunkId}`,
-  STREAM_RANDOM: "/urls/random",
 } as const;
 
 type ChunkStreamEvents = {
@@ -95,36 +94,6 @@ export class UrlService {
   ): EventSource {
     return sseClient.createEventSourceWithHandlers<ChunkStreamEvents>(
       ENDPOINTS.STREAM_CHUNK(urlId, chunkId),
-      {
-        metadata: (data, _es) => {
-          const mappedData = mapStreamMetadata(data);
-          handlers.onMetadata(mappedData);
-        },
-        context_chunk: (data, _es) => {
-          handlers.onContextChunk(data.content);
-        },
-        context_complete: (_data, es) => {
-          handlers.onComplete();
-          es.close();
-        },
-        error: (data, es) => {
-          logger.error(data.detail);
-          handlers.onInStreamError();
-          es.close();
-        },
-      },
-      handlers.onError,
-    );
-  }
-
-  /**
-   * Creates a streaming connection for random chunks
-   * @param handlers - Object containing all stream event handlers
-   * @returns EventSource instance (caller must close it)
-   */
-  getStreamedRandomChunk(handlers: StreamHandlers): EventSource {
-    return sseClient.createEventSourceWithHandlers<ChunkStreamEvents>(
-      ENDPOINTS.STREAM_RANDOM,
       {
         metadata: (data, _es) => {
           const mappedData = mapStreamMetadata(data);

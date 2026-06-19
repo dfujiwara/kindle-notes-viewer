@@ -39,7 +39,10 @@ export function BookPage() {
         onDelete={() => deleteMutation.mutate(bookId)}
         isDeleting={deleteMutation.isPending}
       />
-      <NoteList bookId={bookId} notes={result.data.notes} />
+      <NoteList
+        notes={result.data.notes}
+        onNoteClick={(note) => navigate(`/books/${bookId}/notes/${note.id}`)}
+      />
     </div>
   );
 }

@@ -1,14 +1,12 @@
-import { useNavigate } from "react-router";
 import type { KindleNote } from "../../models";
 import { NoteItem } from "./NoteItem";
 
 interface NoteListProps {
-  bookId: string;
   notes: KindleNote[];
+  onNoteClick: (note: KindleNote) => void;
 }
 
-export function NoteList({ bookId, notes }: NoteListProps) {
-  const navigate = useNavigate();
+export function NoteList({ notes, onNoteClick }: NoteListProps) {
   if (notes.length === 0) {
     return (
       <div className="text-center py-8">
@@ -21,12 +19,7 @@ export function NoteList({ bookId, notes }: NoteListProps) {
     <ul className="space-y-3 sm:space-y-4 list-none">
       {notes.map((note) => (
         <li key={note.id}>
-          <NoteItem
-            note={note}
-            onClick={() => {
-              navigate(`/books/${bookId}/notes/${note.id}`);
-            }}
-          />
+          <NoteItem note={note} onClick={() => onNoteClick(note)} />
         </li>
       ))}
     </ul>
