@@ -34,7 +34,10 @@ export function UrlPage() {
         onDelete={() => deleteMutation.mutate(urlId)}
         isDeleting={deleteMutation.isPending}
       />
-      <ChunkList urlId={urlId} chunks={result.data.chunks} />
+      <ChunkList
+        chunks={result.data.chunks}
+        onChunkClick={(chunk) => navigate(`/urls/${urlId}/chunks/${chunk.id}`)}
+      />
     </div>
   );
 }

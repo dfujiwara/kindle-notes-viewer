@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router";
+import userEvent from "@testing-library/user-event";
 import type { KindleNote } from "src/models";
 import { NoteList } from "./NoteList";
 
@@ -23,11 +23,7 @@ const mockNotes: KindleNote[] = [
 
 describe("NotesList", () => {
   it("renders all notes when notes array is not empty", () => {
-    render(
-      <MemoryRouter>
-        <NoteList bookId="test-book-id" notes={mockNotes} />
-      </MemoryRouter>,
-    );
+    render(<NoteList notes={mockNotes} onNoteClick={vi.fn()} />);
 
     expect(screen.getByText("First note from the book.")).toBeInTheDocument();
     expect(
@@ -40,11 +36,7 @@ describe("NotesList", () => {
   });
 
   it("displays 'No notes found' message when notes array is empty", () => {
-    render(
-      <MemoryRouter>
-        <NoteList bookId="test-book-id" notes={[]} />
-      </MemoryRouter>,
-    );
+    render(<NoteList notes={[]} onNoteClick={vi.fn()} />);
 
     expect(
       screen.getByText("No notes found for this book."),
@@ -52,17 +44,22 @@ describe("NotesList", () => {
   });
 
   it("handles single note", () => {
-    const singleNote = [mockNotes[0]];
-
-    render(
-      <MemoryRouter>
-        <NoteList bookId="test-book-id" notes={singleNote} />
-      </MemoryRouter>,
-    );
+    render(<NoteList notes={[mockNotes[0]]} onNoteClick={vi.fn()} />);
 
     expect(screen.getByText("First note from the book.")).toBeInTheDocument();
     expect(
       screen.queryByText("Second note with different content."),
     ).not.toBeInTheDocument();
+  });
+
+  it("calls onNoteClick with the clicked note", async () => {
+    const onNoteClick = vi.fn();
+    render(<NoteList notes={mockNotes} onNoteClick={onNoteClick} />);
+
+    await userEvent.click(
+      screen.getByText("Second note with different content."),
+    );
+
+    expect(onNoteClick).toHaveBeenCalledWith(mockNotes[1]);
   });
 });

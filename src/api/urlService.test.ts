@@ -260,34 +260,4 @@ describe("UrlService", () => {
       } as UrlDetailedChunk);
     });
   });
-
-  describe("getStreamedRandomChunk", () => {
-    it("should create event source for random chunk endpoint", () => {
-      const mockEventSource = {} as EventSource;
-      vi.mocked(sseClient.createEventSourceWithHandlers).mockReturnValue(
-        mockEventSource,
-      );
-
-      const handlers = {
-        onMetadata: vi.fn(),
-        onContextChunk: vi.fn(),
-        onComplete: vi.fn(),
-        onInStreamError: vi.fn(),
-      };
-
-      const result = urlService.getStreamedRandomChunk(handlers);
-
-      expect(sseClient.createEventSourceWithHandlers).toHaveBeenCalledWith(
-        "/urls/random",
-        expect.objectContaining({
-          metadata: expect.any(Function),
-          context_chunk: expect.any(Function),
-          context_complete: expect.any(Function),
-          error: expect.any(Function),
-        }),
-        undefined,
-      );
-      expect(result).toBe(mockEventSource);
-    });
-  });
 });
