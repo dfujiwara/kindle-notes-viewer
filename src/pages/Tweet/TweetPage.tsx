@@ -2,7 +2,12 @@ import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import type { ApiError } from "src/api";
 import { tweetService, useApiMutation, useApiSuspenseQuery } from "src/api";
-import { ClickableUrl, DeleteButton, PageContainer } from "src/components";
+import {
+  ClickableUrl,
+  DeleteButton,
+  PageContainer,
+  PageHeader,
+} from "src/components";
 import { formatDate } from "src/utils/date";
 
 export function TweetPage() {
@@ -32,30 +37,26 @@ export function TweetPage() {
 
   return (
     <PageContainer>
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">
-            {thread.title}
-          </h1>
+      <PageHeader
+        title={thread.title}
+        subtitle={
           <ClickableUrl
             url={thread.canonicalURL}
-            className="text-sm sm:text-base text-zinc-400 line-clamp-1 mb-2 block"
+            className="text-sm sm:text-base text-zinc-400 line-clamp-1 block"
           />
-          <p className="text-zinc-400 text-sm">
-            @{thread.authorUsername} · {thread.authorDisplayName} ·{" "}
-            {thread.tweetCount} {thread.tweetCount === 1 ? "tweet" : "tweets"} ·{" "}
-            {formatDate(thread.createdAt)}
-          </p>
-        </div>
-        <DeleteButton
-          confirmMessage={`Delete "${thread.title}" and all its tweets?`}
-          onDelete={() => deleteMutation.mutate(threadId)}
-          isDeleting={deleteMutation.isPending}
-          ariaLabel={`Delete tweet thread ${thread.title}`}
-        />
-      </div>
+        }
+        meta={`@${thread.authorUsername} · ${thread.authorDisplayName} · ${thread.tweetCount} ${thread.tweetCount === 1 ? "tweet" : "tweets"} · ${formatDate(thread.createdAt)}`}
+        action={
+          <DeleteButton
+            confirmMessage={`Delete "${thread.title}" and all its tweets?`}
+            onDelete={() => deleteMutation.mutate(threadId)}
+            isDeleting={deleteMutation.isPending}
+            ariaLabel={`Delete tweet thread ${thread.title}`}
+          />
+        }
+      />
 
-      <ul className="space-y-3 list-none">
+      <ul className="space-y-3 list-none pt-6">
         {tweets.length === 0 && (
           <li>
             <p className="text-zinc-500 text-sm italic">No tweets found</p>
