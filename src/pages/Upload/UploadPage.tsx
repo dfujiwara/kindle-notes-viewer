@@ -10,6 +10,7 @@ import {
 } from "src/api";
 import {
   FileDropZone,
+  PageContainer,
   PageTitle,
   TabBar,
   UploadControl,
@@ -123,7 +124,7 @@ export function UploadPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <PageContainer>
       <PageTitle>Upload Notes</PageTitle>
 
       <form onSubmit={handleSubmit}>
@@ -159,6 +160,6 @@ export function UploadPage() {
           isUploading={isUploading[uploadMode]}
         />
       </form>
-    </div>
+    </PageContainer>
   );
 }

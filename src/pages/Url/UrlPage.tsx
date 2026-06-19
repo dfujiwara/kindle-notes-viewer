@@ -2,6 +2,7 @@ import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import type { ApiError } from "src/api";
 import { urlService, useApiMutation, useApiSuspenseQuery } from "src/api";
+import { PageContainer } from "src/components";
 import { ChunkList } from "./ChunkList";
 import { UrlDescription } from "./UrlDescription";
 
@@ -28,7 +29,7 @@ export function UrlPage() {
   );
 
   return (
-    <div className="px-4 py-4 sm:px-6 sm:py-6 max-w-4xl mx-auto">
+    <PageContainer>
       <UrlDescription
         url={result.data.url}
         onDelete={() => deleteMutation.mutate(urlId)}
@@ -38,6 +39,6 @@ export function UrlPage() {
         chunks={result.data.chunks}
         onChunkClick={(chunk) => navigate(`/urls/${urlId}/chunks/${chunk.id}`)}
       />
-    </div>
+    </PageContainer>
   );
 }

@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import type { ApiError } from "src/api";
 import { tweetService, useApiMutation, useApiSuspenseQuery } from "src/api";
-import { ClickableUrl, DeleteButton } from "src/components";
+import { ClickableUrl, DeleteButton, PageContainer } from "src/components";
 import { formatDate } from "src/utils/date";
 
 export function TweetPage() {
@@ -31,7 +31,7 @@ export function TweetPage() {
   const { thread, tweets } = result.data;
 
   return (
-    <div className="px-4 py-4 sm:px-6 sm:py-6 max-w-4xl mx-auto">
+    <PageContainer>
       <div className="mb-6 flex items-start justify-between gap-4">
         <div className="min-w-0">
           <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">
@@ -76,6 +76,6 @@ export function TweetPage() {
           </li>
         ))}
       </ul>
-    </div>
+    </PageContainer>
   );
 }

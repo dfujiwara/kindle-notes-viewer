@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router";
-import { LoadingIndicator } from "src/components";
+import { LoadingIndicator, PageContainer } from "src/components";
 import { ChunkDescription } from "./ChunkDescription";
 import { useStreamedDetailedChunk } from "./useStreamedDetailedChunk";
 
@@ -27,7 +27,7 @@ export function ChunkPage() {
       } = state.data;
 
       return (
-        <div>
+        <PageContainer>
           <ChunkDescription
             url={url}
             chunk={chunkData}
@@ -40,7 +40,7 @@ export function ChunkPage() {
               navigate(`/urls/${url.id}/chunks/${relatedChunkId}`);
             }}
           />
-        </div>
+        </PageContainer>
       );
     }
   }

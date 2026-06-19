@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router";
-import { LoadingIndicator } from "src/components";
+import { LoadingIndicator, PageContainer } from "src/components";
 import { TweetDescription } from "./TweetDescription";
 import { useStreamedDetailedTweet } from "./useStreamedDetailedTweet";
 
@@ -25,16 +25,18 @@ export function TweetDetailPage() {
       const { thread, tweet, additionalContext, relatedTweets } = state.data;
 
       return (
-        <TweetDescription
-          thread={thread}
-          tweet={tweet}
-          relatedTweets={relatedTweets}
-          additionalContext={additionalContext}
-          onThreadClick={() => navigate(`/tweets/${thread.id}/`)}
-          onRelatedTweetClick={(relatedTweetId) =>
-            navigate(`/tweets/${thread.id}/tweets/${relatedTweetId}`)
-          }
-        />
+        <PageContainer>
+          <TweetDescription
+            thread={thread}
+            tweet={tweet}
+            relatedTweets={relatedTweets}
+            additionalContext={additionalContext}
+            onThreadClick={() => navigate(`/tweets/${thread.id}/`)}
+            onRelatedTweetClick={(relatedTweetId) =>
+              navigate(`/tweets/${thread.id}/tweets/${relatedTweetId}`)
+            }
+          />
+        </PageContainer>
       );
     }
   }

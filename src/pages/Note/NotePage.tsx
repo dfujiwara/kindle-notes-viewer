@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router";
-import { LoadingIndicator } from "src/components";
+import { LoadingIndicator, PageContainer } from "src/components";
 import { NoteDescription } from "./NoteDescription";
 import { useStreamedDetailedNote } from "./useStreamedDetailedNote";
 
@@ -27,7 +27,7 @@ export function NotePage() {
       } = state.note;
 
       return (
-        <div>
+        <PageContainer>
           <NoteDescription
             book={book}
             note={noteData}
@@ -40,7 +40,7 @@ export function NotePage() {
               navigate(`/books/${book.id}/notes/${relatedNoteId}`);
             }}
           />
-        </div>
+        </PageContainer>
       );
     }
   }
