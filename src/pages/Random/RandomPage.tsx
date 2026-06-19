@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { LoadingIndicator, PageTitle } from "src/components";
+import { LoadingIndicator, PageContainer, PageTitle } from "src/components";
 import {
   mapBookSourceToKindleBook,
   mapNoteContentToKindleNote,
@@ -36,7 +36,7 @@ export function RandomPage() {
           );
         }
         return (
-          <div>
+          <PageContainer>
             <PageTitle>Random Note</PageTitle>
             <NoteDescription
               book={mapBookSourceToKindleBook(source)}
@@ -50,7 +50,7 @@ export function RandomPage() {
                 navigate(`/books/${source.id}/notes/${relatedNoteId}`);
               }}
             />
-          </div>
+          </PageContainer>
         );
       }
 
@@ -63,7 +63,7 @@ export function RandomPage() {
         const thread = mapTweetThreadSourceToThread(source);
         const tweet = mapTweetContentToTweet(content);
         return (
-          <div>
+          <PageContainer>
             <PageTitle>Random Tweet</PageTitle>
             <TweetDescription
               thread={thread}
@@ -75,7 +75,7 @@ export function RandomPage() {
                 navigate(`/tweets/${source.id}/tweets/${relatedTweetId}`)
               }
             />
-          </div>
+          </PageContainer>
         );
       }
 
@@ -85,7 +85,7 @@ export function RandomPage() {
         );
       }
       return (
-        <div>
+        <PageContainer>
           <PageTitle>Random URL</PageTitle>
           <ChunkDescription
             url={mapUrlSourceToUrl(source)}
@@ -99,7 +99,7 @@ export function RandomPage() {
               navigate(`/urls/${source.id}/chunks/${relatedChunkId}`);
             }}
           />
-        </div>
+        </PageContainer>
       );
     }
   }

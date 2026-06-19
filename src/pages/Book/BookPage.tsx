@@ -7,6 +7,7 @@ import {
   useApiMutation,
   useApiSuspenseQuery,
 } from "src/api";
+import { PageContainer } from "src/components";
 import { BookDescription } from "./BookDescription";
 import { NoteList } from "./NoteList";
 
@@ -33,7 +34,7 @@ export function BookPage() {
   );
 
   return (
-    <div className="px-4 py-4 sm:px-6 sm:py-6 max-w-4xl mx-auto">
+    <PageContainer>
       <BookDescription
         book={result.data.book}
         onDelete={() => deleteMutation.mutate(bookId)}
@@ -43,6 +44,6 @@ export function BookPage() {
         notes={result.data.notes}
         onNoteClick={(note) => navigate(`/books/${bookId}/notes/${note.id}`)}
       />
-    </div>
+    </PageContainer>
   );
 }

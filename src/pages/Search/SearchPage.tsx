@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { searchService, useApiQuery } from "src/api";
-import { PageTitle } from "src/components";
+import { PageContainer, PageTitle } from "src/components";
 import type { SearchResultsProps } from "./SearchResults";
 import { SearchResults } from "./SearchResults";
 
@@ -49,7 +49,7 @@ export function SearchPage() {
     query.trim().length < MINIMUM_SEARCH_QUERY_LENGTH;
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <PageContainer>
       <PageTitle>Search</PageTitle>
       <div className="mb-8">
         <input
@@ -69,6 +69,6 @@ export function SearchPage() {
         )}
       </div>
       <SearchResults {...getSearchState()} />
-    </div>
+    </PageContainer>
   );
 }
