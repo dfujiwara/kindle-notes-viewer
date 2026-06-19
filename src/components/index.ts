@@ -6,6 +6,7 @@ export { Footer } from "./Footer";
 export { Header } from "./Header";
 export { LoadingIndicator } from "./LoadingIndicator";
 export { PageContainer } from "./PageContainer";
+export { PageHeader } from "./PageHeader";
 export { PageTitle } from "./PageTitle";
 export type { TabItem } from "./TabBar";
 export { TabBar } from "./TabBar";
