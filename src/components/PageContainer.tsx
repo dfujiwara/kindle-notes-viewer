@@ -1,9 +1,7 @@
 import type { ReactNode } from "react";
 
+import { PAGE_WIDTH } from "./layout";
+
 export function PageContainer({ children }: { children: ReactNode }) {
-  return (
-    <div className="px-4 py-4 sm:px-6 sm:py-6 max-w-4xl mx-auto">
-      {children}
-    </div>
-  );
+  return <div className={`${PAGE_WIDTH} py-4 sm:py-6`}>{children}</div>;
 }

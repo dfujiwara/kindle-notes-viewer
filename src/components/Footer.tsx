@@ -1,7 +1,9 @@
+import { PAGE_WIDTH } from "./layout";
+
 export function Footer() {
   return (
     <footer className="bg-zinc-900 border-t border-zinc-700 py-4 md:py-6 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+      <div className={PAGE_WIDTH}>
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-zinc-400 text-xs sm:text-sm m-0 text-center sm:text-left">
             © {new Date().getFullYear()} Kindle Notes Frontend. All rights

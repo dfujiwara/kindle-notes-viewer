@@ -1,5 +1,7 @@
 import { NavLink } from "react-router";
 
+import { PAGE_WIDTH } from "./layout";
+
 interface HeaderProps {
   title?: string;
 }
@@ -7,7 +9,9 @@ interface HeaderProps {
 export function Header({ title = "Kindle Notes" }: HeaderProps) {
   return (
     <header className="bg-zinc-900 border-b border-zinc-700 py-3 md:py-4">
-      <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4 px-4 sm:px-6 md:px-8">
+      <div
+        className={`${PAGE_WIDTH} flex flex-wrap justify-between items-center gap-4`}
+      >
         <NavLink to="/">
           <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-blue-400 m-0">
             {title}
