@@ -6,7 +6,7 @@ import {
   urlService,
   useApiSuspenseQuery,
 } from "src/api";
-import { TabBar } from "src/components";
+import { PageContainer, PageTitle, TabBar } from "src/components";
 import { BookList } from "./BookList";
 import { TweetList } from "./TweetList";
 import { UrlList } from "./UrlList";
@@ -73,7 +73,8 @@ export function HomePage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <PageContainer>
+      <PageTitle>Home</PageTitle>
       <TabBar tabs={tabs} activeTab={activeTab} onChange={updateTab} />
 
       {activeTab === "books" && (
@@ -106,6 +107,6 @@ export function HomePage() {
           />
         </section>
       )}
-    </div>
+    </PageContainer>
   );
 }
