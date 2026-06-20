@@ -46,6 +46,10 @@ describe("SearchPage", () => {
     } satisfies ApiResponse<SearchResult>);
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("displays helper text when input has 1-2 characters", async () => {
     const user = userEvent.setup();
     renderWithQueryClient(<SearchPage />);
@@ -115,12 +119,14 @@ describe("SearchPage", () => {
     expect(screen.getByText("Start typing to search")).toBeInTheDocument();
   });
 
-  it("triggers search as you type once the minimum length is reached", async () => {
+  it("debounces search requests while typing", async () => {
     const user = userEvent.setup();
     renderWithQueryClient(<SearchPage />);
 
     const input = screen.getByRole("searchbox");
     await user.type(input, "abc");
+
+    expect(searchService.search).not.toHaveBeenCalled();
 
     await waitFor(() => {
       expect(searchService.search).toHaveBeenCalledWith("abc");
