@@ -1,4 +1,5 @@
 import type { UrlChunk } from "../../models";
+import { EmptyState } from "src/components";
 import { ChunkItem } from "./ChunkItem";
 
 interface ChunkListProps {
@@ -8,11 +9,7 @@ interface ChunkListProps {
 
 export function ChunkList({ chunks, onChunkClick }: ChunkListProps) {
   if (chunks.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-zinc-400 text-lg">No chunks found for this URL.</p>
-      </div>
-    );
+    return <EmptyState>No chunks found for this URL.</EmptyState>;
   }
 
   return (

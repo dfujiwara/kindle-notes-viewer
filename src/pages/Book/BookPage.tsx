@@ -7,7 +7,7 @@ import {
   useApiMutation,
   useApiSuspenseQuery,
 } from "src/api";
-import { PageContainer } from "src/components";
+import { DetailPageShell } from "src/components";
 import { BookDescription } from "./BookDescription";
 import { NoteList } from "./NoteList";
 
@@ -34,16 +34,17 @@ export function BookPage() {
   );
 
   return (
-    <PageContainer>
+    <DetailPageShell>
       <BookDescription
         book={result.data.book}
         onDelete={() => deleteMutation.mutate(bookId)}
         isDeleting={deleteMutation.isPending}
+        backLink={{ to: "/", label: "Back to Home" }}
       />
       <NoteList
         notes={result.data.notes}
         onNoteClick={(note) => navigate(`/books/${bookId}/notes/${note.id}`)}
       />
-    </PageContainer>
+    </DetailPageShell>
   );
 }

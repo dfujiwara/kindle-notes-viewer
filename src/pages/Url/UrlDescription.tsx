@@ -6,17 +6,22 @@ interface UrlDescriptionProps {
   url: Url;
   onDelete: () => void;
   isDeleting: boolean;
+  backLink?: {
+    to: string;
+    label: string;
+  };
 }
 
 export function UrlDescription({
   url,
   onDelete,
   isDeleting,
+  backLink,
 }: UrlDescriptionProps) {
   const formattedDate = formatDate(url.createdAt);
 
   return (
-    <article className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
+    <article className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 sm:p-6">
       <PageHeader
         title={url.title}
         subtitle={
@@ -34,6 +39,7 @@ export function UrlDescription({
             ariaLabel={`Delete URL ${url.title}`}
           />
         }
+        backLink={backLink}
       />
     </article>
   );
