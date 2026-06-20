@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { searchService, useApiQuery } from "src/api";
 import { PageContainer, PageTitle } from "src/components";
 import type { SearchResultsProps } from "./SearchResults";
@@ -6,18 +6,30 @@ import { SearchResults } from "./SearchResults";
 
 const MINIMUM_SEARCH_QUERY_LENGTH = 3;
 
+const SEARCH_DEBOUNCE_MS = 300;
+
 export function SearchPage() {
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const trimmedQuery = query.trim();
+  const trimmedDebouncedQuery = debouncedQuery.trim();
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedQuery(query);
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [query]);
 
   const result = useApiQuery(
-    ["search", trimmedQuery],
-    () => searchService.search(trimmedQuery),
-    { enabled: trimmedQuery.length >= MINIMUM_SEARCH_QUERY_LENGTH },
+    ["search", trimmedDebouncedQuery],
+    () => searchService.search(trimmedDebouncedQuery),
+    { enabled: trimmedDebouncedQuery.length >= MINIMUM_SEARCH_QUERY_LENGTH },
   );
 
   const getSearchState = (): SearchResultsProps => {
-    if (trimmedQuery.length < MINIMUM_SEARCH_QUERY_LENGTH) {
+    if (trimmedDebouncedQuery.length < MINIMUM_SEARCH_QUERY_LENGTH) {
       return { status: "idle" };
     }
     if (result.isLoading) {
@@ -35,8 +47,8 @@ export function SearchPage() {
   };
 
   const isTooShort =
-    query.trim().length > 0 &&
-    query.trim().length < MINIMUM_SEARCH_QUERY_LENGTH;
+    trimmedQuery.length > 0 &&
+    trimmedQuery.length < MINIMUM_SEARCH_QUERY_LENGTH;
 
   return (
     <PageContainer>
