@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { LoadingIndicator, PageContainer, PageTitle } from "src/components";
+import { DetailPageShell, LoadingIndicator, PageHeader } from "src/components";
 import {
   mapBookSourceToKindleBook,
   mapNoteContentToKindleNote,
@@ -36,8 +36,10 @@ export function RandomPage() {
           );
         }
         return (
-          <PageContainer>
-            <PageTitle>Random Note</PageTitle>
+          <DetailPageShell
+            backLink={{ to: `/books/${source.id}/`, label: "Back to Book" }}
+          >
+            <PageHeader title="Random Note" />
             <NoteDescription
               book={mapBookSourceToKindleBook(source)}
               note={mapNoteContentToKindleNote(content)}
@@ -50,7 +52,7 @@ export function RandomPage() {
                 navigate(`/books/${source.id}/notes/${relatedNoteId}`);
               }}
             />
-          </PageContainer>
+          </DetailPageShell>
         );
       }
 
@@ -63,8 +65,10 @@ export function RandomPage() {
         const thread = mapTweetThreadSourceToThread(source);
         const tweet = mapTweetContentToTweet(content);
         return (
-          <PageContainer>
-            <PageTitle>Random Tweet</PageTitle>
+          <DetailPageShell
+            backLink={{ to: `/tweets/${source.id}/`, label: "Back to Thread" }}
+          >
+            <PageHeader title="Random Tweet" />
             <TweetDescription
               thread={thread}
               tweet={tweet}
@@ -75,7 +79,7 @@ export function RandomPage() {
                 navigate(`/tweets/${source.id}/tweets/${relatedTweetId}`)
               }
             />
-          </PageContainer>
+          </DetailPageShell>
         );
       }
 
@@ -85,8 +89,10 @@ export function RandomPage() {
         );
       }
       return (
-        <PageContainer>
-          <PageTitle>Random URL</PageTitle>
+        <DetailPageShell
+          backLink={{ to: `/urls/${source.id}/`, label: "Back to URL" }}
+        >
+          <PageHeader title="Random URL" />
           <ChunkDescription
             url={mapUrlSourceToUrl(source)}
             chunk={mapUrlChunkContentToUrlChunk(content)}
@@ -99,7 +105,7 @@ export function RandomPage() {
               navigate(`/urls/${source.id}/chunks/${relatedChunkId}`);
             }}
           />
-        </PageContainer>
+        </DetailPageShell>
       );
     }
   }

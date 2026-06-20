@@ -5,15 +5,20 @@ interface BookDescriptionProps {
   book: KindleBook;
   onDelete: () => void;
   isDeleting: boolean;
+  backLink?: {
+    to: string;
+    label: string;
+  };
 }
 
 export function BookDescription({
   book,
   onDelete,
   isDeleting,
+  backLink,
 }: BookDescriptionProps) {
   return (
-    <article className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
+    <article className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 sm:p-6">
       <PageHeader
         title={book.title}
         subtitle={
@@ -27,6 +32,7 @@ export function BookDescription({
             ariaLabel={`Delete book ${book.title}`}
           />
         }
+        backLink={backLink}
       />
     </article>
   );

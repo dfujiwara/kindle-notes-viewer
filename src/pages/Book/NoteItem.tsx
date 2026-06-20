@@ -1,5 +1,5 @@
+import { DetailCardButton } from "src/components";
 import type { KindleNote } from "src/models";
-import { getCardButtonClassName } from "src/utils/styles";
 
 interface NoteItemProps {
   note: KindleNote;
@@ -8,14 +8,10 @@ interface NoteItemProps {
 
 export function NoteItem({ note, onClick }: NoteItemProps) {
   return (
-    <button
-      type="button"
-      className={`${getCardButtonClassName("p-3 sm:p-4")} touch-manipulation`}
-      onClick={onClick}
-    >
+    <DetailCardButton padding="p-3 sm:p-4" onClick={onClick}>
       <p className="text-zinc-300 leading-relaxed text-sm sm:text-base break-words">
         {note.content}
       </p>
-    </button>
+    </DetailCardButton>
   );
 }

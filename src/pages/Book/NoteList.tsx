@@ -1,3 +1,4 @@
+import { EmptyState } from "src/components";
 import type { KindleNote } from "../../models";
 import { NoteItem } from "./NoteItem";
 
@@ -8,11 +9,7 @@ interface NoteListProps {
 
 export function NoteList({ notes, onNoteClick }: NoteListProps) {
   if (notes.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-zinc-400 text-lg">No notes found for this book.</p>
-      </div>
-    );
+    return <EmptyState>No notes found for this book.</EmptyState>;
   }
 
   return (

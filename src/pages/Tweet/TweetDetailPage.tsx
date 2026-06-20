@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router";
-import { LoadingIndicator, PageContainer } from "src/components";
+import { DetailPageShell, LoadingIndicator } from "src/components";
 import { TweetDescription } from "./TweetDescription";
 import { useStreamedDetailedTweet } from "./useStreamedDetailedTweet";
 
@@ -25,7 +25,9 @@ export function TweetDetailPage() {
       const { thread, tweet, additionalContext, relatedTweets } = state.data;
 
       return (
-        <PageContainer>
+        <DetailPageShell
+          backLink={{ to: `/tweets/${thread.id}/`, label: "Back to Thread" }}
+        >
           <TweetDescription
             thread={thread}
             tweet={tweet}
@@ -36,7 +38,7 @@ export function TweetDetailPage() {
               navigate(`/tweets/${thread.id}/tweets/${relatedTweetId}`)
             }
           />
-        </PageContainer>
+        </DetailPageShell>
       );
     }
   }

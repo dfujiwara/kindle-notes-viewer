@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import type { ApiError } from "src/api";
 import { urlService, useApiMutation, useApiSuspenseQuery } from "src/api";
-import { PageContainer } from "src/components";
+import { DetailPageShell } from "src/components";
 import { ChunkList } from "./ChunkList";
 import { UrlDescription } from "./UrlDescription";
 
@@ -29,16 +29,17 @@ export function UrlPage() {
   );
 
   return (
-    <PageContainer>
+    <DetailPageShell>
       <UrlDescription
         url={result.data.url}
         onDelete={() => deleteMutation.mutate(urlId)}
         isDeleting={deleteMutation.isPending}
+        backLink={{ to: "/", label: "Back to Home" }}
       />
       <ChunkList
         chunks={result.data.chunks}
         onChunkClick={(chunk) => navigate(`/urls/${urlId}/chunks/${chunk.id}`)}
       />
-    </PageContainer>
+    </DetailPageShell>
   );
 }
