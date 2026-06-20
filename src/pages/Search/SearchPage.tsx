@@ -8,26 +8,16 @@ const MINIMUM_SEARCH_QUERY_LENGTH = 3;
 
 export function SearchPage() {
   const [query, setQuery] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const trimmedQuery = query.trim();
 
   const result = useApiQuery(
-    ["search", searchQuery],
-    () => searchService.search(searchQuery),
-    { enabled: searchQuery.length >= MINIMUM_SEARCH_QUERY_LENGTH },
+    ["search", trimmedQuery],
+    () => searchService.search(trimmedQuery),
+    { enabled: trimmedQuery.length >= MINIMUM_SEARCH_QUERY_LENGTH },
   );
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key !== "Enter") {
-      return;
-    }
-    if (query.trim().length < MINIMUM_SEARCH_QUERY_LENGTH) {
-      return;
-    }
-    setSearchQuery(query);
-  };
-
   const getSearchState = (): SearchResultsProps => {
-    if (searchQuery.length === 0) {
+    if (trimmedQuery.length < MINIMUM_SEARCH_QUERY_LENGTH) {
       return { status: "idle" };
     }
     if (result.isLoading) {
@@ -58,7 +48,6 @@ export function SearchPage() {
           aria-label="Search notes and URLs"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
           placeholder="Search..."
           className="w-full px-4 py-3 rounded-lg border border-zinc-700 bg-zinc-800 text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />

@@ -1,6 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ApiResponse } from "src/api";
+import { searchService } from "src/api";
+import type { SearchResult } from "src/models";
 import { SearchPage } from "./SearchPage";
 
 // Mock the search service
@@ -29,6 +32,20 @@ function renderWithQueryClient(ui: React.ReactElement) {
 }
 
 describe("SearchPage", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(searchService.search).mockResolvedValue({
+      status: 200,
+      data: {
+        q: "test",
+        count: 0,
+        books: [],
+        urls: [],
+        tweetThreads: [],
+      },
+    } satisfies ApiResponse<SearchResult>);
+  });
+
   it("displays helper text when input has 1-2 characters", async () => {
     const user = userEvent.setup();
     renderWithQueryClient(<SearchPage />);
@@ -87,21 +104,30 @@ describe("SearchPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("does not trigger search when pressing Enter with less than 3 characters", async () => {
+  it("does not trigger search when input is shorter than 3 characters", async () => {
     const user = userEvent.setup();
     renderWithQueryClient(<SearchPage />);
 
     const input = screen.getByRole("searchbox");
     await user.type(input, "ab");
-    await user.keyboard("{Enter}");
 
-    // Should still show idle message
-    expect(
-      screen.getByText("Enter a search query and press Enter to find notes"),
-    ).toBeInTheDocument();
+    expect(searchService.search).not.toHaveBeenCalled();
+    expect(screen.getByText("Start typing to search")).toBeInTheDocument();
   });
 
-  it("shows placeholder with Enter hint", () => {
+  it("triggers search as you type once the minimum length is reached", async () => {
+    const user = userEvent.setup();
+    renderWithQueryClient(<SearchPage />);
+
+    const input = screen.getByRole("searchbox");
+    await user.type(input, "abc");
+
+    await waitFor(() => {
+      expect(searchService.search).toHaveBeenCalledWith("abc");
+    });
+  });
+
+  it("shows placeholder without an Enter hint", () => {
     renderWithQueryClient(<SearchPage />);
 
     const input = screen.getByPlaceholderText("Search...");

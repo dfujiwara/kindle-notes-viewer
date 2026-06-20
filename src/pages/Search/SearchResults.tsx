@@ -171,7 +171,7 @@ export function SearchResults(props: SearchResultsProps) {
   if (props.status === "idle") {
     return (
       <div className="text-center text-zinc-400 py-12">
-        Enter a search query and press Enter to find notes
+        Start typing to search
       </div>
     );
   }
