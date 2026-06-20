@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from "react";
+import { type ReactNode, useId } from "react";
 
 type DetailSectionProps = {
   title: ReactNode;
@@ -18,7 +18,10 @@ export function DetailSection({
       aria-labelledby={headingId}
       className={`space-y-2 ${className}`.trim()}
     >
-      <h3 id={headingId} className="text-base md:text-lg font-semibold text-white">
+      <h3
+        id={headingId}
+        className="text-base md:text-lg font-semibold text-white"
+      >
         {title}
       </h3>
       {children}

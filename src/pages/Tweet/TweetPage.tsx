@@ -5,7 +5,9 @@ import { tweetService, useApiMutation, useApiSuspenseQuery } from "src/api";
 import {
   ClickableUrl,
   DeleteButton,
-  PageContainer,
+  DetailCardButton,
+  DetailPageShell,
+  EmptyState,
   PageHeader,
 } from "src/components";
 import { formatDate } from "src/utils/date";
@@ -36,13 +38,13 @@ export function TweetPage() {
   const { thread, tweets } = result.data;
 
   return (
-    <PageContainer>
+    <DetailPageShell>
       <PageHeader
         title={thread.title}
         subtitle={
           <ClickableUrl
             url={thread.canonicalURL}
-            className="text-sm sm:text-base text-zinc-400 line-clamp-1 block"
+            className="text-sm sm:text-base text-zinc-400 line-clamp-1 block hover:text-white transition-colors"
           />
         }
         meta={`@${thread.authorUsername} · ${thread.authorDisplayName} · ${thread.tweetCount} ${thread.tweetCount === 1 ? "tweet" : "tweets"} · ${formatDate(thread.createdAt)}`}
@@ -54,29 +56,29 @@ export function TweetPage() {
             ariaLabel={`Delete tweet thread ${thread.title}`}
           />
         }
+        backLink={{ to: "/", label: "Back to Home" }}
       />
 
-      <ul className="space-y-3 list-none pt-6">
+      <ul className="space-y-3 list-none pt-2">
         {tweets.length === 0 && (
           <li>
-            <p className="text-zinc-500 text-sm italic">No tweets found</p>
+            <EmptyState>No tweets found</EmptyState>
           </li>
         )}
         {tweets.map((tweet) => (
           <li key={tweet.id}>
-            <button
-              type="button"
-              className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 hover:bg-zinc-700 hover:border-zinc-600 transition-colors cursor-pointer text-left w-full"
+            <DetailCardButton
+              className="text-left"
               onClick={() => navigate(`/tweets/${threadId}/tweets/${tweet.id}`)}
             >
               <p className="text-zinc-400 text-xs mb-1">
                 @{tweet.authorUsername} · {formatDate(tweet.tweetedAt)}
               </p>
               <p className="text-zinc-200">{tweet.content}</p>
-            </button>
+            </DetailCardButton>
           </li>
         ))}
       </ul>
-    </PageContainer>
+    </DetailPageShell>
   );
 }

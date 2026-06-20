@@ -1,5 +1,5 @@
-import type { KindleNote } from "../../models";
 import { EmptyState } from "src/components";
+import type { KindleNote } from "../../models";
 import { NoteItem } from "./NoteItem";
 
 interface NoteListProps {

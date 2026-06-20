@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
-
-import { EmptyState } from "./EmptyState";
 import { DetailSection } from "./DetailSection";
+import { EmptyState } from "./EmptyState";
 
 type RelatedItemsSectionProps<T> = {
   title: string;

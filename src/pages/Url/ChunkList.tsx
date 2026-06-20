@@ -1,5 +1,5 @@
-import type { UrlChunk } from "../../models";
 import { EmptyState } from "src/components";
+import type { UrlChunk } from "../../models";
 import { ChunkItem } from "./ChunkItem";
 
 interface ChunkListProps {
