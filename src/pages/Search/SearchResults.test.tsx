@@ -120,9 +120,7 @@ describe("SearchResults", () => {
       </MemoryRouter>,
     );
 
-    expect(
-      screen.getByText("Enter a search query and press Enter to find notes"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Start typing to search")).toBeInTheDocument();
   });
 
   it("displays error message when status is error", () => {
